@@ -1,6 +1,8 @@
 import React from 'react';
-import { Home, Grid, TrendingUp } from 'lucide-react';
+import { Home, Grid, TrendingUp, Package, Users, BarChart3, Truck } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
+import { useAccessControl } from '../contexts/AuthContext';
+import { UserType } from '../types/auth';
 
 const HorizontalMenu: React.FC = () => {
   const location = useLocation();

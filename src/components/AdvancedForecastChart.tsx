@@ -266,20 +266,20 @@ const AdvancedForecastChart: React.FC = () => {
           
           {/* Accuracy line */}
           <polyline
-            points={monthlyData.map((d, i) => `${80 + i * 55},${200 - ((d.accuracy - 95) / 5) * 200}`).join(' ')}
+            points={monthlyData.map((d, i) => `${80 + i * 55},${200 - (((d?.accuracy || 95) - 95) / 5) * 200}`).join(' ')}
             fill="none"
             stroke="#10B981"
             strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          
+
           {/* Data points */}
           {monthlyData.map((d, i) => (
             <circle
               key={i}
               cx={80 + i * 55}
-              cy={200 - ((d.accuracy - 95) / 5) * 200}
+              cy={200 - (((d?.accuracy || 95) - 95) / 5) * 200}
               r="5"
               fill="#10B981"
               stroke="white"

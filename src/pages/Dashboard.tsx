@@ -27,29 +27,24 @@ const Dashboard: React.FC = () => {
     showNotification('Dashboard data refreshed successfully', 'success');
   };
 
-  // Import role-specific stats
-  const statsData = useMemo(() => {
-    if (!user) return [];
-    // Default stats for fallback
-    return [
-      {
-        title: 'Total Budget Units',
-        value: '5,042',
-        subtitle: 'As of current year',
-        icon: PieChartIcon,
-        color: 'primary' as const,
-        trend: { value: '+12.5%', isPositive: true }
-      },
-      {
-        title: 'Total Sales',
-        value: '$0',
-        subtitle: 'Last Week Analysis',
-        icon: TrendingUp,
-        color: 'success' as const,
-        trend: { value: '0%', isPositive: true }
-      }
-    ];
-  }, [user]);
+  const statsData = [
+    {
+      title: 'Total Budget Units',
+      value: '5,042',
+      subtitle: 'As of current year',
+      icon: PieChartIcon,
+      color: 'primary' as const,
+      trend: { value: '+12.5%', isPositive: true }
+    },
+    {
+      title: 'Total Sales',
+      value: '$0',
+      subtitle: 'Last Week Analysis',
+      icon: TrendingUp,
+      color: 'success' as const,
+      trend: { value: '0%', isPositive: true }
+    }
+  ];
 
   return (
     <div className="space-y-6">

@@ -32,7 +32,8 @@ const Dashboard: React.FC = () => {
 
   // Import role-specific stats
   const statsData = useMemo(() => {
-    return require('../utils/dashboardStats').getRoleSpecificStats(user);
+    const { getRoleSpecificStats } = require('../utils/dashboardStats');
+    return getRoleSpecificStats(user);
   }, [user]);
 
   return (

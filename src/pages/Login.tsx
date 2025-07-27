@@ -12,35 +12,19 @@ const Login: React.FC = () => {
   });
   const [error, setError] = useState('');
 
-  // Example credentials for different user types
-  const EXAMPLE_CREDENTIALS = [
-    { email: 'admin@example.com', password: 'admin123', role: 'Administrator' },
-    { email: 'salesman@example.com', password: 'sales123', role: 'Salesman' },
-    { email: 'manager@example.com', password: 'manager123', role: 'Manager' },
-    { email: 'supply@example.com', password: 'supply123', role: 'Supply Chain' },
-    { email: 'branch@example.com', password: 'branch123', role: 'Branch Manager' },
-  ];
+  // Example credentials
+  const EXAMPLE_CREDENTIALS = {
+    email: 'admin@example.com',
+    password: 'admin123'
+  };
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated && !loading) {
-      const from = location.state?.from?.pathname || '/dashboard';
-      navigate(from, { replace: true });
-    }
-  }, [isAuthenticated, loading, navigate, location]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
 
-    try {
-      await login(formData);
-      // Navigation will be handled by useEffect
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
-    } finally {
-      setIsLoading(false);
+    if (formData.email === EXAMPLE_CREDENTIALS.email && formData.password === EXAMPLE_CREDENTIALS.password) {
+      navigate('/dashboard');
+    } else {
+      setError('Invalid email or password');
     }
   };
 

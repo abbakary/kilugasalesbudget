@@ -6,8 +6,6 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);

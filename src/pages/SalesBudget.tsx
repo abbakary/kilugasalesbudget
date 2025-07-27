@@ -32,6 +32,8 @@ const SalesBudget: React.FC = () => {
   const [activeView, setActiveView] = useState('customer-item');
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [unitInputs, setUnitInputs] = useState<{ [key: number]: string }>({});
+  const [inlineFormRows, setInlineFormRows] = useState<Set<number>>(new Set());
+  const [newRowData, setNewRowData] = useState<{ [key: number]: Partial<typeof tableData[0]> }>({});
 
   // Modal states
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -148,8 +150,85 @@ const SalesBudget: React.FC = () => {
   };
 
   const handleNewAddition = (type: 'customer' | 'item') => {
-    setNewAdditionType(type);
-    setIsNewAdditionModalOpen(true);
+    // Get selected rows
+    const selectedRows = tableData.filter(row => row.selected);
+
+    if (selectedRows.length === 0) {
+      showNotification('Please select at least one row to add new items', 'error');
+      return;
+    }
+
+    // Add inline forms to selected rows
+    const selectedIds = new Set(selectedRows.map(row => row.id));
+    setInlineFormRows(selectedIds);
+
+    // Initialize form data for selected rows
+    const initialData: { [key: number]: Partial<typeof tableData[0]> } = {};
+    selectedRows.forEach(row => {
+      initialData[row.id] = {
+        item: '',
+        rate: '0',
+        stk: '0',
+        git: '0'
+      };
+    });
+    setNewRowData(initialData);
+  };
+
+  const handleInlineFormChange = (rowId: number, field: string, value: string) => {
+    setNewRowData(prev => ({
+      ...prev,
+      [rowId]: {
+        ...prev[rowId],
+        [field]: value
+      }
+    }));
+  };
+
+  const submitInlineForm = (rowId: number) => {
+    const formData = newRowData[rowId];
+    if (!formData || !formData.item) {
+      showNotification('Please fill in the item name', 'error');
+      return;
+    }
+
+    // Update the row with new data
+    setTableData(prev => prev.map(row => {
+      if (row.id === rowId) {
+        return {
+          ...row,
+          item: formData.item || row.item,
+          rate: formData.rate || row.rate,
+          stk: formData.stk || row.stk,
+          git: formData.git || row.git,
+          selected: false
+        };
+      }
+      return row;
+    }));
+
+    // Remove from inline forms
+    setInlineFormRows(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(rowId);
+      return newSet;
+    });
+
+    showNotification(`Item updated successfully for row ${rowId}`, 'success');
+  };
+
+  const cancelInlineForm = (rowId: number) => {
+    setInlineFormRows(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(rowId);
+      return newSet;
+    });
+
+    setNewRowData(prev => {
+      const newData = { ...prev };
+      delete newData[rowId];
+      return newData;
+    });
   };
 
   const handleAddNewItem = (itemData: NewItemData) => {
@@ -344,14 +423,23 @@ const SalesBudget: React.FC = () => {
                     className="bg-green-600 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-700 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>New Item</span>
+                    <span>Edit Selected</span>
                   </button>
                   <button
-                    onClick={() => handleNewAddition('customer')}
-                    className="bg-green-500 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-600 transition-colors"
+                    onClick={() => {
+                      const selectedCount = tableData.filter(row => row.selected).length;
+                      if (selectedCount === 0) {
+                        showNotification('Please select rows to clear forms', 'error');
+                      } else {
+                        setInlineFormRows(new Set());
+                        setNewRowData({});
+                        showNotification('Forms cleared', 'success');
+                      }
+                    }}
+                    className="bg-red-500 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-red-600 transition-colors"
                   >
-                    <Plus className="w-4 h-4" />
-                    <span>New Customer</span>
+                    <Minus className="w-4 h-4" />
+                    <span>Clear Forms</span>
                   </button>
                 </div>
                 <button

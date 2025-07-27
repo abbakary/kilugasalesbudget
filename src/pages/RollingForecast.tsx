@@ -1,13 +1,33 @@
 import React, { useState } from 'react';
 import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, AlertCircle, Plus, Minus, Save, Upload, RefreshCw } from 'lucide-react';
 import ForecastSummary from '../components/ForecastSummary';
-import ForecastChart from '../components/ForecastChart';
+import AdvancedForecastChart from '../components/AdvancedForecastChart';
+import FiltersModal, { FilterState } from '../components/FiltersModal';
+import ScenariosModal, { ScenarioConfig } from '../components/ScenariosModal';
+import ExportModal, { ExportConfig } from '../components/ExportModal';
+import ImportModal, { ImportConfig } from '../components/ImportModal';
+import AnalyticsPlanningModal from '../components/AnalyticsPlanningModal';
 
 const RollingForecast: React.FC = () => {
   const [activeTab, setActiveTab] = useState('forecast-overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPeriod, setSelectedPeriod] = useState('2025');
   const [forecastHorizon, setForecastHorizon] = useState('12');
+  const [modelType, setModelType] = useState('linear');
+
+  // Modal states
+  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
+  const [isScenariosModalOpen, setIsScenariosModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
+
+  // Applied filters and scenarios
+  const [appliedFilters, setAppliedFilters] = useState<FilterState | null>(null);
+  const [appliedScenario, setAppliedScenario] = useState<ScenarioConfig | null>(null);
+
+  // Toast notification state
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
   // Sample forecast data with editable fields
   const [forecastData, setForecastData] = useState([
@@ -169,6 +189,81 @@ const RollingForecast: React.FC = () => {
       ...item,
       accuracy: Math.min(100, item.accuracy + (Math.random() * 4 - 2)) // Random adjustment
     })));
+    showNotification('Forecast recalculated successfully', 'success');
+  };
+
+  const saveChanges = () => {
+    // Simulate saving changes
+    showNotification('Changes saved successfully', 'success');
+  };
+
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleFiltersApply = (filters: FilterState) => {
+    setAppliedFilters(filters);
+    // Apply filters to data
+    let filteredData = [...forecastData];
+
+    if (filters.customer) {
+      filteredData = filteredData.filter(item =>
+        item.product.toLowerCase().includes(filters.customer.toLowerCase())
+      );
+    }
+
+    if (filters.product) {
+      filteredData = filteredData.filter(item =>
+        item.product.toLowerCase().includes(filters.product.toLowerCase())
+      );
+    }
+
+    showNotification('Filters applied successfully', 'success');
+  };
+
+  const handleScenarioApply = (scenario: ScenarioConfig) => {
+    setAppliedScenario(scenario);
+    // Apply scenario adjustments to forecast data
+    setForecastData(prev => prev.map(item => {
+      const adjustedItem = { ...item };
+
+      // Apply scenario adjustments
+      if (scenario.adjustments.volumeChange !== 0) {
+        const volumeMultiplier = 1 + (scenario.adjustments.volumeChange / 100);
+        ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].forEach(month => {
+          adjustedItem[month as keyof typeof adjustedItem] = Math.round(
+            (adjustedItem[month as keyof typeof adjustedItem] as number) * volumeMultiplier
+          );
+        });
+        adjustedItem.total = Math.round(adjustedItem.total * volumeMultiplier);
+      }
+
+      return adjustedItem;
+    }));
+
+    showNotification(`Scenario "${scenario.name}" applied successfully`, 'success');
+  };
+
+  const handleExport = (config: ExportConfig) => {
+    // Simulate export functionality
+    const fileName = `${config.filename}.${config.format === 'excel' ? 'xlsx' : config.format}`;
+    showNotification(`Exporting data as ${fileName}...`, 'success');
+
+    // In a real app, this would trigger file download
+    setTimeout(() => {
+      showNotification(`Export completed: ${fileName}`, 'success');
+    }, 2000);
+  };
+
+  const handleImport = (file: File, config: ImportConfig) => {
+    // Simulate import functionality
+    showNotification(`Importing data from ${file.name}...`, 'success');
+
+    // In a real app, this would process the file
+    setTimeout(() => {
+      showNotification(`Import completed: ${file.name}`, 'success');
+    }, 3000);
   };
 
   const formatCurrency = (amount: number) => {
@@ -207,15 +302,39 @@ const RollingForecast: React.FC = () => {
           <p className="text-gray-600 text-sm">Manage and analyze rolling forecasts with advanced predictive analytics</p>
         </div>
         <div className="flex space-x-2">
-          <button className="flex items-center space-x-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors">
+          <button
+            onClick={() => setIsAnalyticsModalOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span>Analytics Planning</span>
+          </button>
+          <button
+            onClick={() => setIsFiltersModalOpen(true)}
+            className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
+              appliedFilters
+                ? 'border-blue-600 bg-blue-50 text-blue-700'
+                : 'border-blue-600 text-blue-600 hover:bg-blue-50'
+            }`}
+          >
             <Filter className="w-4 h-4" />
-            <span>Filters</span>
+            <span>Filters {appliedFilters && '(Active)'}</span>
           </button>
-          <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+          <button
+            onClick={() => setIsScenariosModalOpen(true)}
+            className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
+              appliedScenario
+                ? 'border-orange-600 bg-orange-50 text-orange-700'
+                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+            }`}
+          >
             <AlertCircle className="w-4 h-4" />
-            <span>Scenarios</span>
+            <span>Scenarios {appliedScenario && `(${appliedScenario.name})`}</span>
           </button>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+          <button
+            onClick={() => setIsExportModalOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
@@ -225,8 +344,8 @@ const RollingForecast: React.FC = () => {
       {/* Summary Cards */}
       <ForecastSummary data={summaryData} />
 
-      {/* Forecast Chart */}
-      <ForecastChart />
+      {/* Advanced Analytics Chart */}
+      <AdvancedForecastChart />
 
       {/* Search and Controls */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -271,7 +390,11 @@ const RollingForecast: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Model Type</label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={modelType}
+              onChange={(e) => setModelType(e.target.value)}
+            >
               <option value="linear">Linear Regression</option>
               <option value="arima">ARIMA</option>
               <option value="exponential">Exponential Smoothing</option>
@@ -305,11 +428,17 @@ const RollingForecast: React.FC = () => {
             <RefreshCw className="w-4 h-4" />
             <span>Recalculate</span>
           </button>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+          <button
+            onClick={saveChanges}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
             <Save className="w-4 h-4" />
             <span>Save Changes</span>
           </button>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors">
+          <button
+            onClick={() => setIsImportModalOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
+          >
             <Upload className="w-4 h-4" />
             <span>Import Data</span>
           </button>
@@ -449,6 +578,48 @@ const RollingForecast: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Notification Toast */}
+      {notification && (
+        <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg transition-all duration-300 ${
+          notification.type === 'success'
+            ? 'bg-green-600 text-white'
+            : 'bg-red-600 text-white'
+        }`}>
+          {notification.message}
+        </div>
+      )}
+
+      {/* Modals */}
+      <FiltersModal
+        isOpen={isFiltersModalOpen}
+        onClose={() => setIsFiltersModalOpen(false)}
+        onApply={handleFiltersApply}
+      />
+
+      <ScenariosModal
+        isOpen={isScenariosModalOpen}
+        onClose={() => setIsScenariosModalOpen(false)}
+        onApplyScenario={handleScenarioApply}
+      />
+
+      <ExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        onExport={handleExport}
+        title="Export Forecast Data"
+      />
+
+      <ImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImport={handleImport}
+      />
+
+      <AnalyticsPlanningModal
+        isOpen={isAnalyticsModalOpen}
+        onClose={() => setIsAnalyticsModalOpen(false)}
+      />
     </div>
   );
 };

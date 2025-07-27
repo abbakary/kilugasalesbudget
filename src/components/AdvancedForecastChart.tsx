@@ -190,15 +190,15 @@ const AdvancedForecastChart: React.FC = () => {
           <div className="relative">
             <svg width="200" height="200" className="transform -rotate-90">
               {productData.map((item, index) => {
-                const percentage = item.value;
+                const percentage = item?.value || 0;
                 const angle = (percentage / 100) * 360;
                 const startAngle = (cumulativePercentage / 100) * 360;
-                
+
                 const x1 = 100 + 80 * Math.cos((startAngle * Math.PI) / 180);
                 const y1 = 100 + 80 * Math.sin((startAngle * Math.PI) / 180);
                 const x2 = 100 + 80 * Math.cos(((startAngle + angle) * Math.PI) / 180);
                 const y2 = 100 + 80 * Math.sin(((startAngle + angle) * Math.PI) / 180);
-                
+
                 const largeArcFlag = angle > 180 ? 1 : 0;
                 
                 const pathData = [

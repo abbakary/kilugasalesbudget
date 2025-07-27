@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { getUserTypeName } from '../types/auth';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated, loading, error: authError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -11,20 +15,37 @@ const Login: React.FC = () => {
     remember: false
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Example credentials
-  const EXAMPLE_CREDENTIALS = {
-    email: 'admin@example.com',
-    password: 'admin123'
-  };
+  // Example credentials for different user types
+  const EXAMPLE_CREDENTIALS = [
+    { email: 'admin@example.com', password: 'admin123', role: 'Administrator' },
+    { email: 'salesman@example.com', password: 'sales123', role: 'Salesman' },
+    { email: 'manager@example.com', password: 'manager123', role: 'Manager' },
+    { email: 'supply@example.com', password: 'supply123', role: 'Supply Chain' },
+    { email: 'branch@example.com', password: 'branch123', role: 'Branch Manager' },
+  ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !loading) {
+      const from = location.state?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, loading, navigate, location]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.email === EXAMPLE_CREDENTIALS.email && formData.password === EXAMPLE_CREDENTIALS.password) {
-      navigate('/dashboard');
-    } else {
-      setError('Invalid email or password');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await login(formData);
+      // Navigation will be handled by useEffect
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -96,22 +117,44 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              disabled={isLoading}
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              Sign in
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign in'
+              )}
             </button>
-            {error && (
-              <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+            {(error || authError) && (
+              <p className="text-red-500 text-sm mt-2 text-center">{error || authError}</p>
             )}
           </form>
 
-          <div className="flex justify-center mt-6">
-          <img 
-                  src="/assets/images/superdoll_logo.jpeg" 
-                  width="70" 
-                  alt="STM Logo" 
-                  className="h-8"
-                />
+          <div className="mt-6">
+            <div className="flex justify-center mb-4">
+              <img
+                src="/assets/images/superdoll_logo.jpeg"
+                width="70"
+                alt="STM Logo"
+                className="h-8"
+              />
+            </div>
+
+            {/* Demo Credentials */}
+            <div className="bg-gray-100 p-4 rounded-lg">
+              <h5 className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</h5>
+              <div className="space-y-1">
+                {EXAMPLE_CREDENTIALS.map((cred, index) => (
+                  <div key={index} className="text-xs text-gray-600">
+                    <strong>{cred.role}:</strong> {cred.email} / {cred.password}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

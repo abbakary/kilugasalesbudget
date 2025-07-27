@@ -42,10 +42,10 @@ const Dashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h4 className="text-2xl font-bold text-gray-900 mb-2">
-            <span className="text-gray-500 font-light">Dashboard /</span> Statistics
+            <span className="text-gray-500 font-light">Dashboard /</span> {user ? getUserTypeName(user.user_type) : 'User'} Overview
           </h4>
           <p className="text-sm text-gray-600">
-            Last updated: {lastRefresh.toLocaleTimeString()}
+            Welcome {user?.name} | Last updated: {lastRefresh.toLocaleTimeString()}
           </p>
         </div>
         <div className="flex space-x-2">

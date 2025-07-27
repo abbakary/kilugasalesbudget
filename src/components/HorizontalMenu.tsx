@@ -4,62 +4,27 @@ import { useLocation, Link } from 'react-router-dom';
 
 const HorizontalMenu: React.FC = () => {
   const location = useLocation();
-  const { canAccess, user } = useAccessControl();
 
-  const allMenuItems = [
+  const menuItems = [
     {
       icon: Home,
-      label: 'Dashboard',
-      path: '/dashboard',
-      active: location.pathname === '/dashboard' || location.pathname === '/home',
-      userTypes: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.SUPPLY_CHAIN, UserType.BRANCH_MANAGER]
+      label: 'Dashboards',
+      path: '/home',
+      active: location.pathname === '/' || location.pathname === '/home' || location.pathname === '/dashboard'
     },
     {
       icon: Grid,
       label: 'Sales Budget',
       path: '/budgets',
-      active: location.pathname === '/budgets',
-      userTypes: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.BRANCH_MANAGER]
+      active: location.pathname === '/budgets'
     },
     {
       icon: TrendingUp,
       label: 'Rolling Forecast',
       path: '/forecasts',
-      active: location.pathname === '/forecasts',
-      userTypes: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.BRANCH_MANAGER]
-    },
-    {
-      icon: Truck,
-      label: 'Distribution',
-      path: '/distribution',
-      active: location.pathname === '/distribution',
-      userTypes: [UserType.ADMIN, UserType.SUPPLY_CHAIN]
-    },
-    {
-      icon: Package,
-      label: 'Inventory',
-      path: '/inventory',
-      active: location.pathname === '/inventory',
-      userTypes: [UserType.ADMIN, UserType.SUPPLY_CHAIN, UserType.MANAGER]
-    },
-    {
-      icon: BarChart3,
-      label: 'Reports',
-      path: '/reports',
-      active: location.pathname === '/reports',
-      userTypes: [UserType.ADMIN, UserType.MANAGER, UserType.BRANCH_MANAGER]
-    },
-    {
-      icon: Users,
-      label: 'User Management',
-      path: '/users',
-      active: location.pathname === '/users',
-      userTypes: [UserType.ADMIN]
+      active: location.pathname === '/forecasts'
     }
   ];
-
-  // Filter menu items based on user type
-  const menuItems = allMenuItems.filter(item => canAccess(item.userTypes));
 
   return (
     <aside className="layout-menu-horizontal menu menu-horizontal bg-white shadow-sm border-b border-gray-200">

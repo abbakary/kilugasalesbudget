@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { getUserTypeName } from '../types/auth';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();

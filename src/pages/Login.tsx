@@ -96,20 +96,12 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isLoading}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign in'
-              )}
+              Sign in
             </button>
-            {(error || authError) && (
-              <p className="text-red-500 text-sm mt-2 text-center">{error || authError}</p>
+            {error && (
+              <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
             )}
           </form>
 

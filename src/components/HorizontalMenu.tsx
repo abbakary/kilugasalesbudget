@@ -6,27 +6,62 @@ import { UserType } from '../types/auth';
 
 const HorizontalMenu: React.FC = () => {
   const location = useLocation();
+  const { canAccess, user } = useAccessControl();
 
-  const menuItems = [
+  const allMenuItems = [
     {
       icon: Home,
-      label: 'Dashboards',
-      path: '/home',
-      active: location.pathname === '/' || location.pathname === '/home'
+      label: 'Dashboard',
+      path: '/dashboard',
+      active: location.pathname === '/dashboard' || location.pathname === '/home',
+      userTypes: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.SUPPLY_CHAIN, UserType.BRANCH_MANAGER]
     },
     {
       icon: Grid,
       label: 'Sales Budget',
       path: '/budgets',
-      active: location.pathname === '/budgets'
+      active: location.pathname === '/budgets',
+      userTypes: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.BRANCH_MANAGER]
     },
     {
       icon: TrendingUp,
       label: 'Rolling Forecast',
       path: '/forecasts',
-      active: location.pathname === '/forecasts'
+      active: location.pathname === '/forecasts',
+      userTypes: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.BRANCH_MANAGER]
+    },
+    {
+      icon: Truck,
+      label: 'Distribution',
+      path: '/distribution',
+      active: location.pathname === '/distribution',
+      userTypes: [UserType.ADMIN, UserType.SUPPLY_CHAIN]
+    },
+    {
+      icon: Package,
+      label: 'Inventory',
+      path: '/inventory',
+      active: location.pathname === '/inventory',
+      userTypes: [UserType.ADMIN, UserType.SUPPLY_CHAIN, UserType.MANAGER]
+    },
+    {
+      icon: BarChart3,
+      label: 'Reports',
+      path: '/reports',
+      active: location.pathname === '/reports',
+      userTypes: [UserType.ADMIN, UserType.MANAGER, UserType.BRANCH_MANAGER]
+    },
+    {
+      icon: Users,
+      label: 'User Management',
+      path: '/users',
+      active: location.pathname === '/users',
+      userTypes: [UserType.ADMIN]
     }
   ];
+
+  // Filter menu items based on user type
+  const menuItems = allMenuItems.filter(item => canAccess(item.userTypes));
 
   return (
     <aside className="layout-menu-horizontal menu menu-horizontal bg-white shadow-sm border-b border-gray-200">

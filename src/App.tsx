@@ -58,6 +58,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN]}>
+                <Layout><UserManagement /></Layout>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

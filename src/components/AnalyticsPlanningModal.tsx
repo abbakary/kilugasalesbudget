@@ -118,8 +118,8 @@ const AnalyticsPlanningModal: React.FC<AnalyticsPlanningModalProps> = ({ isOpen,
                     <circle key={i} cx={50 + i * 90} cy={120 - d * 0.8} r="4" fill="#3B82F6" />
                   ))}
                   {salesAnalytics.trends.map((d, i) => (
-                    <text key={i} x={50 + i * 90} y="135" fontSize="12" fill="#6B7280" textAnchor="middle">
-                      {d.month}
+                    <text key={i} x={50 + i * 90} y={135} fontSize="12" fill="#6B7280" textAnchor="middle">
+                      {d.month || ''}
                     </text>
                   ))}
                 </svg>

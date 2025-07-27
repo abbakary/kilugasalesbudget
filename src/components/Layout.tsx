@@ -5,6 +5,7 @@ import HorizontalMenu from './HorizontalMenu';
 import Footer from './Footer';
 import PasswordModal from './PasswordModal';
 import ToastContainer from './ToastContainer';
+import AnimatedVisionText from './AnimatedVisionText';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -36,11 +37,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </>
         )}
       </div>
-      <PasswordModal 
-        isOpen={isPasswordModalOpen} 
-        onClose={() => setIsPasswordModalOpen(false)} 
+      <PasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
       />
       <ToastContainer />
+      {location.pathname !== '/' && <AnimatedVisionText />}
     </div>
   );
 };

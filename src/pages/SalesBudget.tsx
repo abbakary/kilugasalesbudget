@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Bell, 
-  ChevronDown, 
-  BarChart3, 
-  TrendingUp, 
-  RotateCcw, 
-  Info as InfoIcon, 
-  Download as DownloadIcon, 
-  Plus, 
-  PieChart, 
-  MoreVertical, 
-  Check, 
-  Trash2, 
+import {
+  Search,
+  Bell,
+  ChevronDown,
+  BarChart3,
+  TrendingUp,
+  RotateCcw,
+  Info as InfoIcon,
+  Download as DownloadIcon,
+  Plus,
+  PieChart,
+  MoreVertical,
+  Check,
+  Trash2,
   ChevronUp,
   Truck,
   Home,
   Grid,
   Minus
 } from 'lucide-react';
+import ExportModal, { ExportConfig } from '../components/ExportModal';
+import NewAdditionModal, { NewItemData } from '../components/NewAdditionModal';
 
 const SalesBudget: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -30,6 +32,17 @@ const SalesBudget: React.FC = () => {
   const [activeView, setActiveView] = useState('customer-item');
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [unitInputs, setUnitInputs] = useState<{ [key: number]: string }>({});
+
+  // Modal states
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isNewAdditionModalOpen, setIsNewAdditionModalOpen] = useState(false);
+  const [newAdditionType, setNewAdditionType] = useState<'customer' | 'item'>('item');
+
+  // Notification state
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+
+  // GIT explanation state
+  const [showGitExplanation, setShowGitExplanation] = useState(false);
 
   const [tableData, setTableData] = useState([
     {
@@ -115,6 +128,67 @@ const SalesBudget: React.FC = () => {
     setExpandedRowId(prev => (prev === id ? null : id));
   };
 
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleDownloadBudget = () => {
+    setIsExportModalOpen(true);
+  };
+
+  const handleExport = (config: ExportConfig) => {
+    const fileName = `budget_${config.year}.${config.format === 'excel' ? 'xlsx' : config.format}`;
+    showNotification(`Downloading budget for ${config.year} as ${fileName}...`, 'success');
+
+    // Simulate download
+    setTimeout(() => {
+      showNotification(`Download completed: ${fileName}`, 'success');
+    }, 2000);
+  };
+
+  const handleNewAddition = (type: 'customer' | 'item') => {
+    setNewAdditionType(type);
+    setIsNewAdditionModalOpen(true);
+  };
+
+  const handleAddNewItem = (itemData: NewItemData) => {
+    if (newAdditionType === 'customer') {
+      showNotification(`Customer "${itemData.customerName}" added successfully`, 'success');
+    } else {
+      // Add new item to table data
+      const newId = Math.max(...tableData.map(item => item.id)) + 1;
+      const newRow = {
+        id: newId,
+        selected: false,
+        customer: selectedCustomer || "New Customer",
+        item: itemData.itemName || "New Item",
+        act25: "0",
+        bud25: "0",
+        bud26: "0",
+        rate: itemData.unitPrice?.toString() || "0",
+        stk: itemData.stockLevel?.toString() || "0",
+        git: itemData.gitLevel?.toString() || "0",
+        value: "$0",
+        discount: "$0"
+      };
+      setTableData(prev => [...prev, newRow]);
+      showNotification(`Item "${itemData.itemName}" added successfully`, 'success');
+    }
+  };
+
+  const saveUnitChanges = (id: number) => {
+    const units = unitInputs[id];
+    if (units && parseInt(units) > 0) {
+      handleBudgetChange(id, units);
+      showNotification(`Units updated for item ID ${id}`, 'success');
+    }
+  };
+
+  const setDistribution = () => {
+    showNotification('Distribution settings updated', 'success');
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
       {/* Main Content Container */}
@@ -134,19 +208,39 @@ const SalesBudget: React.FC = () => {
             </div>
 
             {/* GIT Card */}
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3 relative">
               <div className="bg-red-200 p-3 rounded-full">
                 <Truck className="w-7 h-7 text-red-600" />
               </div>
-              <div>
-                <p className="text-sm text-gray-600 mb-1">GIT</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-600">GIT (Good In Transit)</p>
+                  <button
+                    onClick={() => setShowGitExplanation(!showGitExplanation)}
+                    className="text-red-600 hover:text-red-800 transition-colors"
+                  >
+                    <InfoIcon className="w-4 h-4" />
+                  </button>
+                </div>
                 <p className="text-xl font-bold text-red-600">7,071 units</p>
+                {showGitExplanation && (
+                  <div className="absolute top-full left-0 right-0 mt-2 p-3 bg-white border border-red-200 rounded-lg shadow-lg z-10">
+                    <p className="text-xs text-gray-700">
+                      <strong>GIT (Good In Transit):</strong> Items that have been shipped from suppliers
+                      but haven't yet arrived at our warehouse. These are considered inventory assets
+                      but are not available for immediate sale.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Download Button */}
             <div className="flex items-center justify-end">
-              <button className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors">
+              <button
+                onClick={handleDownloadBudget}
+                className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
+              >
                 <DownloadIcon className="w-5 h-5" />
                 <span>Download Budget (2026)</span>
               </button>
@@ -244,11 +338,26 @@ const SalesBudget: React.FC = () => {
             {/* Action Buttons */}
             <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
               <div className="flex flex-col gap-1 mb-2">
-                <button className="bg-green-600 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-700 transition-colors">
-                  <Plus className="w-4 h-4" />
-                  <span>New Addition</span>
-                </button>
-                <button className="bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-blue-200 transition-colors">
+                <div className="flex gap-1 mb-1">
+                  <button
+                    onClick={() => handleNewAddition('item')}
+                    className="bg-green-600 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>New Item</span>
+                  </button>
+                  <button
+                    onClick={() => handleNewAddition('customer')}
+                    className="bg-green-500 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-600 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>New Customer</span>
+                  </button>
+                </div>
+                <button
+                  onClick={setDistribution}
+                  className="bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-blue-200 transition-colors w-full"
+                >
                   <PieChart className="w-4 h-4" />
                   <span>Set Distribution</span>
                 </button>
@@ -393,7 +502,10 @@ const SalesBudget: React.FC = () => {
                               onChange={(e) => handleUnitInputChange(row.id, e.target.value)}
                               placeholder="Enter units"
                             />
-                            <button className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm">
+                            <button
+                              onClick={() => saveUnitChanges(row.id)}
+                              className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+                            >
                               Save
                             </button>
                           </div>
@@ -407,6 +519,32 @@ const SalesBudget: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Notification Toast */}
+      {notification && (
+        <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg transition-all duration-300 ${
+          notification.type === 'success'
+            ? 'bg-green-600 text-white'
+            : 'bg-red-600 text-white'
+        }`}>
+          {notification.message}
+        </div>
+      )}
+
+      {/* Modals */}
+      <ExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        onExport={handleExport}
+        title="Download Budget"
+      />
+
+      <NewAdditionModal
+        isOpen={isNewAdditionModalOpen}
+        onClose={() => setIsNewAdditionModalOpen(false)}
+        onAdd={handleAddNewItem}
+        type={newAdditionType}
+      />
     </div>
   );
 };

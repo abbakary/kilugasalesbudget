@@ -20,7 +20,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.email === EXAMPLE_CREDENTIALS.email && formData.password === EXAMPLE_CREDENTIALS.password) {
       navigate('/dashboard');
     } else {
@@ -106,12 +106,12 @@ const Login: React.FC = () => {
           </form>
 
           <div className="flex justify-center mt-6">
-          <img 
-                  src="/assets/images/superdoll_logo.jpeg" 
-                  width="70" 
-                  alt="STM Logo" 
-                  className="h-8"
-                />
+            <img
+              src="/assets/images/superdoll_logo.jpeg"
+              width="70"
+              alt="STM Logo"
+              className="h-8"
+            />
           </div>
         </div>
       </div>

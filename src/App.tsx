@@ -1,21 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import SalesBudget from './pages/SalesBudget';
-import RollingForecast from './pages/RollingForecast';
-import Login from './pages/Login';
+import SimpleLogin from './pages/SimpleLogin';
+import SimpleDashboard from './pages/SimpleDashboard';
 import './index.css';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
-        <Route path="/home" element={<Layout><Dashboard /></Layout>} />
-        <Route path="/budgets" element={<Layout><SalesBudget /></Layout>} />
-        <Route path="/forecasts" element={<Layout><RollingForecast /></Layout>} />
+        <Route path="/" element={<SimpleLogin />} />
+        <Route path="/dashboard" element={<SimpleDashboard />} />
+        <Route path="/home" element={<SimpleDashboard />} />
       </Routes>
     </Router>
   );

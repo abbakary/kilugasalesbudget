@@ -157,9 +157,7 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
                 className="nav-link dropdown-toggle hide-arrow flex items-center space-x-2 p-2 rounded-md hover:bg-gray-700 transition-colors"
               >
                 <div className="avatar avatar-online">
-                  <img 
-                    // src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=40&h=40&fit=crop" 
-                    // alt="User Avatar" 
+                  <img
                     className="w-8 h-8 rounded-full"
                   />
                 </div>
@@ -169,7 +167,7 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
               {isUserMenuOpen && (
                 <div className="absolute right-0 top-12 w-48 bg-white rounded-lg shadow-xl z-50">
                   <div className="py-2">
-                    <button 
+                    <button
                       onClick={() => {
                         onPasswordModalOpen();
                         setIsUserMenuOpen(false);

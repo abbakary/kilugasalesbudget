@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import StatsCard from '../components/StatsCard';
-import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw, Calendar, BarChart3, Target, AlertTriangle, DollarSign } from 'lucide-react';
+import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw } from 'lucide-react';
 import ExportModal, { ExportConfig } from '../components/ExportModal';
 
 const Dashboard: React.FC = () => {
@@ -43,38 +43,6 @@ const Dashboard: React.FC = () => {
       icon: TrendingUp,
       color: 'success' as const,
       trend: { value: '0%', isPositive: true }
-    },
-    {
-      title: 'Total Sold Units',
-      value: '0',
-      subtitle: 'Last Week Analysis',
-      icon: Clock,
-      color: 'info' as const,
-      trend: { value: '0%', isPositive: true }
-    },
-    {
-      title: 'Budget Growth',
-      value: '15.2%',
-      subtitle: 'Year over year',
-      icon: BarChart3,
-      color: 'success' as const,
-      trend: { value: '+3.1%', isPositive: true }
-    },
-    {
-      title: 'Forecast Accuracy',
-      value: '94.2%',
-      subtitle: 'Current accuracy rate',
-      icon: Target,
-      color: 'info' as const,
-      trend: { value: '+2.1%', isPositive: true }
-    },
-    {
-      title: 'Stock Alerts',
-      value: '23',
-      subtitle: 'Items below minimum',
-      icon: AlertTriangle,
-      color: 'warning' as const,
-      trend: { value: '-5', isPositive: true }
     }
   ];
 

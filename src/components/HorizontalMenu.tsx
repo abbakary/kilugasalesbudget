@@ -10,7 +10,7 @@ const HorizontalMenu: React.FC = () => {
       icon: Home,
       label: 'Dashboards',
       path: '/home',
-      active: location.pathname === '/' || location.pathname === '/home'
+      active: location.pathname === '/' || location.pathname === '/home' || location.pathname === '/dashboard'
     },
     {
       icon: Grid,

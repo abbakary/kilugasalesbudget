@@ -105,27 +105,13 @@ const Login: React.FC = () => {
             )}
           </form>
 
-          <div className="mt-6">
-            <div className="flex justify-center mb-4">
-              <img
-                src="/assets/images/superdoll_logo.jpeg"
-                width="70"
-                alt="STM Logo"
-                className="h-8"
-              />
-            </div>
-
-            {/* Demo Credentials */}
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <h5 className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</h5>
-              <div className="space-y-1">
-                {EXAMPLE_CREDENTIALS.map((cred, index) => (
-                  <div key={index} className="text-xs text-gray-600">
-                    <strong>{cred.role}:</strong> {cred.email} / {cred.password}
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="flex justify-center mt-6">
+            <img
+              src="/assets/images/superdoll_logo.jpeg"
+              width="70"
+              alt="STM Logo"
+              className="h-8"
+            />
           </div>
         </div>
       </div>

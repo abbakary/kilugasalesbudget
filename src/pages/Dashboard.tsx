@@ -6,6 +6,7 @@ import { useAccessControl } from '../contexts/AuthContext';
 import { UserType, getUserTypeName } from '../types/auth';
 
 const Dashboard: React.FC = () => {
+  const { user, accessPattern, isAdmin, isSalesman, isManager, isSupplyChain, isBranchManager } = useAccessControl();
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   const [lastRefresh, setLastRefresh] = useState(new Date());

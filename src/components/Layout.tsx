@@ -5,7 +5,7 @@ import HorizontalMenu from './HorizontalMenu';
 import Footer from './Footer';
 import PasswordModal from './PasswordModal';
 import ToastContainer from './ToastContainer';
-import AnimatedVisionText from './AnimatedVisionText';
+import FloatingParticles from './FloatingParticles';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -25,10 +25,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         ) : (
           <>
             <Navbar onPasswordModalOpen={() => setIsPasswordModalOpen(true)} />
-            <div className="layout-page flex-grow mt-16 mb-24">
+            <div className="layout-page flex-grow mt-24 mb-24">
               <div className="content-wrapper flex flex-col">
                 <HorizontalMenu />
-                <div className="flex-grow container mx-auto px-4 py-6">
+                <div className="flex-grow container mx-auto px-4 py-6 relative z-10">
                   {children}
                 </div>
               </div>
@@ -42,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         onClose={() => setIsPasswordModalOpen(false)}
       />
       <ToastContainer />
-      {location.pathname !== '/' && <AnimatedVisionText />}
+      {location.pathname !== '/' && <FloatingParticles />}
     </div>
   );
 };

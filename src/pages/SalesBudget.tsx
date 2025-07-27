@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import ExportModal, { ExportConfig } from '../components/ExportModal';
 import NewAdditionModal, { NewItemData } from '../components/NewAdditionModal';
+import DistributionModal, { DistributionConfig } from '../components/DistributionModal';
 
 const SalesBudget: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -39,6 +40,7 @@ const SalesBudget: React.FC = () => {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isNewAdditionModalOpen, setIsNewAdditionModalOpen] = useState(false);
   const [newAdditionType, setNewAdditionType] = useState<'customer' | 'item'>('item');
+  const [isDistributionModalOpen, setIsDistributionModalOpen] = useState(false);
 
   // Notification state
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
@@ -265,7 +267,41 @@ const SalesBudget: React.FC = () => {
   };
 
   const setDistribution = () => {
-    showNotification('Distribution settings updated', 'success');
+    setIsDistributionModalOpen(true);
+  };
+
+  const handleApplyDistribution = (distribution: DistributionConfig) => {
+    // Apply distribution to table data based on the selected type
+    const distributionEntries = Object.entries(distribution.distributions);
+
+    // Create new rows based on distribution
+    const newRows = distributionEntries.map((entry, index) => {
+      const [name, data] = entry;
+      const newId = Math.max(...tableData.map(item => item.id)) + index + 1;
+
+      return {
+        id: newId,
+        selected: false,
+        customer: distribution.type === 'customer' ? name : selectedCustomer || "New Customer",
+        item: distribution.type === 'category' ? `${name} Item` : `New ${name} Item`,
+        act25: "0",
+        bud25: "0",
+        bud26: data.units.toString(),
+        rate: Math.round(data.amount / (data.units || 1)).toString(),
+        stk: data.units.toString(),
+        git: "0",
+        value: `$${data.amount.toLocaleString()}`,
+        discount: "$0"
+      };
+    });
+
+    // Add new rows to existing data
+    setTableData(prev => [...prev, ...newRows]);
+
+    showNotification(
+      `Distribution applied: ${distributionEntries.length} ${distribution.type} segments created`,
+      'success'
+    );
   };
 
   return (
@@ -697,6 +733,12 @@ const SalesBudget: React.FC = () => {
         onClose={() => setIsNewAdditionModalOpen(false)}
         onAdd={handleAddNewItem}
         type={newAdditionType}
+      />
+
+      <DistributionModal
+        isOpen={isDistributionModalOpen}
+        onClose={() => setIsDistributionModalOpen(false)}
+        onApplyDistribution={handleApplyDistribution}
       />
     </div>
   );

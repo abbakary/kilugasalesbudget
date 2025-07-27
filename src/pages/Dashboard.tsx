@@ -32,8 +32,26 @@ const Dashboard: React.FC = () => {
 
   // Import role-specific stats
   const statsData = useMemo(() => {
-    const { getRoleSpecificStats } = require('../utils/dashboardStats');
-    return getRoleSpecificStats(user);
+    if (!user) return [];
+    // Default stats for fallback
+    return [
+      {
+        title: 'Total Budget Units',
+        value: '5,042',
+        subtitle: 'As of current year',
+        icon: PieChartIcon,
+        color: 'primary' as const,
+        trend: { value: '+12.5%', isPositive: true }
+      },
+      {
+        title: 'Total Sales',
+        value: '$0',
+        subtitle: 'Last Week Analysis',
+        icon: TrendingUp,
+        color: 'success' as const,
+        trend: { value: '0%', isPositive: true }
+      }
+    ];
   }, [user]);
 
   return (

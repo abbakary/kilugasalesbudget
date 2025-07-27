@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, AlertCircle, Plus, Minus, Save, Upload, RefreshCw } from 'lucide-react';
 import ForecastSummary from '../components/ForecastSummary';
-import ForecastChart from '../components/ForecastChart';
+import AdvancedForecastChart from '../components/AdvancedForecastChart';
 import FiltersModal, { FilterState } from '../components/FiltersModal';
 import ScenariosModal, { ScenarioConfig } from '../components/ScenariosModal';
 import ExportModal, { ExportConfig } from '../components/ExportModal';
@@ -335,8 +335,8 @@ const RollingForecast: React.FC = () => {
       {/* Summary Cards */}
       <ForecastSummary data={summaryData} />
 
-      {/* Forecast Chart */}
-      <ForecastChart />
+      {/* Advanced Analytics Chart */}
+      <AdvancedForecastChart />
 
       {/* Search and Controls */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

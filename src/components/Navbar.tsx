@@ -20,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
     'text-blue-300'
   ];
 
-  const visionText = `Welcome ${user?.name || 'User'} - ${user ? getUserTypeName(user.user_type) : ''} | Trust you can take a year to build but a minute to destroy`;
+  const visionText = "Trust you can take a year to build but a minute to destroy";
 
   useEffect(() => {
     const colorInterval = setInterval(() => {

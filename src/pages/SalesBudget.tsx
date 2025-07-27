@@ -22,6 +22,7 @@ import {
 import ExportModal, { ExportConfig } from '../components/ExportModal';
 import NewAdditionModal, { NewItemData } from '../components/NewAdditionModal';
 import DistributionModal, { DistributionConfig } from '../components/DistributionModal';
+import DistributionSummary from '../components/DistributionSummary';
 
 const SalesBudget: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -47,6 +48,16 @@ const SalesBudget: React.FC = () => {
 
   // GIT explanation state
   const [showGitExplanation, setShowGitExplanation] = useState(false);
+
+  // Distribution tracking state
+  const [appliedDistributions, setAppliedDistributions] = useState<Array<{
+    type: 'regional' | 'category' | 'customer' | 'seasonal' | 'channel';
+    name: string;
+    appliedAt: Date;
+    segments: number;
+    totalAmount: number;
+    totalUnits: number;
+  }>>([]);
 
   const [tableData, setTableData] = useState([
     {
@@ -298,6 +309,18 @@ const SalesBudget: React.FC = () => {
     // Add new rows to existing data
     setTableData(prev => [...prev, ...newRows]);
 
+    // Track the applied distribution
+    const distributionSummary = {
+      type: distribution.type,
+      name: `${distribution.type.charAt(0).toUpperCase() + distribution.type.slice(1)} Distribution`,
+      appliedAt: new Date(),
+      segments: distributionEntries.length,
+      totalAmount: distribution.totalBudget,
+      totalUnits: distribution.totalUnits
+    };
+
+    setAppliedDistributions(prev => [...prev, distributionSummary]);
+
     showNotification(
       `Distribution applied: ${distributionEntries.length} ${distribution.type} segments created`,
       'success'
@@ -508,6 +531,9 @@ const SalesBudget: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Distribution Summary */}
+          <DistributionSummary distributions={appliedDistributions} />
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">

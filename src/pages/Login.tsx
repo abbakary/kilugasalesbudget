@@ -4,8 +4,6 @@ import { Eye, EyeOff } from 'lucide-react';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { login, isAuthenticated, loading, error: authError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -13,7 +11,6 @@ const Login: React.FC = () => {
     remember: false
   });
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   // Example credentials for different user types
   const EXAMPLE_CREDENTIALS = [

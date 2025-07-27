@@ -534,7 +534,7 @@ const SalesBudget: React.FC = () => {
               <tbody>
                 {tableData.map(row => (
                   <React.Fragment key={row.id}>
-                    <tr className="hover:bg-gray-50">
+                    <tr className={`hover:bg-gray-50 ${row.selected ? 'bg-blue-50' : ''}`}>
                       <td className="p-3 border-b border-gray-200">
                         <input
                           type="checkbox"
@@ -544,7 +544,19 @@ const SalesBudget: React.FC = () => {
                         />
                       </td>
                       <td className="p-3 border-b border-gray-200">{row.customer}</td>
-                      <td className="p-3 border-b border-gray-200">{row.item}</td>
+                      <td className="p-3 border-b border-gray-200">
+                        {inlineFormRows.has(row.id) ? (
+                          <input
+                            type="text"
+                            className="w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={newRowData[row.id]?.item || ''}
+                            onChange={(e) => handleInlineFormChange(row.id, 'item', e.target.value)}
+                            placeholder="Enter item name"
+                          />
+                        ) : (
+                          row.item
+                        )}
+                      </td>
                       <td className="p-3 border-b border-gray-200">{row.bud25}</td>
                       <td className="p-3 border-b border-gray-200">{row.act25}</td>
                       <td className="p-3 border-b border-gray-200 bg-gray-50">
@@ -555,28 +567,81 @@ const SalesBudget: React.FC = () => {
                           onChange={(e) => handleBudgetChange(row.id, e.target.value)}
                         />
                       </td>
-                      <td className="p-3 border-b border-gray-200">{row.rate}</td>
-                      <td className="p-3 border-b border-gray-200">{row.stk}</td>
-                      <td className="p-3 border-b border-gray-200">{row.git}</td>
+                      <td className="p-3 border-b border-gray-200">
+                        {inlineFormRows.has(row.id) ? (
+                          <input
+                            type="number"
+                            className="w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={newRowData[row.id]?.rate || ''}
+                            onChange={(e) => handleInlineFormChange(row.id, 'rate', e.target.value)}
+                            placeholder="Rate"
+                          />
+                        ) : (
+                          row.rate
+                        )}
+                      </td>
+                      <td className="p-3 border-b border-gray-200">
+                        {inlineFormRows.has(row.id) ? (
+                          <input
+                            type="number"
+                            className="w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={newRowData[row.id]?.stk || ''}
+                            onChange={(e) => handleInlineFormChange(row.id, 'stk', e.target.value)}
+                            placeholder="Stock"
+                          />
+                        ) : (
+                          row.stk
+                        )}
+                      </td>
+                      <td className="p-3 border-b border-gray-200">
+                        {inlineFormRows.has(row.id) ? (
+                          <input
+                            type="number"
+                            className="w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={newRowData[row.id]?.git || ''}
+                            onChange={(e) => handleInlineFormChange(row.id, 'git', e.target.value)}
+                            placeholder="GIT"
+                          />
+                        ) : (
+                          row.git
+                        )}
+                      </td>
                       <td className="p-3 border-b border-gray-200">{row.value}</td>
                       <td className="p-3 border-b border-gray-200">{row.discount}</td>
                       <td className="p-3 border-b border-gray-200 text-sm text-gray-600">
                         <div className="flex justify-center gap-1">
-                          <button
-                            onClick={() => toggleExpandRow(row.id)}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
-                            {expandedRowId === row.id ? (
-                              <Minus className="w-5 h-5" />
-                            ) : (
-                              <Plus className="w-5 h-5" />
-                            )}
-                          </button>
+                          {inlineFormRows.has(row.id) ? (
+                            <>
+                              <button
+                                onClick={() => submitInlineForm(row.id)}
+                                className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700 transition-colors"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => cancelInlineForm(row.id)}
+                                className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors ml-1"
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => toggleExpandRow(row.id)}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              {expandedRowId === row.id ? (
+                                <Minus className="w-5 h-5" />
+                              ) : (
+                                <Plus className="w-5 h-5" />
+                              )}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
 
-                    {expandedRowId === row.id && (
+                    {expandedRowId === row.id && !inlineFormRows.has(row.id) && (
                       <tr className="bg-gray-50">
                         <td colSpan={13} className="p-4 border-b border-gray-200">
                           <div className="flex items-center gap-4">

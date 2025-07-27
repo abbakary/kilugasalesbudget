@@ -29,7 +29,7 @@ const AdvancedForecastChart: React.FC = () => {
     { name: 'Others', value: 5, color: '#8B5CF6' }
   ];
 
-  const maxValue = Math.max(...monthlyData.map(d => Math.max(d.forecast, d.actual, d.budget)));
+  const maxValue = Math.max(...monthlyData.map(d => Math.max(d?.forecast || 0, d?.actual || 0, d?.budget || 0))) || 1;
 
   const renderLineChart = () => (
     <div className="relative h-80 bg-white rounded-lg p-6">
@@ -67,7 +67,7 @@ const AdvancedForecastChart: React.FC = () => {
           
           {/* Lines */}
           <polyline
-            points={monthlyData.map((d, i) => `${80 + i * 55},${200 - (d.forecast / maxValue) * 200}`).join(' ')}
+            points={monthlyData.map((d, i) => `${80 + i * 55},${200 - ((d?.forecast || 0) / maxValue) * 200}`).join(' ')}
             fill="none"
             stroke="#3B82F6"
             strokeWidth="3"
@@ -75,7 +75,7 @@ const AdvancedForecastChart: React.FC = () => {
             strokeLinejoin="round"
           />
           <polyline
-            points={monthlyData.map((d, i) => `${80 + i * 55},${200 - (d.actual / maxValue) * 200}`).join(' ')}
+            points={monthlyData.map((d, i) => `${80 + i * 55},${200 - ((d?.actual || 0) / maxValue) * 200}`).join(' ')}
             fill="none"
             stroke="#10B981"
             strokeWidth="3"
@@ -83,19 +83,19 @@ const AdvancedForecastChart: React.FC = () => {
             strokeLinejoin="round"
           />
           <polyline
-            points={monthlyData.map((d, i) => `${80 + i * 55},${200 - (d.budget / maxValue) * 200}`).join(' ')}
+            points={monthlyData.map((d, i) => `${80 + i * 55},${200 - ((d?.budget || 0) / maxValue) * 200}`).join(' ')}
             fill="none"
             stroke="#F59E0B"
             strokeWidth="2"
             strokeDasharray="5,5"
           />
-          
+
           {/* Data points */}
           {monthlyData.map((d, i) => (
             <g key={i}>
-              <circle cx={80 + i * 55} cy={200 - (d.forecast / maxValue) * 200} r="4" fill="#3B82F6" />
-              <circle cx={80 + i * 55} cy={200 - (d.actual / maxValue) * 200} r="4" fill="#10B981" />
-              <circle cx={80 + i * 55} cy={200 - (d.budget / maxValue) * 200} r="3" fill="#F59E0B" />
+              <circle cx={80 + i * 55} cy={200 - ((d?.forecast || 0) / maxValue) * 200} r="4" fill="#3B82F6" />
+              <circle cx={80 + i * 55} cy={200 - ((d?.actual || 0) / maxValue) * 200} r="4" fill="#10B981" />
+              <circle cx={80 + i * 55} cy={200 - ((d?.budget || 0) / maxValue) * 200} r="3" fill="#F59E0B" />
             </g>
           ))}
           

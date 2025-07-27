@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import SalesBudget from './pages/SalesBudget';
 import RollingForecast from './pages/RollingForecast';
 import DistributionManagement from './pages/DistributionManagement';
+import UserManagement from './pages/UserManagement';
 import Login from './pages/Login';
 import { UserType } from './types/auth';
 import './index.css';

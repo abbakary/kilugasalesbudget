@@ -4,14 +4,14 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import SalesBudget from './pages/SalesBudget';
 import RollingForecast from './pages/RollingForecast';
-import Login from './pages/Login';
+import SimpleLogin from './pages/SimpleLogin';
 import './index.css';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<SimpleLogin />} />
         <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
         <Route path="/home" element={<Layout><Dashboard /></Layout>} />
         <Route path="/budgets" element={<Layout><SalesBudget /></Layout>} />

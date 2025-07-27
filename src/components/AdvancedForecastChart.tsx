@@ -141,24 +141,24 @@ const AdvancedForecastChart: React.FC = () => {
               <g key={i}>
                 <rect
                   x={x - barWidth}
-                  y={200 - (d.budget / maxValue) * 200}
+                  y={200 - ((d?.budget || 0) / maxValue) * 200}
                   width={barWidth}
-                  height={(d.budget / maxValue) * 200}
+                  height={((d?.budget || 0) / maxValue) * 200}
                   fill="#F59E0B"
                   opacity="0.7"
                 />
                 <rect
                   x={x}
-                  y={200 - (d.forecast / maxValue) * 200}
+                  y={200 - ((d?.forecast || 0) / maxValue) * 200}
                   width={barWidth}
-                  height={(d.forecast / maxValue) * 200}
+                  height={((d?.forecast || 0) / maxValue) * 200}
                   fill="#3B82F6"
                 />
                 <rect
                   x={x + barWidth}
-                  y={200 - (d.actual / maxValue) * 200}
+                  y={200 - ((d?.actual || 0) / maxValue) * 200}
                   width={barWidth}
-                  height={(d.actual / maxValue) * 200}
+                  height={((d?.actual || 0) / maxValue) * 200}
                   fill="#10B981"
                 />
               </g>

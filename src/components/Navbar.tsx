@@ -157,14 +157,11 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
                 className="nav-link dropdown-toggle hide-arrow flex items-center space-x-2 p-2 rounded-md hover:bg-gray-700 transition-colors"
               >
                 <div className="avatar avatar-online">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
+                  <img
+                    className="w-8 h-8 rounded-full"
+                  />
                 </div>
-                <div className="mx-1 hidden md:block">
-                  <span className="text-sm font-medium">{user?.name || 'User'}</span>
-                  <div className="text-xs text-gray-300">{user ? getUserTypeName(user.user_type) : ''}</div>
-                </div>
+                <span className="mx-1 text-sm font-medium hidden md:block">USER</span>
               </button>
               
               {isUserMenuOpen && (

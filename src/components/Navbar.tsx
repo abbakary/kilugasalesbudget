@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, Menu, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, Menu, Settings, LogOut, User } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { getUserTypeName } from '../types/auth';
+import { useNavigate } from 'react-router-dom';
 
 interface NavbarProps {
   onPasswordModalOpen: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -20,7 +25,7 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
     'text-blue-300'
   ];
 
-  const visionText = "Trust you can take a year to build but a minute to destroy";
+  const visionText = `Welcome ${user?.name || 'User'} - ${user ? getUserTypeName(user.user_type) : ''} | Trust you can take a year to build but a minute to destroy`;
 
   useEffect(() => {
     const colorInterval = setInterval(() => {
@@ -157,19 +162,32 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
                 className="nav-link dropdown-toggle hide-arrow flex items-center space-x-2 p-2 rounded-md hover:bg-gray-700 transition-colors"
               >
                 <div className="avatar avatar-online">
-                  <img 
-                    // src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=40&h=40&fit=crop" 
-                    // alt="User Avatar" 
-                    className="w-8 h-8 rounded-full"
-                  />
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
                 </div>
-                <span className="mx-1 text-sm font-medium hidden md:block">USER</span>
+                <div className="mx-1 hidden md:block">
+                  <span className="text-sm font-medium">{user?.name || 'User'}</span>
+                  <div className="text-xs text-gray-300">{user ? getUserTypeName(user.user_type) : ''}</div>
+                </div>
               </button>
               
               {isUserMenuOpen && (
-                <div className="absolute right-0 top-12 w-48 bg-white rounded-lg shadow-xl z-50">
+                <div className="absolute right-0 top-12 w-56 bg-white rounded-lg shadow-xl z-50">
+                  <div className="px-4 py-3 border-b border-gray-200">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">{user?.name || 'User'}</div>
+                        <div className="text-sm text-gray-500">{user ? getUserTypeName(user.user_type) : ''}</div>
+                        <div className="text-xs text-gray-400">{user?.email}</div>
+                      </div>
+                    </div>
+                  </div>
                   <div className="py-2">
-                    <button 
+                    <button
                       onClick={() => {
                         onPasswordModalOpen();
                         setIsUserMenuOpen(false);
@@ -179,7 +197,14 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
                       <Settings className="w-4 h-4" />
                       <span>Change Password</span>
                     </button>
-                    <button className="dropdown-item flex items-center space-x-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+                    <button
+                      onClick={() => {
+                        logout();
+                        navigate('/');
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="dropdown-item flex items-center space-x-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
                       <LogOut className="w-4 h-4" />
                       <span>Log Out</span>
                     </button>

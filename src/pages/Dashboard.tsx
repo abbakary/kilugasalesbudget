@@ -30,56 +30,10 @@ const Dashboard: React.FC = () => {
     showNotification('Dashboard data refreshed successfully', 'success');
   };
 
-  const statsData = [
-    {
-      title: 'Total Budget Units',
-      value: '5,042',
-      subtitle: 'As of current year',
-      icon: PieChartIcon,
-      color: 'primary' as const,
-      trend: { value: '+12.5%', isPositive: true }
-    },
-    {
-      title: 'Total Sales',
-      value: '$0',
-      subtitle: 'Last Week Analysis',
-      icon: TrendingUp,
-      color: 'success' as const,
-      trend: { value: '0%', isPositive: true }
-    },
-    {
-      title: 'Total Sold Units',
-      value: '0',
-      subtitle: 'Last Week Analysis',
-      icon: Clock,
-      color: 'info' as const,
-      trend: { value: '0%', isPositive: true }
-    },
-    {
-      title: 'Budget Growth',
-      value: '15.2%',
-      subtitle: 'Year over year',
-      icon: BarChart3,
-      color: 'success' as const,
-      trend: { value: '+3.1%', isPositive: true }
-    },
-    {
-      title: 'Forecast Accuracy',
-      value: '94.2%',
-      subtitle: 'Current accuracy rate',
-      icon: Target,
-      color: 'info' as const,
-      trend: { value: '+2.1%', isPositive: true }
-    },
-    {
-      title: 'Stock Alerts',
-      value: '23',
-      subtitle: 'Items below minimum',
-      icon: AlertTriangle,
-      color: 'warning' as const,
-      trend: { value: '-5', isPositive: true }
-    }
-  ];
+  // Import role-specific stats
+  const statsData = useMemo(() => {
+    return require('../utils/dashboardStats').getRoleSpecificStats(user);
+  }, [user]);
 
   return (
     <div className="space-y-6">

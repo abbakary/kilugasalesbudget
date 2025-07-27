@@ -22,7 +22,7 @@ import {
 import ExportModal, { ExportConfig } from '../components/ExportModal';
 import NewAdditionModal, { NewItemData } from '../components/NewAdditionModal';
 import DistributionModal, { DistributionConfig } from '../components/DistributionModal';
-import DistributionSummary from '../components/DistributionSummary';
+import DistributionManager from '../components/DistributionManager';
 
 const SalesBudget: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -51,12 +51,21 @@ const SalesBudget: React.FC = () => {
 
   // Distribution tracking state
   const [appliedDistributions, setAppliedDistributions] = useState<Array<{
+    id: string;
     type: 'regional' | 'category' | 'customer' | 'seasonal' | 'channel';
     name: string;
     appliedAt: Date;
     segments: number;
     totalAmount: number;
     totalUnits: number;
+    isActive: boolean;
+    segments_detail: Array<{
+      name: string;
+      percentage: number;
+      amount: number;
+      units: number;
+      color: string;
+    }>;
   }>>([]);
 
   const [tableData, setTableData] = useState([
@@ -309,14 +318,24 @@ const SalesBudget: React.FC = () => {
     // Add new rows to existing data
     setTableData(prev => [...prev, ...newRows]);
 
-    // Track the applied distribution
+    // Track the applied distribution with detailed segments
+    const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#84CC16'];
     const distributionSummary = {
+      id: `dist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       type: distribution.type,
       name: `${distribution.type.charAt(0).toUpperCase() + distribution.type.slice(1)} Distribution`,
       appliedAt: new Date(),
       segments: distributionEntries.length,
       totalAmount: distribution.totalBudget,
-      totalUnits: distribution.totalUnits
+      totalUnits: distribution.totalUnits,
+      isActive: true,
+      segments_detail: distributionEntries.map(([name, data], index) => ({
+        name,
+        percentage: data.percentage,
+        amount: data.amount,
+        units: data.units,
+        color: colors[index % colors.length]
+      }))
     };
 
     setAppliedDistributions(prev => [...prev, distributionSummary]);
@@ -325,6 +344,66 @@ const SalesBudget: React.FC = () => {
       `Distribution applied: ${distributionEntries.length} ${distribution.type} segments created`,
       'success'
     );
+  };
+
+  const handleEditDistribution = (id: string) => {
+    const distribution = appliedDistributions.find(d => d.id === id);
+    if (distribution) {
+      // Open distribution modal with existing data
+      setIsDistributionModalOpen(true);
+      showNotification(`Opening ${distribution.name} for editing`, 'success');
+    }
+  };
+
+  const handleDeleteDistribution = (id: string) => {
+    const distribution = appliedDistributions.find(d => d.id === id);
+    if (distribution) {
+      setAppliedDistributions(prev => prev.filter(d => d.id !== id));
+
+      // Remove related table rows (this is a simplified approach)
+      // In a real app, you'd track which rows belong to which distribution
+      setTableData(prev => prev.filter(row =>
+        !distribution.segments_detail.some(segment =>
+          row.customer.includes(segment.name) || row.item.includes(segment.name)
+        )
+      ));
+
+      showNotification(`${distribution.name} deleted successfully`, 'success');
+    }
+  };
+
+  const handleDuplicateDistribution = (id: string) => {
+    const distribution = appliedDistributions.find(d => d.id === id);
+    if (distribution) {
+      const duplicated = {
+        ...distribution,
+        id: `dist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        name: `${distribution.name} (Copy)`,
+        appliedAt: new Date(),
+        isActive: false
+      };
+
+      setAppliedDistributions(prev => [...prev, duplicated]);
+      showNotification(`${distribution.name} duplicated successfully`, 'success');
+    }
+  };
+
+  const handleToggleDistribution = (id: string) => {
+    setAppliedDistributions(prev => prev.map(d =>
+      d.id === id ? { ...d, isActive: !d.isActive } : d
+    ));
+
+    const distribution = appliedDistributions.find(d => d.id === id);
+    if (distribution) {
+      showNotification(
+        `${distribution.name} ${distribution.isActive ? 'deactivated' : 'activated'}`,
+        'success'
+      );
+    }
+  };
+
+  const handleCreateNewDistribution = () => {
+    setIsDistributionModalOpen(true);
   };
 
   return (
@@ -532,8 +611,15 @@ const SalesBudget: React.FC = () => {
             </div>
           </div>
 
-          {/* Distribution Summary */}
-          <DistributionSummary distributions={appliedDistributions} />
+          {/* Distribution Management */}
+          <DistributionManager
+            distributions={appliedDistributions}
+            onEditDistribution={handleEditDistribution}
+            onDeleteDistribution={handleDeleteDistribution}
+            onDuplicateDistribution={handleDuplicateDistribution}
+            onToggleDistribution={handleToggleDistribution}
+            onCreateNew={handleCreateNewDistribution}
+          />
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">

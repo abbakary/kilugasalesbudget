@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Bell, Menu, Settings, LogOut } from 'lucide-react';
 
 interface NavbarProps {
@@ -9,9 +9,68 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [currentColorIndex, setCurrentColorIndex] = useState(0);
+
+  const colors = [
+    'text-yellow-400',
+    'text-blue-400',
+    'text-yellow-500',
+    'text-blue-500',
+    'text-yellow-300',
+    'text-blue-300'
+  ];
+
+  const visionText = "Trust you can take a year to build but a minute to destroy";
+
+  useEffect(() => {
+    const colorInterval = setInterval(() => {
+      setCurrentColorIndex((prev) => (prev + 1) % colors.length);
+    }, 1500);
+
+    return () => {
+      clearInterval(colorInterval);
+    };
+  }, [colors.length]);
 
   return (
-<nav className="bg-gray-800 text-white shadow-lg fixed top-0 left-0 right-0 z-50">
+    <>
+      {/* Animated Vision Text */}
+      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 fixed top-0 left-0 right-0 z-50 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap">
+          <span
+            className={`inline-block px-4 text-sm font-bold transition-all duration-700 ${
+              colors[currentColorIndex]
+            }`}
+            style={{
+              textShadow: '0 0 8px currentColor',
+            }}
+          >
+            {visionText}
+          </span>
+          <span
+            className={`inline-block px-4 text-sm font-bold transition-all duration-700 ${
+              colors[(currentColorIndex + 1) % colors.length]
+            }`}
+            style={{
+              textShadow: '0 0 8px currentColor',
+            }}
+          >
+            {visionText}
+          </span>
+          <span
+            className={`inline-block px-4 text-sm font-bold transition-all duration-700 ${
+              colors[(currentColorIndex + 2) % colors.length]
+            }`}
+            style={{
+              textShadow: '0 0 8px currentColor',
+            }}
+          >
+            {visionText}
+          </span>
+        </div>
+      </div>
+
+      <nav className="bg-gray-800 text-white shadow-lg fixed top-8 left-0 right-0 z-40">
 
       <div className="container-fluid px-4">
         <div className="flex items-center justify-between h-16">
@@ -132,6 +191,7 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
         </div>
       </div>
     </nav>
+    </>
   );
 };
 

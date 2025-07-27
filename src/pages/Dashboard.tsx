@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import StatsCard from '../components/StatsCard';
-import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw, Calendar, BarChart3, Target, AlertTriangle, DollarSign } from 'lucide-react';
+import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw, Calendar, BarChart3, Target, AlertTriangle, DollarSign, Users, Package, MapPin, Building } from 'lucide-react';
 import ExportModal, { ExportConfig } from '../components/ExportModal';
+import { useAccessControl } from '../contexts/AuthContext';
+import { UserType, getUserTypeName } from '../types/auth';
 
 const Dashboard: React.FC = () => {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);

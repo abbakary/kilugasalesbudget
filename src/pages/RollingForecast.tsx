@@ -6,6 +6,7 @@ import FiltersModal, { FilterState } from '../components/FiltersModal';
 import ScenariosModal, { ScenarioConfig } from '../components/ScenariosModal';
 import ExportModal, { ExportConfig } from '../components/ExportModal';
 import ImportModal, { ImportConfig } from '../components/ImportModal';
+import AnalyticsPlanningModal from '../components/AnalyticsPlanningModal';
 
 const RollingForecast: React.FC = () => {
   const [activeTab, setActiveTab] = useState('forecast-overview');
@@ -19,6 +20,7 @@ const RollingForecast: React.FC = () => {
   const [isScenariosModalOpen, setIsScenariosModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
 
   // Applied filters and scenarios
   const [appliedFilters, setAppliedFilters] = useState<FilterState | null>(null);
@@ -300,6 +302,13 @@ const RollingForecast: React.FC = () => {
           <p className="text-gray-600 text-sm">Manage and analyze rolling forecasts with advanced predictive analytics</p>
         </div>
         <div className="flex space-x-2">
+          <button
+            onClick={() => setIsAnalyticsModalOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span>Analytics Planning</span>
+          </button>
           <button
             onClick={() => setIsFiltersModalOpen(true)}
             className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
@@ -605,6 +614,11 @@ const RollingForecast: React.FC = () => {
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
         onImport={handleImport}
+      />
+
+      <AnalyticsPlanningModal
+        isOpen={isAnalyticsModalOpen}
+        onClose={() => setIsAnalyticsModalOpen(false)}
       />
     </div>
   );

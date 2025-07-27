@@ -108,14 +108,14 @@ const AnalyticsPlanningModal: React.FC<AnalyticsPlanningModalProps> = ({ isOpen,
               <div className="relative h-40">
                 <svg className="w-full h-full" viewBox="0 0 600 120">
                   <polyline
-                    points={salesAnalytics.trends.map((d, i) => `${50 + i * 90},${120 - d * 0.8}`).join(' ')}
+                    points={salesAnalytics.trends.map((d, i) => `${50 + i * 90},${120 - (d?.value || 0) * 0.8}`).join(' ')}
                     fill="none"
                     stroke="#3B82F6"
                     strokeWidth="3"
                     strokeLinecap="round"
                   />
                   {salesAnalytics.trends.map((d, i) => (
-                    <circle key={i} cx={50 + i * 90} cy={120 - d * 0.8} r="4" fill="#3B82F6" />
+                    <circle key={i} cx={50 + i * 90} cy={120 - (d?.value || 0) * 0.8} r="4" fill="#3B82F6" />
                   ))}
                   {salesAnalytics.trends.map((d, i) => (
                     <text key={i} x={50 + i * 90} y={135} fontSize="12" fill="#6B7280" textAnchor="middle">

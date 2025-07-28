@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import StatsCard from '../components/StatsCard';
-import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw } from 'lucide-react';
+import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw, BarChart3 } from 'lucide-react';
 import ExportModal, { ExportConfig } from '../components/ExportModal';
 
 const Dashboard: React.FC = () => {

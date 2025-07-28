@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Layout from '../components/Layout';
 import {
   Search,
   Bell,
@@ -407,7 +408,8 @@ const SalesBudget: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
+    <Layout>
+      <div className="min-h-screen bg-gray-100 font-sans">
       {/* Main Content Container */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 m-4 overflow-hidden">
         {/* Stats Cards Row */}
@@ -852,7 +854,8 @@ const SalesBudget: React.FC = () => {
         onClose={() => setIsDistributionModalOpen(false)}
         onApplyDistribution={handleApplyDistribution}
       />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

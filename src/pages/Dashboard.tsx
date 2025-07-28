@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import Layout from '../components/Layout';
 import StatsCard from '../components/StatsCard';
-import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw } from 'lucide-react';
+import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw, BarChart3, Target, AlertTriangle } from 'lucide-react';
 import ExportModal, { ExportConfig } from '../components/ExportModal';
 
 const Dashboard: React.FC = () => {
@@ -38,16 +39,33 @@ const Dashboard: React.FC = () => {
     },
     {
       title: 'Total Sales',
-      value: '$0',
-      subtitle: 'Last Week Analysis',
+      value: '$2.4M',
+      subtitle: 'Current performance',
       icon: TrendingUp,
       color: 'success' as const,
-      trend: { value: '0%', isPositive: true }
+      trend: { value: '+18.2%', isPositive: true }
+    },
+    {
+      title: 'Target Achievement',
+      value: '87%',
+      subtitle: 'Monthly progress',
+      icon: Target,
+      color: 'warning' as const,
+      trend: { value: '+5.3%', isPositive: true }
+    },
+    {
+      title: 'Active Users',
+      value: '45',
+      subtitle: 'System users',
+      icon: Clock,
+      color: 'info' as const,
+      trend: { value: '+2', isPositive: true }
     }
   ];
 
   return (
-    <div className="space-y-6">
+    <Layout>
+      <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -77,7 +95,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {statsData.map((stat, index) => (
           <div key={index} className="col-span-1">
             <StatsCard {...stat} />
@@ -141,7 +159,8 @@ const Dashboard: React.FC = () => {
         onExport={handleExport}
         title="Export Dashboard Report"
       />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

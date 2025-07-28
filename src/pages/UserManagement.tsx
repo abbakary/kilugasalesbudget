@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Layout from '../components/Layout';
 import { Users, Plus, Edit, Trash2, Shield, Search, Filter } from 'lucide-react';
 import { UserType, getUserTypeName, MOCK_USERS } from '../types/auth';
 
@@ -30,7 +31,8 @@ const UserManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <Layout>
+      <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -218,6 +220,7 @@ const UserManagement: React.FC = () => {
         </div>
       )}
     </div>
+    </Layout>
   );
 };
 

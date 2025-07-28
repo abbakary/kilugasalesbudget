@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Grid, TrendingUp } from 'lucide-react';
+import { Home, Grid, TrendingUp, BarChart3, Users } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
 
 const HorizontalMenu: React.FC = () => {
@@ -15,14 +15,26 @@ const HorizontalMenu: React.FC = () => {
     {
       icon: Grid,
       label: 'Sales Budget',
-      path: '/budgets',
-      active: location.pathname === '/budgets'
+      path: '/sales-budget',
+      active: location.pathname === '/sales-budget'
     },
     {
       icon: TrendingUp,
       label: 'Rolling Forecast',
-      path: '/forecasts',
-      active: location.pathname === '/forecasts'
+      path: '/rolling-forecast',
+      active: location.pathname === '/rolling-forecast'
+    },
+    {
+      icon: BarChart3,
+      label: 'Distribution',
+      path: '/distribution-management',
+      active: location.pathname === '/distribution-management'
+    },
+    {
+      icon: Users,
+      label: 'Users',
+      path: '/user-management',
+      active: location.pathname === '/user-management'
     }
   ];
 

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login, loading, error: authError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -12,19 +14,19 @@ const Login: React.FC = () => {
   });
   const [error, setError] = useState('');
 
-  // Example credentials
-  const EXAMPLE_CREDENTIALS = {
-    email: 'admin@example.com',
-    password: 'admin123'
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
-    if (formData.email === EXAMPLE_CREDENTIALS.email && formData.password === EXAMPLE_CREDENTIALS.password) {
+    try {
+      await login({
+        email: formData.email,
+        password: formData.password,
+        remember: formData.remember
+      });
       navigate('/dashboard');
-    } else {
-      setError('Invalid email or password');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
     }
   };
 
@@ -96,21 +98,28 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
-            {error && (
-              <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+            {(error || authError) && (
+              <p className="text-red-500 text-sm mt-2 text-center">{error || authError}</p>
             )}
           </form>
 
-          <div className="flex justify-center mt-6">
+          <div className="mt-6 text-center">
+            <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-4">
+              <p className="text-sm font-medium text-blue-800 mb-2">Demo Credentials:</p>
+              <p className="text-xs text-blue-600">admin@example.com / admin123</p>
+              <p className="text-xs text-blue-600">manager@example.com / manager123</p>
+              <p className="text-xs text-blue-600">salesman@example.com / sales123</p>
+            </div>
             <img
               src="/assets/images/superdoll_logo.jpeg"
               width="70"
               alt="STM Logo"
-              className="h-8"
+              className="h-8 mx-auto"
             />
           </div>
         </div>

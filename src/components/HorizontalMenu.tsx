@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Grid, TrendingUp } from 'lucide-react';
+import { Home, Grid, TrendingUp, BarChart3, Users } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
 
 const HorizontalMenu: React.FC = () => {

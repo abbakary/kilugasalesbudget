@@ -340,7 +340,7 @@ const DistributionModal: React.FC<DistributionModalProps> = ({ isOpen, onClose, 
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 p-6 max-h-[calc(90vh-120px)] overflow-y-auto">
+          <div className="flex-1 p-6 overflow-y-auto">
             {renderPieChart(getCurrentDistribution())}
 
             <div className="space-y-3">

@@ -38,11 +38,27 @@ const Dashboard: React.FC = () => {
     },
     {
       title: 'Total Sales',
-      value: '$0',
-      subtitle: 'Last Week Analysis',
+      value: '$2.4M',
+      subtitle: 'Current performance',
       icon: TrendingUp,
       color: 'success' as const,
-      trend: { value: '0%', isPositive: true }
+      trend: { value: '+18.2%', isPositive: true }
+    },
+    {
+      title: 'Target Achievement',
+      value: '87%',
+      subtitle: 'Monthly progress',
+      icon: Target,
+      color: 'warning' as const,
+      trend: { value: '+5.3%', isPositive: true }
+    },
+    {
+      title: 'Active Users',
+      value: '45',
+      subtitle: 'System users',
+      icon: Clock,
+      color: 'info' as const,
+      trend: { value: '+2', isPositive: true }
     }
   ];
 

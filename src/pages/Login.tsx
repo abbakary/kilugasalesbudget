@@ -108,12 +108,18 @@ const Login: React.FC = () => {
             )}
           </form>
 
-          <div className="flex justify-center mt-6">
+          <div className="mt-6 text-center">
+            <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-4">
+              <p className="text-sm font-medium text-blue-800 mb-2">Demo Credentials:</p>
+              <p className="text-xs text-blue-600">admin@example.com / admin123</p>
+              <p className="text-xs text-blue-600">manager@example.com / manager123</p>
+              <p className="text-xs text-blue-600">salesman@example.com / sales123</p>
+            </div>
             <img
               src="/assets/images/superdoll_logo.jpeg"
               width="70"
               alt="STM Logo"
-              className="h-8"
+              className="h-8 mx-auto"
             />
           </div>
         </div>

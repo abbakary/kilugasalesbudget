@@ -23,6 +23,18 @@ const HorizontalMenu: React.FC = () => {
       label: 'Rolling Forecast',
       path: '/rolling-forecast',
       active: location.pathname === '/rolling-forecast'
+    },
+    {
+      icon: BarChart3,
+      label: 'Distribution',
+      path: '/distribution-management',
+      active: location.pathname === '/distribution-management'
+    },
+    {
+      icon: Users,
+      label: 'Users',
+      path: '/user-management',
+      active: location.pathname === '/user-management'
     }
   ];
 

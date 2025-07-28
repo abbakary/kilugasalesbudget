@@ -64,7 +64,8 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <Layout>
+      <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -158,7 +159,8 @@ const Dashboard: React.FC = () => {
         onExport={handleExport}
         title="Export Dashboard Report"
       />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

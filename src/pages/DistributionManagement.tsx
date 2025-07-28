@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Layout from '../components/Layout';
 import { PieChart, Plus, Download, Upload, RefreshCw, BarChart3 } from 'lucide-react';
 import DistributionManager from '../components/DistributionManager';
 import DistributionModal, { DistributionConfig } from '../components/DistributionModal';
@@ -153,7 +154,8 @@ const DistributionManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <Layout>
+      <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -276,7 +278,8 @@ const DistributionManagement: React.FC = () => {
         onExport={handleExport}
         title="Export Distribution Report"
       />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

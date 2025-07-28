@@ -98,12 +98,13 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
-            {error && (
-              <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+            {(error || authError) && (
+              <p className="text-red-500 text-sm mt-2 text-center">{error || authError}</p>
             )}
           </form>
 

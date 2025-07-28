@@ -15,14 +15,14 @@ const HorizontalMenu: React.FC = () => {
     {
       icon: Grid,
       label: 'Sales Budget',
-      path: '/budgets',
-      active: location.pathname === '/budgets'
+      path: '/sales-budget',
+      active: location.pathname === '/sales-budget'
     },
     {
       icon: TrendingUp,
       label: 'Rolling Forecast',
-      path: '/forecasts',
-      active: location.pathname === '/forecasts'
+      path: '/rolling-forecast',
+      active: location.pathname === '/rolling-forecast'
     }
   ];
 

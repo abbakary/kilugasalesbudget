@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Layout from '../components/Layout';
 import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, AlertCircle, Plus, Minus, Save, Upload, RefreshCw } from 'lucide-react';
 import ForecastSummary from '../components/ForecastSummary';
 import AdvancedForecastChart from '../components/AdvancedForecastChart';
@@ -292,7 +293,8 @@ const RollingForecast: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <Layout>
+      <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -620,7 +622,8 @@ const RollingForecast: React.FC = () => {
         isOpen={isAnalyticsModalOpen}
         onClose={() => setIsAnalyticsModalOpen(false)}
       />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

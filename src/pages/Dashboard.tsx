@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Layout from '../components/Layout';
 import StatsCard from '../components/StatsCard';
 import { PieChartIcon, TrendingUp, Clock, Download, RefreshCw, BarChart3, Target, AlertTriangle } from 'lucide-react';
 import ExportModal, { ExportConfig } from '../components/ExportModal';

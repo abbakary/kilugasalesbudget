@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login, loading, error: authError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -13,19 +14,19 @@ const Login: React.FC = () => {
   });
   const [error, setError] = useState('');
 
-  // Example credentials
-  const EXAMPLE_CREDENTIALS = {
-    email: 'admin@example.com',
-    password: 'admin123'
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
-    if (formData.email === EXAMPLE_CREDENTIALS.email && formData.password === EXAMPLE_CREDENTIALS.password) {
+    try {
+      await login({
+        email: formData.email,
+        password: formData.password,
+        remember: formData.remember
+      });
       navigate('/dashboard');
-    } else {
-      setError('Invalid email or password');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
     }
   };
 

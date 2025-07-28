@@ -274,9 +274,9 @@ const DistributionModal: React.FC<DistributionModalProps> = ({ isOpen, onClose, 
           </button>
         </div>
 
-        <div className="flex">
+        <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <div className="w-64 border-r border-gray-200 p-4">
+          <div className="w-64 border-r border-gray-200 p-4 overflow-y-auto">
             <div className="space-y-2 mb-6">
               {tabs.map((tab) => {
                 const IconComponent = tab.icon;

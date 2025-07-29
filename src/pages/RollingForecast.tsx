@@ -11,6 +11,7 @@ const RollingForecast: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [selectedPeriod, setSelectedPeriod] = useState('2025');
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
   // Modal states
   const [isForecastModalOpen, setIsForecastModalOpen] = useState(false);

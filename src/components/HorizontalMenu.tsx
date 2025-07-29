@@ -1,42 +1,69 @@
 import React from 'react';
-import { Home, Grid, TrendingUp, BarChart3, Users } from 'lucide-react';
+import { Home, Grid, TrendingUp, BarChart3, Users, Package } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
+import { useAccessControl } from '../contexts/AuthContext';
+import { UserType } from '../types/auth';
 
 const HorizontalMenu: React.FC = () => {
   const location = useLocation();
+  const { user, accessPattern } = useAccessControl();
 
-  const menuItems = [
+  const allMenuItems = [
     {
       icon: Home,
-      label: 'Dashboards',
-      path: '/home',
-      active: location.pathname === '/' || location.pathname === '/home' || location.pathname === '/dashboard'
+      label: 'Dashboard',
+      path: '/dashboard',
+      active: location.pathname === '/' || location.pathname === '/home' || location.pathname === '/dashboard',
+      allowedRoles: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.SUPPLY_CHAIN, UserType.BRANCH_MANAGER],
+      requiresAccess: () => true
     },
     {
       icon: Grid,
       label: 'Sales Budget',
       path: '/sales-budget',
-      active: location.pathname === '/sales-budget'
+      active: location.pathname === '/sales-budget',
+      allowedRoles: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.BRANCH_MANAGER],
+      requiresAccess: () => accessPattern.canManageBudgets
     },
     {
       icon: TrendingUp,
       label: 'Rolling Forecast',
       path: '/rolling-forecast',
-      active: location.pathname === '/rolling-forecast'
+      active: location.pathname === '/rolling-forecast',
+      allowedRoles: [UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.BRANCH_MANAGER],
+      requiresAccess: () => accessPattern.canViewReports
     },
     {
       icon: BarChart3,
       label: 'Distribution',
       path: '/distribution-management',
-      active: location.pathname === '/distribution-management'
+      active: location.pathname === '/distribution-management',
+      allowedRoles: [UserType.ADMIN, UserType.SUPPLY_CHAIN],
+      requiresAccess: () => accessPattern.canManageInventory
+    },
+    {
+      icon: Package,
+      label: 'Inventory',
+      path: '/inventory-management',
+      active: location.pathname === '/inventory-management',
+      allowedRoles: [UserType.ADMIN, UserType.SUPPLY_CHAIN, UserType.MANAGER],
+      requiresAccess: () => accessPattern.canManageInventory || accessPattern.canAccessDepartmentData
     },
     {
       icon: Users,
-      label: 'Users',
+      label: 'User Management',
       path: '/user-management',
-      active: location.pathname === '/user-management'
+      active: location.pathname === '/user-management',
+      allowedRoles: [UserType.ADMIN],
+      requiresAccess: () => accessPattern.canManageUsers
     }
   ];
+
+  // Filter menu items based on user role and access pattern
+  const menuItems = allMenuItems.filter(item => {
+    if (!user) return false;
+    return item.allowedRoles.includes(user.user_type) && item.requiresAccess();
+  });
 
   return (
     <aside className="layout-menu-horizontal menu menu-horizontal bg-white shadow-sm border-b border-gray-200">
@@ -61,6 +88,11 @@ const HorizontalMenu: React.FC = () => {
                 </li>
               );
             })}
+            {menuItems.length === 0 && (
+              <li className="text-gray-500 text-sm px-4 py-2">
+                No menu items available for your role
+              </li>
+            )}
           </ul>
         </div>
       </div>

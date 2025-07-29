@@ -59,6 +59,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/inventory-management"
+            element={
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.SUPPLY_CHAIN, UserType.MANAGER]}>
+                <InventoryManagement />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

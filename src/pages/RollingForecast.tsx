@@ -766,6 +766,23 @@ const RollingForecast: React.FC = () => {
             </div>
           )}
 
+          {activeTab === 'customer-table' && (
+            <div className="space-y-6">
+              <AdvancedCustomerTable
+                customers={customers}
+                items={items}
+                customerForecasts={customerForecasts}
+                onUpdateCustomer={handleUpdateCustomer}
+                onCreateForecast={handleCreateForecast}
+                onViewCustomerDetails={(customer) => {
+                  setSelectedCustomer(customer);
+                  setSelectedCustomerId(customer.id);
+                }}
+                selectedYear={selectedYear}
+              />
+            </div>
+          )}
+
           {activeTab === 'budget-impact' && (
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

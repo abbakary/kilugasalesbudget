@@ -11,6 +11,10 @@ export interface Customer {
   active: boolean;
   createdAt: string;
   lastActivity: string;
+  channels: string[];
+  seasonality: 'high' | 'medium' | 'low';
+  tier: 'platinum' | 'gold' | 'silver' | 'bronze';
+  manager: string;
 }
 
 export interface Item {
@@ -25,6 +29,11 @@ export interface Item {
   unit: string;
   active: boolean;
   description?: string;
+  seasonal: boolean;
+  seasonalMonths?: string[];
+  minOrderQuantity: number;
+  leadTime: number;
+  supplier: string;
 }
 
 export interface MonthlyForecast {
@@ -75,6 +84,18 @@ export interface BudgetImpact {
   variancePercentage: number;
 }
 
+export interface FilterOptions {
+  customers: string[];
+  regions: string[];
+  segments: string[];
+  categories: string[];
+  brands: string[];
+  channels: string[];
+  years: number[];
+  confidence: ('low' | 'medium' | 'high')[];
+  status: ('draft' | 'submitted' | 'approved' | 'revised')[];
+}
+
 export interface ForecastFormData {
   customerId: string;
   itemId: string;
@@ -87,4 +108,57 @@ export interface ForecastFormData {
   };
   confidence: 'low' | 'medium' | 'high';
   notes?: string;
+}
+
+export interface BudgetHistory {
+  year: number;
+  totalBudget: number;
+  actualSpent: number;
+  forecastAccuracy: number;
+  monthlyData: {
+    [month: string]: {
+      budget: number;
+      actual: number;
+      forecast: number;
+    };
+  };
+  variance: number;
+  variancePercentage: number;
+  status: 'completed' | 'in-progress' | 'planned';
+}
+
+export interface YearlyForecastSummary {
+  year: number;
+  totalForecast: number;
+  totalBudget: number;
+  customerCount: number;
+  itemCount: number;
+  forecastCount: number;
+  avgConfidence: number;
+  topCustomers: {
+    customerId: string;
+    customerName: string;
+    forecastValue: number;
+  }[];
+  topCategories: {
+    category: string;
+    forecastValue: number;
+    itemCount: number;
+  }[];
+}
+
+export interface CustomerAnalytics {
+  customerId: string;
+  totalForecast: number;
+  monthlyBreakdown: { [month: string]: number };
+  categoryBreakdown: { [category: string]: number };
+  channelBreakdown: { [channel: string]: number };
+  growthRate: number;
+  seasonalTrends: {
+    month: string;
+    averageValue: number;
+    trend: 'up' | 'down' | 'stable';
+  }[];
+  riskScore: number;
+  confidenceScore: number;
 }

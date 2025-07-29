@@ -190,12 +190,22 @@ const UserManagement: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900 p-1 rounded">
+                      <button
+                        onClick={() => handleEditUser(user.id)}
+                        className="text-blue-600 hover:text-blue-900 p-1 rounded transition-colors"
+                        title="Edit user"
+                      >
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900 p-1 rounded">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {user.user_type !== UserType.ADMIN && (
+                        <button
+                          onClick={() => handleDeleteUser(user.id, user.name)}
+                          className="text-red-600 hover:text-red-900 p-1 rounded transition-colors"
+                          title="Delete user"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

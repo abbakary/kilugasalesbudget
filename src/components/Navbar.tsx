@@ -36,6 +36,12 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
     };
   }, [colors.length]);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    setIsUserMenuOpen(false);
+  };
+
   return (
     <>
       {/* Animated Vision Text */}

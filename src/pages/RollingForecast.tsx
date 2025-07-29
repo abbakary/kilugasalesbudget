@@ -844,6 +844,120 @@ const RollingForecast: React.FC = () => {
             </div>
           )}
 
+          {activeTab === 'budget-history' && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget History (2021 - {new Date().getFullYear()})</h3>
+
+                {/* Historical Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  {budgetHistory.map(history => (
+                    <div key={history.year} className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-gray-900">{history.year}</h4>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          history.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          history.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {history.status}
+                        </span>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Budget:</span>
+                          <span className="font-medium">{formatCurrency(history.totalBudget)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Actual:</span>
+                          <span className="font-medium">{formatCurrency(history.actualSpent)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Variance:</span>
+                          <span className={`font-medium ${
+                            history.variance >= 0 ? 'text-red-600' : 'text-green-600'
+                          }`}>
+                            {formatPercentage(history.variancePercentage)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Accuracy:</span>
+                          <span className="font-medium">{history.forecastAccuracy.toFixed(1)}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Detailed Year Selection */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Year for Detailed View
+                  </label>
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {budgetHistory.map(history => (
+                      <option key={history.year} value={history.year}>{history.year}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Monthly Details for Selected Year */}
+                {(() => {
+                  const selectedYearData = budgetHistory.find(h => h.year === selectedYear);
+                  if (!selectedYearData) return null;
+
+                  return (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Budget Target</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actual Spent</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Forecast</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variance</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {Object.entries(selectedYearData.monthlyData).map(([month, data]) => {
+                            const variance = data.actual - data.budget;
+                            const variancePercentage = data.budget !== 0 ? (variance / data.budget) * 100 : 0;
+
+                            return (
+                              <tr key={month} className="hover:bg-gray-50">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {month} {selectedYear}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {formatCurrency(data.budget)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {formatCurrency(data.actual)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                  {formatCurrency(data.forecast)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getVarianceColor(variance)}`}>
+                                    {formatPercentage(variancePercentage)}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+
           {activeTab === 'forecast-summary' && (
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

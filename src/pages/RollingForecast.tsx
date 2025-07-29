@@ -22,6 +22,16 @@ const RollingForecast: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [customerForecasts, setCustomerForecasts] = useState<CustomerItemForecast[]>([]);
+  const [budgetHistory, setBudgetHistory] = useState<BudgetHistory[]>([]);
+  const [yearlyForecastSummary, setYearlyForecastSummary] = useState<YearlyForecastSummary | null>(null);
+
+  // Filter states
+  const [filters, setFilters] = useState<{
+    regions: string[];
+    segments: string[];
+    categories: string[];
+    confidence: string[];
+  }>({ regions: [], segments: [], categories: [], confidence: [] });
 
   // Toast notification state
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);

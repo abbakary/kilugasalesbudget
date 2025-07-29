@@ -178,7 +178,11 @@ const RollingForecast: React.FC = () => {
         currency: 'USD',
         unit: 'piece',
         active: true,
-        description: 'Premium ultrabook for professionals'
+        description: 'Premium ultrabook for professionals',
+        seasonal: false,
+        minOrderQuantity: 1,
+        leadTime: 8,
+        supplier: 'Dell Technologies'
       },
       {
         id: '5',

@@ -781,10 +781,7 @@ const RollingForecast: React.FC = () => {
                 customerForecasts={customerForecasts}
                 onUpdateCustomer={handleUpdateCustomer}
                 onCreateForecast={handleCreateForecast}
-                onViewCustomerDetails={(customer) => {
-                  setSelectedCustomer(customer);
-                  setSelectedCustomerId(customer.id);
-                }}
+                onViewCustomerDetails={handleViewCustomerAnalytics}
                 selectedYear={selectedYear}
               />
             </div>

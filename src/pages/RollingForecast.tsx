@@ -374,12 +374,24 @@ const RollingForecast: React.FC = () => {
     return { totalValue, totalItems };
   };
 
-  const handleExportData = () => {
-    showNotification('Exporting forecast data...', 'success');
-    // In real app, this would generate and download file
-    setTimeout(() => {
-      showNotification('Export completed successfully', 'success');
-    }, 2000);
+  const handleExportData = (format: 'csv' | 'json' | 'budget-csv' = 'csv') => {
+    try {
+      const exportData: ExportData = {
+        customers,
+        forecasts: customerForecasts,
+        budgetAnalysis
+      };
+
+      exportForecastData(exportData, format);
+      showNotification(`Export started in ${format.toUpperCase()} format`, 'success');
+    } catch (error) {
+      showNotification('Export failed. Please try again.', 'error');
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    downloadImportTemplate();
+    showNotification('Import template downloaded', 'success');
   };
 
   return (

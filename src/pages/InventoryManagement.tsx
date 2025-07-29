@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import AddItemModal from '../components/AddItemModal';
+import UnifiedAddModal from '../components/UnifiedAddModal';
 import AddCategoryModal from '../components/AddCategoryModal';
 import AddBrandModal from '../components/AddBrandModal';
 import EditItemModal from '../components/EditItemModal';

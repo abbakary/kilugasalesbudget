@@ -52,7 +52,11 @@ const RollingForecast: React.FC = () => {
         currency: 'USD',
         active: true,
         createdAt: '2024-01-15',
-        lastActivity: '2024-12-01'
+        lastActivity: '2024-12-01',
+        channels: ['Direct Sales', 'Online'],
+        seasonality: 'medium',
+        tier: 'platinum',
+        manager: 'John Smith'
       },
       {
         id: '2',

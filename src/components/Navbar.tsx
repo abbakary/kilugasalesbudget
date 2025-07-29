@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, Menu, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface NavbarProps {
   onPasswordModalOpen: () => void;

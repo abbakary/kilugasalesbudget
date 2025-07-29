@@ -161,7 +161,11 @@ const RollingForecast: React.FC = () => {
         currency: 'USD',
         unit: 'piece',
         active: true,
-        description: 'Ultra-thin laptop with M3 chip'
+        description: 'Ultra-thin laptop with M3 chip',
+        seasonal: false,
+        minOrderQuantity: 1,
+        leadTime: 10,
+        supplier: 'Apple Inc.'
       },
       {
         id: '4',

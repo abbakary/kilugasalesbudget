@@ -723,14 +723,12 @@ const InventoryManagement: React.FC = () => {
       </div>
 
       {/* Modals */}
-      <AddItemModal
-        isOpen={isAddItemModalOpen}
-        onClose={() => setIsAddItemModalOpen(false)}
-        onSubmit={handleAddItem}
-        categories={categories}
-        brands={brands}
-        onAddCategory={() => setIsAddCategoryModalOpen(true)}
-        onAddBrand={() => setIsAddBrandModalOpen(true)}
+      <UnifiedAddModal
+        isOpen={isUnifiedAddModalOpen}
+        onClose={() => setIsUnifiedAddModalOpen(false)}
+        onSubmit={handleUnifiedSubmit}
+        existingCategories={categories}
+        existingBrands={brands}
       />
 
       <EditItemModal

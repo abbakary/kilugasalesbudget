@@ -290,6 +290,13 @@ const RollingForecast: React.FC = () => {
     }
   };
 
+  const handleUpdateCustomer = (updatedCustomer: Customer) => {
+    setCustomers(prev => prev.map(customer =>
+      customer.id === updatedCustomer.id ? updatedCustomer : customer
+    ));
+    showNotification('Customer updated successfully', 'success');
+  };
+
   const handleSaveForecast = (forecastData: ForecastFormData) => {
     const customer = customers.find(c => c.id === forecastData.customerId);
     const item = items.find(i => i.id === forecastData.itemId);

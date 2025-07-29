@@ -56,6 +56,18 @@ const UserManagement: React.FC = () => {
     setTimeout(() => setNotification(null), 5000);
   };
 
+  const handleDeleteUser = (userId: number, userName: string) => {
+    if (confirm(`Are you sure you want to delete user "${userName}"? This action cannot be undone.`)) {
+      setUsers(prev => prev.filter(user => user.id !== userId));
+      showNotification(`User ${userName} has been deleted successfully.`, 'success');
+    }
+  };
+
+  const handleEditUser = (userId: number) => {
+    // In a real app, this would open an edit modal
+    showNotification('Edit functionality would be implemented here.', 'success');
+  };
+
   return (
     <Layout>
       <div className="space-y-6">

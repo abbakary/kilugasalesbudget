@@ -299,6 +299,11 @@ const RollingForecast: React.FC = () => {
     showNotification('Customer updated successfully', 'success');
   };
 
+  const handleViewCustomerAnalytics = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setIsAnalyticsModalOpen(true);
+  };
+
   const handleSaveForecast = (forecastData: ForecastFormData) => {
     const customer = customers.find(c => c.id === forecastData.customerId);
     const item = items.find(i => i.id === forecastData.itemId);

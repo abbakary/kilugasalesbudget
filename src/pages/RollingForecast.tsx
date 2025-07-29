@@ -17,6 +17,7 @@ const RollingForecast: React.FC = () => {
 
   // Modal states
   const [isForecastModalOpen, setIsForecastModalOpen] = useState(false);
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [editingForecast, setEditingForecast] = useState<CustomerItemForecast | null>(null);
 

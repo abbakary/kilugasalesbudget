@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, AlertCircle, Plus, Users, DollarSign, ShoppingCart, Eye, Edit, Trash2, X } from 'lucide-react';
 import CustomerForecastModal from '../components/CustomerForecastModal';
-import { Customer, Item, CustomerItemForecast, ForecastFormData, MonthlyForecast } from '../types/forecast';
-import { getBudgetImpactAnalysis, formatCurrency, formatPercentage, getVarianceColor, getConfidenceColor, getRemainingMonths } from '../utils/budgetCalculations';
+import { Customer, Item, CustomerItemForecast, ForecastFormData, MonthlyForecast, BudgetHistory, YearlyForecastSummary, FilterOptions } from '../types/forecast';
+import { getBudgetImpactAnalysis, formatCurrency, formatPercentage, getVarianceColor, getConfidenceColor, getRemainingMonths, generateBudgetHistory, generateYearlyForecastSummary, getAvailableYears } from '../utils/budgetCalculations';
+import { exportForecastData, downloadImportTemplate, ExportData } from '../utils/exportUtils';
 
 const RollingForecast: React.FC = () => {
   const [activeTab, setActiveTab] = useState('customer-forecast');

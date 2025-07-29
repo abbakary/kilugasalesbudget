@@ -203,66 +203,87 @@ const RollingForecast: React.FC = () => {
     { id: 'forecast-summary', label: 'Forecast Summary', active: false }
   ];
 
-  const handleCellEdit = (id: number, field: string, value: number | string) => {
-    setForecastData(prev => prev.map(item => {
-      if (item.id === id) {
-        const updated = { ...item, [field]: value };
-        // Recalculate total for numeric fields
-        if (typeof value === 'number' && field !== 'total' && field !== 'accuracy') {
-          updated.total = updated.jan + updated.feb + updated.mar + updated.apr + 
-                         updated.may + updated.jun + updated.jul + updated.aug + 
-                         updated.sep + updated.oct + updated.nov + updated.dec;
-        }
-        return updated;
-      }
-      return item;
-    }));
+  const handleCustomerSelect = (customerId: string) => {
+    setSelectedCustomerId(customerId);
+    const customer = customers.find(c => c.id === customerId);
+    setSelectedCustomer(customer || null);
   };
 
-  const handleSelectRow = (id: number) => {
-    setForecastData(prev => prev.map(item => 
-      item.id === id ? { ...item, selected: !item.selected } : item
-    ));
+  const handleCreateForecast = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setEditingForecast(null);
+    setIsForecastModalOpen(true);
   };
 
-  const handleSelectAll = () => {
-    const allSelected = forecastData.every(item => item.selected);
-    setForecastData(prev => prev.map(item => ({ ...item, selected: !allSelected })));
+  const handleEditForecast = (forecast: CustomerItemForecast) => {
+    setSelectedCustomer(forecast.customer);
+    setEditingForecast(forecast);
+    setIsForecastModalOpen(true);
   };
 
-  const addNewRow = () => {
-    const newId = Math.max(...forecastData.map(item => item.id)) + 1;
-    const newRow = {
-      id: newId,
-      selected: false,
-      product: 'New Product',
-      sku: 'NEW-SKU',
-      jan: 0, feb: 0, mar: 0, apr: 0, may: 0, jun: 0,
-      jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0,
-      total: 0,
-      accuracy: 0,
-      model: 'Linear Regression',
-      confidence: 'Medium'
+  const handleDeleteForecast = (forecastId: string) => {
+    if (confirm('Are you sure you want to delete this forecast?')) {
+      setCustomerForecasts(prev => prev.filter(f => f.id !== forecastId));
+      showNotification('Forecast deleted successfully', 'success');
+    }
+  };
+
+  const handleSaveForecast = (forecastData: ForecastFormData) => {
+    const customer = customers.find(c => c.id === forecastData.customerId);
+    const item = items.find(i => i.id === forecastData.itemId);
+
+    if (!customer || !item) {
+      showNotification('Invalid customer or item selected', 'error');
+      return;
+    }
+
+    // Convert forecast data to monthly forecasts
+    const monthlyForecasts: MonthlyForecast[] = Object.entries(forecastData.forecasts)
+      .filter(([_, data]) => data.quantity > 0 || data.unitPrice > 0)
+      .map(([month, data]) => ({
+        month,
+        year: new Date().getFullYear(),
+        monthIndex: getRemainingMonths().indexOf(month),
+        quantity: data.quantity,
+        unitPrice: data.unitPrice,
+        totalValue: data.quantity * data.unitPrice,
+        notes: data.notes
+      }));
+
+    const yearlyTotal = monthlyForecasts.reduce((sum, mf) => sum + mf.totalValue, 0);
+
+    const monthlyBudgetImpact: { [month: string]: number } = {};
+    monthlyForecasts.forEach(mf => {
+      monthlyBudgetImpact[mf.month] = mf.totalValue;
+    });
+
+    const newForecast: CustomerItemForecast = {
+      id: editingForecast?.id || `forecast_${Date.now()}`,
+      customerId: customer.id,
+      itemId: item.id,
+      customer,
+      item,
+      monthlyForecasts,
+      yearlyTotal,
+      yearlyBudgetImpact: yearlyTotal,
+      monthlyBudgetImpact,
+      createdAt: editingForecast?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: 'current_user',
+      status: 'draft',
+      confidence: forecastData.confidence,
+      notes: forecastData.notes
     };
-    setForecastData(prev => [...prev, newRow]);
-  };
 
-  const removeSelectedRows = () => {
-    setForecastData(prev => prev.filter(item => !item.selected));
-  };
-
-  const recalculateForecast = () => {
-    // Simulate forecast recalculation
-    setForecastData(prev => prev.map(item => ({
-      ...item,
-      accuracy: Math.min(100, item.accuracy + (Math.random() * 4 - 2)) // Random adjustment
-    })));
-    showNotification('Forecast recalculated successfully', 'success');
-  };
-
-  const saveChanges = () => {
-    // Simulate saving changes
-    showNotification('Changes saved successfully', 'success');
+    if (editingForecast) {
+      // Update existing forecast
+      setCustomerForecasts(prev => prev.map(f => f.id === editingForecast.id ? newForecast : f));
+      showNotification('Forecast updated successfully', 'success');
+    } else {
+      // Add new forecast
+      setCustomerForecasts(prev => [...prev, newForecast]);
+      showNotification('Forecast created successfully', 'success');
+    }
   };
 
   const showNotification = (message: string, type: 'success' | 'error') => {
@@ -270,93 +291,35 @@ const RollingForecast: React.FC = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleFiltersApply = (filters: FilterState) => {
-    setAppliedFilters(filters);
-    // Apply filters to data
-    let filteredData = [...forecastData];
-
-    if (filters.customer) {
-      filteredData = filteredData.filter(item =>
-        item.product.toLowerCase().includes(filters.customer.toLowerCase())
-      );
-    }
-
-    if (filters.product) {
-      filteredData = filteredData.filter(item =>
-        item.product.toLowerCase().includes(filters.product.toLowerCase())
-      );
-    }
-
-    showNotification('Filters applied successfully', 'success');
+  const getFilteredCustomers = () => {
+    if (!searchTerm) return customers;
+    return customers.filter(customer =>
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.region.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   };
 
-  const handleScenarioApply = (scenario: ScenarioConfig) => {
-    setAppliedScenario(scenario);
-    // Apply scenario adjustments to forecast data
-    setForecastData(prev => prev.map(item => {
-      const adjustedItem = { ...item };
-
-      // Apply scenario adjustments
-      if (scenario.adjustments.volumeChange !== 0) {
-        const volumeMultiplier = 1 + (scenario.adjustments.volumeChange / 100);
-        ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].forEach(month => {
-          adjustedItem[month as keyof typeof adjustedItem] = Math.round(
-            (adjustedItem[month as keyof typeof adjustedItem] as number) * volumeMultiplier
-          );
-        });
-        adjustedItem.total = Math.round(adjustedItem.total * volumeMultiplier);
-      }
-
-      return adjustedItem;
-    }));
-
-    showNotification(`Scenario "${scenario.name}" applied successfully`, 'success');
+  const getCustomerForecasts = (customerId?: string) => {
+    if (customerId) {
+      return customerForecasts.filter(f => f.customerId === customerId);
+    }
+    return customerForecasts;
   };
 
-  const handleExport = (config: ExportConfig) => {
-    // Simulate export functionality
-    const fileName = `${config.filename}.${config.format === 'excel' ? 'xlsx' : config.format}`;
-    showNotification(`Exporting data as ${fileName}...`, 'success');
+  const getCustomerForecastSummary = (customerId: string) => {
+    const forecasts = getCustomerForecasts(customerId);
+    const totalValue = forecasts.reduce((sum, f) => sum + f.yearlyTotal, 0);
+    const totalItems = forecasts.length;
+    return { totalValue, totalItems };
+  };
 
-    // In a real app, this would trigger file download
+  const handleExportData = () => {
+    showNotification('Exporting forecast data...', 'success');
+    // In real app, this would generate and download file
     setTimeout(() => {
-      showNotification(`Export completed: ${fileName}`, 'success');
+      showNotification('Export completed successfully', 'success');
     }, 2000);
-  };
-
-  const handleImport = (file: File, config: ImportConfig) => {
-    // Simulate import functionality
-    showNotification(`Importing data from ${file.name}...`, 'success');
-
-    // In a real app, this would process the file
-    setTimeout(() => {
-      showNotification(`Import completed: ${file.name}`, 'success');
-    }, 3000);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const getAccuracyColor = (accuracy: number) => {
-    if (accuracy >= 95) return 'text-green-600 bg-green-50';
-    if (accuracy >= 90) return 'text-blue-600 bg-blue-50';
-    if (accuracy >= 85) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
-  };
-
-  const getConfidenceBadge = (confidence: string) => {
-    const classes = {
-      'High': 'bg-green-100 text-green-800',
-      'Medium': 'bg-yellow-100 text-yellow-800',
-      'Low': 'bg-red-100 text-red-800',
-    };
-    return classes[confidence as keyof typeof classes] || classes.Medium;
   };
 
   return (
@@ -366,74 +329,91 @@ const RollingForecast: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h4 className="text-2xl font-bold text-gray-900 mb-2">
-            <span className="text-gray-500 font-light">Rolling Forecast /</span> Management
+            <span className="text-gray-500 font-light">Rolling Forecast /</span> Customer Management
           </h4>
-          <p className="text-gray-600 text-sm">Manage and analyze rolling forecasts with advanced predictive analytics</p>
+          <p className="text-gray-600 text-sm">Create and manage customer-specific forecasts for remaining months of {new Date().getFullYear()}</p>
         </div>
         <div className="flex space-x-2">
           <button
-            onClick={() => setIsAnalyticsModalOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-          >
-            <BarChart3 className="w-4 h-4" />
-            <span>Analytics Planning</span>
-          </button>
-          <button
-            onClick={() => setIsFiltersModalOpen(true)}
-            className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
-              appliedFilters
-                ? 'border-blue-600 bg-blue-50 text-blue-700'
-                : 'border-blue-600 text-blue-600 hover:bg-blue-50'
-            }`}
-          >
-            <Filter className="w-4 h-4" />
-            <span>Filters {appliedFilters && '(Active)'}</span>
-          </button>
-          <button
-            onClick={() => setIsScenariosModalOpen(true)}
-            className={`flex items-center space-x-2 px-4 py-2 border rounded-md transition-colors ${
-              appliedScenario
-                ? 'border-orange-600 bg-orange-50 text-orange-700'
-                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            <AlertCircle className="w-4 h-4" />
-            <span>Scenarios {appliedScenario && `(${appliedScenario.name})`}</span>
-          </button>
-          <button
-            onClick={() => setIsExportModalOpen(true)}
+            onClick={handleExportData}
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <Download className="w-4 h-4" />
-            <span>Export</span>
+            <span>Export Data</span>
           </button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <ForecastSummary data={summaryData} />
-
-      {/* Advanced Analytics Chart */}
-      <AdvancedForecastChart />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {summaryData.map((item, index) => {
+          const IconComponent = item.icon;
+          return (
+            <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center">
+                <div className={`flex-shrink-0 p-3 rounded-lg ${
+                  item.color === 'primary' ? 'bg-blue-100' :
+                  item.color === 'success' ? 'bg-green-100' :
+                  item.color === 'info' ? 'bg-purple-100' :
+                  item.color === 'warning' ? 'bg-yellow-100' : 'bg-gray-100'
+                }`}>
+                  <IconComponent className={`w-6 h-6 ${
+                    item.color === 'primary' ? 'text-blue-600' :
+                    item.color === 'success' ? 'text-green-600' :
+                    item.color === 'info' ? 'text-purple-600' :
+                    item.color === 'warning' ? 'text-yellow-600' : 'text-gray-600'
+                  }`} />
+                </div>
+                <div className="ml-4 flex-1">
+                  <p className="text-sm font-medium text-gray-600">{item.title}</p>
+                  <div className="flex items-baseline">
+                    <p className="text-2xl font-semibold text-gray-900">{item.value}</p>
+                    <p className={`ml-2 text-sm font-medium ${
+                      item.isPositive ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {item.change}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
       {/* Search and Controls */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Search Forecasts</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Search Customers</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Search products, customers, or regions..."
+                placeholder="Search customers, codes, or regions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Forecast Period</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Select Customer</label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={selectedCustomerId}
+              onChange={(e) => handleCustomerSelect(e.target.value)}
+            >
+              <option value="">All Customers</option>
+              {customers.map(customer => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name} ({customer.code})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Forecast Year</label>
             <select
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={selectedPeriod}
@@ -441,79 +421,28 @@ const RollingForecast: React.FC = () => {
             >
               <option value="2025">2025</option>
               <option value="2024">2024</option>
-              <option value="2023">2023</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Forecast Horizon</label>
-            <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={forecastHorizon}
-              onChange={(e) => setForecastHorizon(e.target.value)}
-            >
-              <option value="3">3 Months</option>
-              <option value="6">6 Months</option>
-              <option value="12">12 Months</option>
-              <option value="18">18 Months</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Model Type</label>
-            <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={modelType}
-              onChange={(e) => setModelType(e.target.value)}
-            >
-              <option value="linear">Linear Regression</option>
-              <option value="arima">ARIMA</option>
-              <option value="exponential">Exponential Smoothing</option>
-              <option value="neural">Neural Network</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={addNewRow}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Forecast</span>
-          </button>
-          <button
-            onClick={removeSelectedRows}
-            className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-          >
-            <Minus className="w-4 h-4" />
-            <span>Remove Selected</span>
-          </button>
-          <button
-            onClick={recalculateForecast}
-            className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-            <span>Recalculate</span>
-          </button>
-          <button
-            onClick={saveChanges}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <Save className="w-4 h-4" />
-            <span>Save Changes</span>
-          </button>
-          <button
-            onClick={() => setIsImportModalOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
-          >
-            <Upload className="w-4 h-4" />
-            <span>Import Data</span>
-          </button>
-        </div>
-        <div className="text-sm text-gray-600">
-          {forecastData.filter(item => item.selected).length} of {forecastData.length} forecasts selected
+      {/* Action Summary */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-6">
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">{customerForecasts.length}</span> active forecasts
+            </div>
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">{customers.filter(c => c.active).length}</span> active customers
+            </div>
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">{getRemainingMonths().length}</span> months remaining in {new Date().getFullYear()}
+            </div>
+          </div>
+          <div className="text-sm text-gray-600">
+            Last updated: {new Date().toLocaleString()}
+          </div>
         </div>
       </div>
 
@@ -540,111 +469,331 @@ const RollingForecast: React.FC = () => {
           </ul>
         </div>
 
-        {/* Sticky Forecast Table Container */}
-        <div className="overflow-hidden">
-          <div className="overflow-x-auto max-h-96">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 sticky top-0 z-10">
-                <tr>
-                  <th className="sticky left-0 z-20 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">
-                    <input
-                      type="checkbox"
-                      checked={forecastData.every(item => item.selected)}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                  </th>
-                  <th className="sticky left-12 z-20 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-48">
-                    Product
-                  </th>
-                  <th className="sticky left-60 z-20 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200 min-w-32">
-                    SKU
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Jan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Feb</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Mar</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Apr</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">May</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Jun</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Jul</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Aug</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Sep</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Oct</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Nov</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Dec</th>
-                  <th className="sticky right-40 z-20 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 min-w-40">
-                    Total
-                  </th>
-                  <th className="sticky right-20 z-20 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 min-w-24">
-                    Accuracy
-                  </th>
-                  <th className="sticky right-0 z-20 bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 min-w-32">
-                    Model
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {forecastData.map((item) => (
-                  <tr key={item.id} className={`hover:bg-gray-50 transition-colors ${item.selected ? 'bg-blue-50' : ''}`}>
-                    <td className="sticky left-0 z-10 bg-white px-6 py-4 whitespace-nowrap border-r border-gray-200">
-                      <input
-                        type="checkbox"
-                        checked={item.selected}
-                        onChange={() => handleSelectRow(item.id)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                    </td>
-                    <td className="sticky left-12 z-10 bg-white px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-                      <input
-                        type="text"
-                        value={item.product}
-                        onChange={(e) => handleCellEdit(item.id, 'product', e.target.value)}
-                        className="w-full border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
-                      />
-                    </td>
-                    <td className="sticky left-60 z-10 bg-white px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
-                      <input
-                        type="text"
-                        value={item.sku}
-                        onChange={(e) => handleCellEdit(item.id, 'sku', e.target.value)}
-                        className="w-full border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
-                      />
-                    </td>
-                    {['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'].map((month) => (
-                      <td key={month} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <input
-                          type="number"
-                          value={item[month as keyof typeof item] as number}
-                          onChange={(e) => handleCellEdit(item.id, month, parseInt(e.target.value) || 0)}
-                          className="w-full border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 text-right"
-                        />
-                      </td>
-                    ))}
-                    <td className="sticky right-40 z-10 bg-white px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 border-l border-gray-200">
-                      {formatCurrency(item.total)}
-                    </td>
-                    <td className="sticky right-20 z-10 bg-white px-6 py-4 whitespace-nowrap text-sm border-l border-gray-200">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAccuracyColor(item.accuracy)}`}>
-                        {item.accuracy.toFixed(1)}%
-                      </span>
-                    </td>
-                    <td className="sticky right-0 z-10 bg-white px-6 py-4 whitespace-nowrap text-sm border-l border-gray-200">
-                      <select
-                        value={item.model}
-                        onChange={(e) => handleCellEdit(item.id, 'model', e.target.value)}
-                        className="w-full border-none bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
+        {/* Tab Content */}
+        <div className="p-6">
+          {activeTab === 'customer-forecast' && (
+            <div className="space-y-6">
+              {/* Customer List */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {getFilteredCustomers().map(customer => {
+                  const forecasts = getCustomerForecasts(customer.id);
+                  const summary = getCustomerForecastSummary(customer.id);
+
+                  return (
+                    <div key={customer.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <Users className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{customer.name}</h3>
+                            <p className="text-sm text-gray-600">{customer.code}</p>
+                          </div>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          customer.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {customer.active ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+
+                      <div className="space-y-3 mb-4">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Region:</span>
+                          <span className="font-medium">{customer.region}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Segment:</span>
+                          <span className="font-medium">{customer.segment}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Active Forecasts:</span>
+                          <span className="font-medium">{summary.totalItems}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Total Forecast:</span>
+                          <span className="font-medium text-green-600">{formatCurrency(summary.totalValue)}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleCreateForecast(customer)}
+                          className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>New Forecast</span>
+                        </button>
+                        {forecasts.length > 0 && (
+                          <button
+                            onClick={() => setSelectedCustomerId(customer.id)}
+                            className="flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Selected Customer Forecasts */}
+              {selectedCustomerId && (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                  <div className="p-6 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        Forecasts for {customers.find(c => c.id === selectedCustomerId)?.name}
+                      </h3>
+                      <button
+                        onClick={() => setSelectedCustomerId('')}
+                        className="text-gray-400 hover:text-gray-600"
                       >
-                        <option value="ARIMA">ARIMA</option>
-                        <option value="Neural Network">Neural Network</option>
-                        <option value="Linear Regression">Linear Regression</option>
-                        <option value="Exponential Smoothing">Exponential Smoothing</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Forecast</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Confidence</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {getCustomerForecasts(selectedCustomerId).map(forecast => (
+                          <tr key={forecast.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">{forecast.item.name}</div>
+                                <div className="text-sm text-gray-500">{forecast.item.category}</div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {forecast.item.sku}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {formatCurrency(forecast.yearlyTotal)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getConfidenceColor(forecast.confidence)}`}>
+                                {forecast.confidence}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                forecast.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                forecast.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
+                                forecast.status === 'revised' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {forecast.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                              <button
+                                onClick={() => handleEditForecast(forecast)}
+                                className="text-blue-600 hover:text-blue-900"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteForecast(forecast.id)}
+                                className="text-red-600 hover:text-red-900"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {getCustomerForecasts(selectedCustomerId).length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                              No forecasts found for this customer.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'budget-impact' && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Budget Impact Analysis</h3>
+
+                {/* Yearly Summary */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-blue-900">Total Budget</p>
+                        <p className="text-xl font-semibold text-blue-800">{formatCurrency(budgetAnalysis.yearly.originalBudget)}</p>
+                      </div>
+                      <DollarSign className="w-8 h-8 text-blue-600" />
+                    </div>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-900">Total Forecast</p>
+                        <p className="text-xl font-semibold text-green-800">{formatCurrency(budgetAnalysis.yearly.forecastImpact)}</p>
+                      </div>
+                      <TrendingUp className="w-8 h-8 text-green-600" />
+                    </div>
+                  </div>
+                  <div className={`rounded-lg p-4 ${
+                    budgetAnalysis.yearly.variance >= 0 ? 'bg-red-50' : 'bg-green-50'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`text-sm font-medium ${
+                          budgetAnalysis.yearly.variance >= 0 ? 'text-red-900' : 'text-green-900'
+                        }`}>Variance</p>
+                        <p className={`text-xl font-semibold ${
+                          budgetAnalysis.yearly.variance >= 0 ? 'text-red-800' : 'text-green-800'
+                        }`}>{formatPercentage(budgetAnalysis.yearly.variancePercentage)}</p>
+                      </div>
+                      <AlertCircle className={`w-8 h-8 ${
+                        budgetAnalysis.yearly.variance >= 0 ? 'text-red-600' : 'text-green-600'
+                      }`} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Monthly Budget Impact */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Budget Target</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Forecast</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variance</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">% Variance</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {budgetAnalysis.monthly.map(impact => (
+                        <tr key={impact.month} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {impact.month} {impact.year}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatCurrency(impact.originalBudget)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatCurrency(impact.forecastImpact)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getVarianceColor(impact.variance)}`}>
+                              {formatCurrency(Math.abs(impact.variance))}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getVarianceColor(impact.variance)}`}>
+                              {formatPercentage(impact.variancePercentage)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'forecast-summary' && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Forecast Summary</h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm font-medium text-gray-600">Total Customers</p>
+                    <p className="text-2xl font-semibold text-gray-900">{customers.length}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm font-medium text-gray-600">Active Forecasts</p>
+                    <p className="text-2xl font-semibold text-gray-900">{customerForecasts.length}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm font-medium text-gray-600">Items Forecasted</p>
+                    <p className="text-2xl font-semibold text-gray-900">{new Set(customerForecasts.map(f => f.itemId)).size}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm font-medium text-gray-600">Avg Confidence</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {customerForecasts.length > 0 ?
+                        Math.round(customerForecasts.reduce((sum, f) =>
+                          sum + (f.confidence === 'high' ? 3 : f.confidence === 'medium' ? 2 : 1), 0
+                        ) / customerForecasts.length * 33.33) : 0}%
+                    </p>
+                  </div>
+                </div>
+
+                {/* Customer Summary Table */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Forecasts</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {customers.map(customer => {
+                        const forecasts = getCustomerForecasts(customer.id);
+                        const summary = getCustomerForecastSummary(customer.id);
+                        const lastForecast = forecasts.sort((a, b) =>
+                          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+                        )[0];
+
+                        return (
+                          <tr key={customer.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">{customer.name}</div>
+                                <div className="text-sm text-gray-500">{customer.code}</div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {customer.region}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {summary.totalItems}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {formatCurrency(summary.totalValue)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {lastForecast ? new Date(lastForecast.updatedAt).toLocaleDateString() : 'No forecasts'}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -659,35 +808,31 @@ const RollingForecast: React.FC = () => {
         </div>
       )}
 
-      {/* Modals */}
-      <FiltersModal
-        isOpen={isFiltersModalOpen}
-        onClose={() => setIsFiltersModalOpen(false)}
-        onApply={handleFiltersApply}
-      />
-
-      <ScenariosModal
-        isOpen={isScenariosModalOpen}
-        onClose={() => setIsScenariosModalOpen(false)}
-        onApplyScenario={handleScenarioApply}
-      />
-
-      <ExportModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        onExport={handleExport}
-        title="Export Forecast Data"
-      />
-
-      <ImportModal
-        isOpen={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
-        onImport={handleImport}
-      />
-
-      <AnalyticsPlanningModal
-        isOpen={isAnalyticsModalOpen}
-        onClose={() => setIsAnalyticsModalOpen(false)}
+      {/* Customer Forecast Modal */}
+      <CustomerForecastModal
+        isOpen={isForecastModalOpen}
+        onClose={() => {
+          setIsForecastModalOpen(false);
+          setSelectedCustomer(null);
+          setEditingForecast(null);
+        }}
+        customer={selectedCustomer}
+        items={items}
+        onSaveForecast={handleSaveForecast}
+        existingForecast={editingForecast ? {
+          customerId: editingForecast.customerId,
+          itemId: editingForecast.itemId,
+          forecasts: editingForecast.monthlyForecasts.reduce((acc, mf) => {
+            acc[mf.month] = {
+              quantity: mf.quantity,
+              unitPrice: mf.unitPrice,
+              notes: mf.notes
+            };
+            return acc;
+          }, {} as { [month: string]: { quantity: number; unitPrice: number; notes?: string } }),
+          confidence: editingForecast.confidence,
+          notes: editingForecast.notes
+        } : null}
       />
       </div>
     </Layout>

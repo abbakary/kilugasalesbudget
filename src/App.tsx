@@ -8,6 +8,7 @@ import SalesBudget from './pages/SalesBudget';
 import RollingForecast from './pages/RollingForecast';
 import DistributionManagement from './pages/DistributionManagement';
 import UserManagement from './pages/UserManagement';
+import InventoryManagement from './pages/InventoryManagement';
 import { UserType } from './types/auth';
 import './index.css';
 

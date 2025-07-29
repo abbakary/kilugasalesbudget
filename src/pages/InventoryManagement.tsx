@@ -509,12 +509,12 @@ const InventoryManagement: React.FC = () => {
               <Award className="w-4 h-4" />
               <span>Add Brand</span>
             </button>
-            <button 
-              onClick={() => setIsAddItemModalOpen(true)}
+            <button
+              onClick={() => setIsUnifiedAddModalOpen(true)}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Item</span>
+              <span>Add New Inventory</span>
             </button>
           </div>
         </div>

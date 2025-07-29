@@ -352,12 +352,37 @@ const RollingForecast: React.FC = () => {
   };
 
   const getFilteredCustomers = () => {
-    if (!searchTerm) return customers;
-    return customers.filter(customer =>
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.region.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    let filteredCustomers = customers;
+
+    // Apply search term filter
+    if (searchTerm) {
+      filteredCustomers = filteredCustomers.filter(customer =>
+        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.region.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.segment.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply selected customer filter
+    if (selectedCustomerId) {
+      filteredCustomers = filteredCustomers.filter(customer => customer.id === selectedCustomerId);
+    }
+
+    // Apply additional filters
+    if (filters.regions.length > 0) {
+      filteredCustomers = filteredCustomers.filter(customer =>
+        filters.regions.includes(customer.region)
+      );
+    }
+
+    if (filters.segments.length > 0) {
+      filteredCustomers = filteredCustomers.filter(customer =>
+        filters.segments.includes(customer.segment)
+      );
+    }
+
+    return filteredCustomers;
   };
 
   const getCustomerForecasts = (customerId?: string) => {

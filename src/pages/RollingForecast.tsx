@@ -206,7 +206,17 @@ const RollingForecast: React.FC = () => {
 
     setCustomers(sampleCustomers);
     setItems(sampleItems);
+
+    // Initialize budget history
+    const history = generateBudgetHistory();
+    setBudgetHistory(history);
   }, []);
+
+  // Update yearly forecast summary when data changes
+  useEffect(() => {
+    const summary = generateYearlyForecastSummary(customerForecasts, customers, selectedYear);
+    setYearlyForecastSummary(summary);
+  }, [customerForecasts, customers, selectedYear]);
 
   // Calculate summary data from forecasts
   const budgetAnalysis = getBudgetImpactAnalysis(customerForecasts);

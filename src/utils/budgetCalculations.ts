@@ -1,22 +1,37 @@
-import { MonthlyForecast, BudgetImpact, CustomerItemForecast } from '../types/forecast';
+import { MonthlyForecast, BudgetImpact, CustomerItemForecast, BudgetHistory, YearlyForecastSummary, CustomerAnalytics } from '../types/forecast';
 
-// Monthly budget targets (example data - would come from database)
-const MONTHLY_BUDGET_TARGETS = {
-  'Jan': 150000,
-  'Feb': 160000,
-  'Mar': 170000,
-  'Apr': 165000,
-  'May': 175000,
-  'Jun': 180000,
-  'Jul': 185000,
-  'Aug': 190000,
-  'Sep': 175000,
-  'Oct': 180000,
-  'Nov': 200000,
-  'Dec': 220000
+// Budget targets by year (example data - would come from database)
+const BUDGET_TARGETS_BY_YEAR: { [year: number]: { [month: string]: number } } = {
+  2021: {
+    'Jan': 120000, 'Feb': 125000, 'Mar': 130000, 'Apr': 128000, 'May': 135000, 'Jun': 140000,
+    'Jul': 145000, 'Aug': 148000, 'Sep': 142000, 'Oct': 145000, 'Nov': 155000, 'Dec': 170000
+  },
+  2022: {
+    'Jan': 130000, 'Feb': 135000, 'Mar': 140000, 'Apr': 138000, 'May': 145000, 'Jun': 150000,
+    'Jul': 155000, 'Aug': 158000, 'Sep': 152000, 'Oct': 155000, 'Nov': 165000, 'Dec': 180000
+  },
+  2023: {
+    'Jan': 140000, 'Feb': 145000, 'Mar': 150000, 'Apr': 148000, 'May': 155000, 'Jun': 160000,
+    'Jul': 165000, 'Aug': 168000, 'Sep': 162000, 'Oct': 165000, 'Nov': 175000, 'Dec': 190000
+  },
+  2024: {
+    'Jan': 150000, 'Feb': 160000, 'Mar': 170000, 'Apr': 165000, 'May': 175000, 'Jun': 180000,
+    'Jul': 185000, 'Aug': 190000, 'Sep': 175000, 'Oct': 180000, 'Nov': 200000, 'Dec': 220000
+  },
+  2025: {
+    'Jan': 160000, 'Feb': 170000, 'Mar': 180000, 'Apr': 175000, 'May': 185000, 'Jun': 190000,
+    'Jul': 195000, 'Aug': 200000, 'Sep': 185000, 'Oct': 190000, 'Nov': 210000, 'Dec': 230000
+  }
 };
 
-const YEARLY_BUDGET_TARGET = Object.values(MONTHLY_BUDGET_TARGETS).reduce((sum, budget) => sum + budget, 0);
+const getYearlyBudgetTarget = (year: number): number => {
+  const monthlyTargets = BUDGET_TARGETS_BY_YEAR[year];
+  return monthlyTargets ? Object.values(monthlyTargets).reduce((sum, budget) => sum + budget, 0) : 0;
+};
+
+const getMonthlyBudgetTarget = (month: string, year: number): number => {
+  return BUDGET_TARGETS_BY_YEAR[year]?.[month] || 0;
+};
 
 export const calculateMonthlyBudgetImpact = (
   monthlyForecasts: MonthlyForecast[]
@@ -53,7 +68,8 @@ export const calculateBudgetVariance = (
 };
 
 export const getBudgetImpactAnalysis = (
-  customerForecasts: CustomerItemForecast[]
+  customerForecasts: CustomerItemForecast[],
+  year: number = new Date().getFullYear()
 ): {
   monthly: BudgetImpact[];
   yearly: BudgetImpact;
@@ -80,14 +96,15 @@ export const getBudgetImpactAnalysis = (
   });
   
   // Create monthly budget impact analysis
-  const monthlyImpacts: BudgetImpact[] = Object.keys(MONTHLY_BUDGET_TARGETS).map(month => {
+  const monthlyTargets = BUDGET_TARGETS_BY_YEAR[year] || {};
+  const monthlyImpacts: BudgetImpact[] = Object.keys(monthlyTargets).map(month => {
     const forecastValue = monthlyTotals[month] || 0;
-    const budgetTarget = MONTHLY_BUDGET_TARGETS[month as keyof typeof MONTHLY_BUDGET_TARGETS];
+    const budgetTarget = getMonthlyBudgetTarget(month, year);
     const { variance, variancePercentage } = calculateBudgetVariance(forecastValue, budgetTarget);
-    
+
     return {
       month,
-      year: new Date().getFullYear(),
+      year,
       originalBudget: budgetTarget,
       forecastImpact: forecastValue,
       newProjectedBudget: budgetTarget + variance,
@@ -98,15 +115,16 @@ export const getBudgetImpactAnalysis = (
   
   // Calculate yearly impact
   const totalForecast = calculateYearlyBudgetImpact(customerForecasts);
-  const { variance: yearlyVariance, variancePercentage: yearlyVariancePercentage } = 
-    calculateBudgetVariance(totalForecast, YEARLY_BUDGET_TARGET);
-  
+  const yearlyBudgetTarget = getYearlyBudgetTarget(year);
+  const { variance: yearlyVariance, variancePercentage: yearlyVariancePercentage } =
+    calculateBudgetVariance(totalForecast, yearlyBudgetTarget);
+
   const yearlyImpact: BudgetImpact = {
     month: 'YEARLY',
-    year: new Date().getFullYear(),
-    originalBudget: YEARLY_BUDGET_TARGET,
+    year,
+    originalBudget: yearlyBudgetTarget,
     forecastImpact: totalForecast,
-    newProjectedBudget: YEARLY_BUDGET_TARGET + yearlyVariance,
+    newProjectedBudget: yearlyBudgetTarget + yearlyVariance,
     variance: yearlyVariance,
     variancePercentage: yearlyVariancePercentage
   };
@@ -120,7 +138,7 @@ export const getBudgetImpactAnalysis = (
     yearly: yearlyImpact,
     summary: {
       totalForecast,
-      totalBudget: YEARLY_BUDGET_TARGET,
+      totalBudget: yearlyBudgetTarget,
       overallVariance: yearlyVariance,
       overallVariancePercentage: yearlyVariancePercentage,
       monthsOverBudget,

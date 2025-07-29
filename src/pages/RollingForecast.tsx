@@ -70,7 +70,11 @@ const RollingForecast: React.FC = () => {
         currency: 'USD',
         active: true,
         createdAt: '2024-02-20',
-        lastActivity: '2024-11-28'
+        lastActivity: '2024-11-28',
+        channels: ['Retail Partners', 'Distributors'],
+        seasonality: 'high',
+        tier: 'gold',
+        manager: 'Sarah Johnson'
       },
       {
         id: '3',

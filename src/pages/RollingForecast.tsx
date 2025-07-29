@@ -127,7 +127,11 @@ const RollingForecast: React.FC = () => {
         currency: 'USD',
         unit: 'piece',
         active: true,
-        description: 'Latest iPhone with Pro features'
+        description: 'Latest iPhone with Pro features',
+        seasonal: false,
+        minOrderQuantity: 1,
+        leadTime: 7,
+        supplier: 'Apple Inc.'
       },
       {
         id: '2',

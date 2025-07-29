@@ -106,7 +106,11 @@ const RollingForecast: React.FC = () => {
         currency: 'SGD',
         active: true,
         createdAt: '2024-04-05',
-        lastActivity: '2024-11-30'
+        lastActivity: '2024-11-30',
+        channels: ['Online', 'Distributors'],
+        seasonality: 'medium',
+        tier: 'silver',
+        manager: 'Lisa Chen'
       }
     ];
 

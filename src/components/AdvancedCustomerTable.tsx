@@ -224,4 +224,153 @@ const AdvancedCustomerTable: React.FC<AdvancedCustomerTableProps> = ({
                         <option value="bronze">Bronze</option>
                       </select>
                     ) : (
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${\n                        customer.tier === 'platinum' ? 'bg-purple-100 text-purple-800' :\n                        customer.tier === 'gold' ? 'bg-yellow-100 text-yellow-800' :\n                        customer.tier === 'silver' ? 'bg-gray-100 text-gray-800' :\n                        'bg-orange-100 text-orange-800'\n                      }`}>\n                        {customer.tier}\n                      </span>\n                    )}\n                  </td>\n                  \n                  {/* Seasonality */}\n                  <td className=\"px-6 py-4 whitespace-nowrap\">\n                    {isEditing ? (\n                      <select\n                        value={currentCustomer.seasonality}\n                        onChange={(e) => handleFieldChange('seasonality', e.target.value)}\n                        className=\"w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500\"\n                      >\n                        <option value=\"high\">High</option>\n                        <option value=\"medium\">Medium</option>\n                        <option value=\"low\">Low</option>\n                      </select>\n                    ) : (\n                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${\n                        customer.seasonality === 'high' ? 'bg-red-100 text-red-800' :\n                        customer.seasonality === 'medium' ? 'bg-yellow-100 text-yellow-800' :\n                        'bg-green-100 text-green-800'\n                      }`}>\n                        {customer.seasonality}\n                      </span>\n                    )}\n                  </td>\n                  \n                  {/* Manager */}\n                  <td className=\"px-6 py-4 whitespace-nowrap\">\n                    {isEditing ? (\n                      <input\n                        type=\"text\"\n                        value={currentCustomer.manager}\n                        onChange={(e) => handleFieldChange('manager', e.target.value)}\n                        className=\"w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500\"\n                      />\n                    ) : (\n                      <span className=\"text-sm text-gray-900\">{customer.manager}</span>\n                    )}\n                  </td>\n                  \n                  {/* Channels */}\n                  <td className=\"px-6 py-4 whitespace-nowrap\">\n                    <div className=\"flex flex-wrap gap-1\">\n                      {customer.channels.slice(0, 2).map((channel, index) => (\n                        <span key={index} className=\"px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800\">\n                          {channel}\n                        </span>\n                      ))}\n                      {customer.channels.length > 2 && (\n                        <span className=\"px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800\">\n                          +{customer.channels.length - 2}\n                        </span>\n                      )}\n                    </div>\n                  </td>\n                  \n                  {/* Forecast Summary */}\n                  <td className=\"px-6 py-4 whitespace-nowrap\">\n                    <div className=\"text-sm\">\n                      <div className=\"font-medium text-gray-900\">{formatCurrency(summary.totalValue)}</div>\n                      <div className=\"text-gray-500\">{summary.forecastCount} forecasts</div>\n                      <div className=\"flex items-center mt-1\">\n                        <div className=\"w-full bg-gray-200 rounded-full h-2 mr-2\">\n                          <div \n                            className=\"bg-blue-600 h-2 rounded-full\" \n                            style={{ width: `${Math.min(100, summary.avgConfidence)}%` }}\n                          ></div>\n                        </div>\n                        <span className=\"text-xs text-gray-600\">{Math.round(summary.avgConfidence)}%</span>\n                      </div>\n                    </div>\n                  </td>\n                  \n                  {/* Actions */}\n                  <td className=\"px-6 py-4 whitespace-nowrap text-sm font-medium\">\n                    <div className=\"flex space-x-2\">\n                      {isEditing ? (\n                        <>\n                          <button\n                            onClick={handleSave}\n                            className=\"text-green-600 hover:text-green-900\"\n                            title=\"Save changes\"\n                          >\n                            <Save className=\"w-4 h-4\" />\n                          </button>\n                          <button\n                            onClick={handleCancel}\n                            className=\"text-gray-600 hover:text-gray-900\"\n                            title=\"Cancel editing\"\n                          >\n                            <X className=\"w-4 h-4\" />\n                          </button>\n                        </>\n                      ) : (\n                        <>\n                          <button\n                            onClick={() => handleEdit(customer)}\n                            className=\"text-blue-600 hover:text-blue-900\"\n                            title=\"Edit customer\"\n                          >\n                            <Edit className=\"w-4 h-4\" />\n                          </button>\n                          <button\n                            onClick={() => onCreateForecast(customer)}\n                            className=\"text-green-600 hover:text-green-900\"\n                            title=\"Create forecast\"\n                          >\n                            <Plus className=\"w-4 h-4\" />\n                          </button>\n                          <button\n                            onClick={() => onViewCustomerDetails(customer)}\n                            className=\"text-purple-600 hover:text-purple-900\"\n                            title=\"View details\"\n                          >\n                            <Eye className=\"w-4 h-4\" />\n                          </button>\n                        </>\n                      )}\n                    </div>\n                  </td>\n                </tr>\n              );\n            })}\n          </tbody>\n        </table>\n      </div>\n      \n      {/* Table Footer */}\n      <div className=\"px-6 py-4 border-t border-gray-200 bg-gray-50\">\n        <div className=\"flex items-center justify-between text-sm text-gray-600\">\n          <span>Showing {customers.length} customers</span>\n          <span>Total forecast value: {formatCurrency(customers.reduce((sum, customer) => {\n            const summary = getCustomerForecastSummary(customer.id);\n            return sum + summary.totalValue;\n          }, 0))}</span>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport default AdvancedCustomerTable;"
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        customer.tier === 'platinum' ? 'bg-purple-100 text-purple-800' :
+                        customer.tier === 'gold' ? 'bg-yellow-100 text-yellow-800' :
+                        customer.tier === 'silver' ? 'bg-gray-100 text-gray-800' :
+                        'bg-orange-100 text-orange-800'
+                      }`}>
+                        {customer.tier}
+                      </span>
+                    )}
+                  </td>
+                  
+                  {/* Seasonality */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {isEditing ? (
+                      <select
+                        value={currentCustomer.seasonality}
+                        onChange={(e) => handleFieldChange('seasonality', e.target.value)}
+                        className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                      </select>
+                    ) : (
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        customer.seasonality === 'high' ? 'bg-red-100 text-red-800' :
+                        customer.seasonality === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {customer.seasonality}
+                      </span>
+                    )}
+                  </td>
+                  
+                  {/* Manager */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={currentCustomer.manager}
+                        onChange={(e) => handleFieldChange('manager', e.target.value)}
+                        className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    ) : (
+                      <span className="text-sm text-gray-900">{customer.manager}</span>
+                    )}
+                  </td>
+                  
+                  {/* Channels */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-wrap gap-1">
+                      {customer.channels.slice(0, 2).map((channel, index) => (
+                        <span key={index} className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {channel}
+                        </span>
+                      ))}
+                      {customer.channels.length > 2 && (
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          +{customer.channels.length - 2}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  
+                  {/* Forecast Summary */}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm">
+                      <div className="font-medium text-gray-900">{formatCurrency(summary.totalValue)}</div>
+                      <div className="text-gray-500">{summary.forecastCount} forecasts</div>
+                      <div className="flex items-center mt-1">
+                        <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full" 
+                            style={{ width: `${Math.min(100, summary.avgConfidence)}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-xs text-gray-600">{Math.round(summary.avgConfidence)}%</span>
+                      </div>
+                    </div>
+                  </td>
+                  
+                  {/* Actions */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
+                      {isEditing ? (
+                        <>
+                          <button
+                            onClick={handleSave}
+                            className="text-green-600 hover:text-green-900"
+                            title="Save changes"
+                          >
+                            <Save className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={handleCancel}
+                            className="text-gray-600 hover:text-gray-900"
+                            title="Cancel editing"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleEdit(customer)}
+                            className="text-blue-600 hover:text-blue-900"
+                            title="Edit customer"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => onCreateForecast(customer)}
+                            className="text-green-600 hover:text-green-900"
+                            title="Create forecast"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => onViewCustomerDetails(customer)}
+                            className="text-purple-600 hover:text-purple-900"
+                            title="View details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Table Footer */}
+      <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <span>Showing {customers.length} customers</span>
+          <span>Total forecast value: {formatCurrency(customers.reduce((sum, customer) => {
+            const summary = getCustomerForecastSummary(customer.id);
+            return sum + summary.totalValue;
+          }, 0))}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdvancedCustomerTable;

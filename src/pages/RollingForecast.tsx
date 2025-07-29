@@ -259,6 +259,7 @@ const RollingForecast: React.FC = () => {
   const tabs = [
     { id: 'customer-forecast', label: 'Customer Forecasts', active: true },
     { id: 'budget-impact', label: 'Budget Impact', active: false },
+    { id: 'budget-history', label: 'Budget History', active: false },
     { id: 'forecast-summary', label: 'Forecast Summary', active: false }
   ];
 

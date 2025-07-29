@@ -187,7 +187,10 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
                       <Settings className="w-4 h-4" />
                       <span>Change Password</span>
                     </button>
-                    <button className="dropdown-item flex items-center space-x-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+                    <button
+                      onClick={handleLogout}
+                      className="dropdown-item flex items-center space-x-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
                       <LogOut className="w-4 h-4" />
                       <span>Log Out</span>
                     </button>

@@ -1,128 +1,196 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, AlertCircle, Plus, Minus, Save, Upload, RefreshCw } from 'lucide-react';
-import ForecastSummary from '../components/ForecastSummary';
-import AdvancedForecastChart from '../components/AdvancedForecastChart';
-import FiltersModal, { FilterState } from '../components/FiltersModal';
-import ScenariosModal, { ScenarioConfig } from '../components/ScenariosModal';
-import ExportModal, { ExportConfig } from '../components/ExportModal';
-import ImportModal, { ImportConfig } from '../components/ImportModal';
-import AnalyticsPlanningModal from '../components/AnalyticsPlanningModal';
+import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, AlertCircle, Plus, Users, DollarSign, ShoppingCart, Eye, Edit, Trash2 } from 'lucide-react';
+import CustomerForecastModal from '../components/CustomerForecastModal';
+import { Customer, Item, CustomerItemForecast, ForecastFormData, MonthlyForecast } from '../types/forecast';
+import { getBudgetImpactAnalysis, formatCurrency, formatPercentage, getVarianceColor, getConfidenceColor, getRemainingMonths } from '../utils/budgetCalculations';
 
 const RollingForecast: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('forecast-overview');
+  const [activeTab, setActiveTab] = useState('customer-forecast');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [selectedPeriod, setSelectedPeriod] = useState('2025');
-  const [forecastHorizon, setForecastHorizon] = useState('12');
-  const [modelType, setModelType] = useState('linear');
 
   // Modal states
-  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
-  const [isScenariosModalOpen, setIsScenariosModalOpen] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
+  const [isForecastModalOpen, setIsForecastModalOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [editingForecast, setEditingForecast] = useState<CustomerItemForecast | null>(null);
 
-  // Applied filters and scenarios
-  const [appliedFilters, setAppliedFilters] = useState<FilterState | null>(null);
-  const [appliedScenario, setAppliedScenario] = useState<ScenarioConfig | null>(null);
+  // Data states
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
+  const [customerForecasts, setCustomerForecasts] = useState<CustomerItemForecast[]>([]);
 
   // Toast notification state
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
-  // Sample forecast data with editable fields
-  const [forecastData, setForecastData] = useState([
-    { 
-      id: 1, 
-      selected: false, 
-      product: 'iPhone 15 Pro', 
-      sku: 'IPH15P-256',
-      jan: 8500, feb: 8800, mar: 9200, apr: 9500, may: 9800, jun: 10200,
-      jul: 10500, aug: 10800, sep: 11200, oct: 11500, nov: 11800, dec: 12200,
-      total: 124000,
-      accuracy: 95.2,
-      model: 'ARIMA',
-      confidence: 'High'
-    },
-    { 
-      id: 2, 
-      selected: false, 
-      product: 'Samsung Galaxy S24', 
-      sku: 'SGS24-128',
-      jan: 6500, feb: 6800, mar: 7200, apr: 7500, may: 7800, jun: 8200,
-      jul: 8500, aug: 8800, sep: 9200, oct: 9500, nov: 9800, dec: 10200,
-      total: 100000,
-      accuracy: 92.8,
-      model: 'Neural Network',
-      confidence: 'High'
-    },
-    { 
-      id: 3, 
-      selected: false, 
-      product: 'MacBook Air M3', 
-      sku: 'MBA-M3-512',
-      jan: 9500, feb: 9200, mar: 8800, apr: 8500, may: 8200, jun: 7800,
-      jul: 7500, aug: 7200, sep: 6800, oct: 6500, nov: 6200, dec: 5800,
-      total: 91700,
-      accuracy: 89.5,
-      model: 'Linear Regression',
-      confidence: 'Medium'
-    },
-    { 
-      id: 4, 
-      selected: false, 
-      product: 'Dell XPS 13', 
-      sku: 'DXP13-1TB',
-      jan: 4500, feb: 4700, mar: 4900, apr: 5100, may: 5300, jun: 5500,
-      jul: 5700, aug: 5900, sep: 6100, oct: 6300, nov: 6500, dec: 6700,
-      total: 66300,
-      accuracy: 91.3,
-      model: 'Exponential Smoothing',
-      confidence: 'High'
-    },
-    { 
-      id: 5, 
-      selected: false, 
-      product: 'Sony WH-1000XM5', 
-      sku: 'SWH1000X5',
-      jan: 2500, feb: 2600, mar: 2700, apr: 2800, may: 2900, jun: 3000,
-      jul: 3100, aug: 3200, sep: 3300, oct: 3400, nov: 3500, dec: 3600,
-      total: 36600,
-      accuracy: 94.7,
-      model: 'ARIMA',
-      confidence: 'High'
-    },
-  ]);
+  // Sample data - in real app this would come from API
+  useEffect(() => {
+    // Initialize sample customers
+    const sampleCustomers: Customer[] = [
+      {
+        id: '1',
+        name: 'Acme Corporation',
+        code: 'ACME001',
+        email: 'orders@acme.com',
+        phone: '+1-555-0101',
+        region: 'North America',
+        segment: 'Enterprise',
+        creditLimit: 500000,
+        currency: 'USD',
+        active: true,
+        createdAt: '2024-01-15',
+        lastActivity: '2024-12-01'
+      },
+      {
+        id: '2',
+        name: 'Global Tech Solutions',
+        code: 'GTS002',
+        email: 'procurement@globaltech.com',
+        phone: '+1-555-0102',
+        region: 'North America',
+        segment: 'SMB',
+        creditLimit: 250000,
+        currency: 'USD',
+        active: true,
+        createdAt: '2024-02-20',
+        lastActivity: '2024-11-28'
+      },
+      {
+        id: '3',
+        name: 'European Systems Ltd',
+        code: 'ESL003',
+        email: 'orders@eusystems.eu',
+        phone: '+44-20-7946-0958',
+        region: 'Europe',
+        segment: 'Enterprise',
+        creditLimit: 750000,
+        currency: 'EUR',
+        active: true,
+        createdAt: '2024-03-10',
+        lastActivity: '2024-12-02'
+      },
+      {
+        id: '4',
+        name: 'Asia Pacific Trading',
+        code: 'APT004',
+        email: 'info@aptrading.com',
+        phone: '+65-6123-4567',
+        region: 'Asia Pacific',
+        segment: 'SMB',
+        creditLimit: 300000,
+        currency: 'SGD',
+        active: true,
+        createdAt: '2024-04-05',
+        lastActivity: '2024-11-30'
+      }
+    ];
+
+    // Initialize sample items
+    const sampleItems: Item[] = [
+      {
+        id: '1',
+        sku: 'IPH15P-256',
+        name: 'iPhone 15 Pro 256GB',
+        category: 'Smartphones',
+        brand: 'Apple',
+        unitPrice: 999.00,
+        costPrice: 750.00,
+        currency: 'USD',
+        unit: 'piece',
+        active: true,
+        description: 'Latest iPhone with Pro features'
+      },
+      {
+        id: '2',
+        sku: 'SGS24-128',
+        name: 'Samsung Galaxy S24 128GB',
+        category: 'Smartphones',
+        brand: 'Samsung',
+        unitPrice: 849.00,
+        costPrice: 650.00,
+        currency: 'USD',
+        unit: 'piece',
+        active: true,
+        description: 'Premium Android smartphone'
+      },
+      {
+        id: '3',
+        sku: 'MBA-M3-512',
+        name: 'MacBook Air M3 512GB',
+        category: 'Laptops',
+        brand: 'Apple',
+        unitPrice: 1299.00,
+        costPrice: 950.00,
+        currency: 'USD',
+        unit: 'piece',
+        active: true,
+        description: 'Ultra-thin laptop with M3 chip'
+      },
+      {
+        id: '4',
+        sku: 'DXP13-1TB',
+        name: 'Dell XPS 13 1TB',
+        category: 'Laptops',
+        brand: 'Dell',
+        unitPrice: 1199.00,
+        costPrice: 900.00,
+        currency: 'USD',
+        unit: 'piece',
+        active: true,
+        description: 'Premium ultrabook for professionals'
+      },
+      {
+        id: '5',
+        sku: 'SWH1000X5',
+        name: 'Sony WH-1000XM5 Headphones',
+        category: 'Audio',
+        brand: 'Sony',
+        unitPrice: 399.00,
+        costPrice: 250.00,
+        currency: 'USD',
+        unit: 'piece',
+        active: true,
+        description: 'Premium noise-canceling headphones'
+      }
+    ];
+
+    setCustomers(sampleCustomers);
+    setItems(sampleItems);
+  }, []);
+
+  // Calculate summary data from forecasts
+  const budgetAnalysis = getBudgetImpactAnalysis(customerForecasts);
 
   const summaryData = [
     {
       title: 'Total Forecast',
-      value: '$3,250,000',
-      change: '+18.5%',
-      isPositive: true,
+      value: formatCurrency(budgetAnalysis.summary.totalForecast),
+      change: formatPercentage(budgetAnalysis.summary.overallVariancePercentage),
+      isPositive: budgetAnalysis.summary.overallVariance >= 0,
       icon: TrendingUp,
       color: 'primary' as const
     },
     {
-      title: 'Forecast Accuracy',
-      value: '94.2%',
-      change: '+2.1%',
+      title: 'Active Customers',
+      value: customers.filter(c => c.active).length.toString(),
+      change: `${customerForecasts.length} forecasts`,
       isPositive: true,
-      icon: Target,
+      icon: Users,
       color: 'success' as const
     },
     {
-      title: 'Active Forecasts',
-      value: '156',
-      change: '+12',
-      isPositive: true,
-      icon: BarChart3,
+      title: 'Budget Variance',
+      value: formatCurrency(Math.abs(budgetAnalysis.summary.overallVariance)),
+      change: budgetAnalysis.summary.overallVariance >= 0 ? 'Over Budget' : 'Under Budget',
+      isPositive: budgetAnalysis.summary.overallVariance < 0,
+      icon: Target,
       color: 'info' as const
     },
     {
-      title: 'Forecast Horizon',
-      value: '12 Months',
-      change: 'Rolling',
+      title: 'Remaining Months',
+      value: getRemainingMonths().length.toString(),
+      change: `${new Date().getFullYear()} Forecast`,
       isPositive: true,
       icon: Calendar,
       color: 'warning' as const
@@ -130,10 +198,9 @@ const RollingForecast: React.FC = () => {
   ];
 
   const tabs = [
-    { id: 'forecast-overview', label: 'Forecast Overview', active: true },
-    { id: 'product-forecast', label: 'Product Forecast', active: false },
-    { id: 'customer-forecast', label: 'Customer Forecast', active: false },
-    { id: 'scenario-analysis', label: 'Scenario Analysis', active: false }
+    { id: 'customer-forecast', label: 'Customer Forecasts', active: true },
+    { id: 'budget-impact', label: 'Budget Impact', active: false },
+    { id: 'forecast-summary', label: 'Forecast Summary', active: false }
   ];
 
   const handleCellEdit = (id: number, field: string, value: number | string) => {

@@ -144,7 +144,11 @@ const RollingForecast: React.FC = () => {
         currency: 'USD',
         unit: 'piece',
         active: true,
-        description: 'Premium Android smartphone'
+        description: 'Premium Android smartphone',
+        seasonal: false,
+        minOrderQuantity: 1,
+        leadTime: 5,
+        supplier: 'Samsung Electronics'
       },
       {
         id: '3',

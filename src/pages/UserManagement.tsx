@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
-import { Users, Plus, Edit, Trash2, Shield, Search, Filter } from 'lucide-react';
-import { UserType, getUserTypeName, MOCK_USERS } from '../types/auth';
+import { Users, Plus, Edit, Trash2, Shield, Search, Filter, CheckCircle } from 'lucide-react';
+import { UserType, getUserTypeName, MOCK_USERS, User } from '../types/auth';
+import AddUserModal from '../components/AddUserModal';
 
 const UserManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<UserType | 'all'>('all');
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
-  // Get all users from mock data
-  const allUsers = Object.values(MOCK_USERS);
+  // State for managing users (in real app, this would come from API)
+  const [users, setUsers] = useState<User[]>(Object.values(MOCK_USERS));
+
+  // Get all users
+  const allUsers = users;
 
   // Filter users based on search and role filter
   const filteredUsers = allUsers.filter(user => {
@@ -28,6 +33,27 @@ const UserManagement: React.FC = () => {
       case UserType.BRANCH_MANAGER: return 'bg-orange-100 text-orange-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleAddUser = (newUserData: Omit<User, 'id'>) => {
+    // Generate new ID (in real app, this would be handled by backend)
+    const newId = Math.max(...allUsers.map(u => u.id), 0) + 1;
+
+    const newUser: User = {
+      ...newUserData,
+      id: newId
+    };
+
+    // Add user to state (in real app, this would be an API call)
+    setUsers(prev => [...prev, newUser]);
+
+    // Show success notification
+    showNotification(`User ${newUser.name} has been created successfully!`, 'success');
+  };
+
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 5000);
   };
 
   return (
@@ -197,26 +223,22 @@ const UserManagement: React.FC = () => {
         })}
       </div>
 
-      {/* Add User Modal Placeholder */}
-      {isAddUserOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Add New User</h3>
-              <p className="text-sm text-gray-600 mb-4">User creation interface would be implemented here.</p>
-              <div className="flex justify-end space-x-2">
-                <button
-                  onClick={() => setIsAddUserOpen(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                  Create User
-                </button>
-              </div>
-            </div>
-          </div>
+      {/* Add User Modal */}
+      <AddUserModal
+        isOpen={isAddUserOpen}
+        onClose={() => setIsAddUserOpen(false)}
+        onAddUser={handleAddUser}
+      />
+
+      {/* Notification Toast */}
+      {notification && (
+        <div className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transition-all duration-300 flex items-center space-x-3 ${
+          notification.type === 'success'
+            ? 'bg-green-600 text-white'
+            : 'bg-red-600 text-white'
+        }`}>
+          {notification.type === 'success' && <CheckCircle className="w-5 h-5" />}
+          <span>{notification.message}</span>
         </div>
       )}
     </div>

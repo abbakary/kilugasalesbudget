@@ -219,7 +219,7 @@ const RollingForecast: React.FC = () => {
   }, [customerForecasts, customers, selectedYear]);
 
   // Calculate summary data from forecasts
-  const budgetAnalysis = getBudgetImpactAnalysis(customerForecasts);
+  const budgetAnalysis = getBudgetImpactAnalysis(customerForecasts, selectedYear);
 
   const summaryData = [
     {

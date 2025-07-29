@@ -14,7 +14,7 @@ const InventoryManagement: React.FC = () => {
   const [filterBrand, setFilterBrand] = useState<string>('all');
   
   // Modal states
-  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [isUnifiedAddModalOpen, setIsUnifiedAddModalOpen] = useState(false);
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
   const [isAddBrandModalOpen, setIsAddBrandModalOpen] = useState(false);
   const [isEditItemModalOpen, setIsEditItemModalOpen] = useState(false);

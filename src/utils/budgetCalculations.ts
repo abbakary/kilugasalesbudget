@@ -196,3 +196,196 @@ export const isMonthInFuture = (monthName: string, year: number = new Date().get
   const monthDate = new Date(year, monthIndex, 1);
   return monthDate >= new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 };
+
+// Generate budget history data
+export const generateBudgetHistory = (): BudgetHistory[] => {
+  const years = [2021, 2022, 2023, 2024];
+
+  return years.map(year => {
+    const monthlyTargets = BUDGET_TARGETS_BY_YEAR[year] || {};
+    const totalBudget = Object.values(monthlyTargets).reduce((sum, budget) => sum + budget, 0);
+
+    // Simulate actual spending (would come from real data)
+    const actualSpent = totalBudget * (0.85 + Math.random() * 0.3); // 85-115% of budget
+    const forecastAccuracy = 80 + Math.random() * 20; // 80-100% accuracy
+
+    const monthlyData: { [month: string]: { budget: number; actual: number; forecast: number } } = {};
+    Object.keys(monthlyTargets).forEach(month => {
+      const budget = monthlyTargets[month];
+      const actual = budget * (0.85 + Math.random() * 0.3);
+      const forecast = budget * (0.9 + Math.random() * 0.2);
+
+      monthlyData[month] = { budget, actual, forecast };
+    });
+
+    const variance = actualSpent - totalBudget;
+    const variancePercentage = totalBudget !== 0 ? (variance / totalBudget) * 100 : 0;
+
+    return {
+      year,
+      totalBudget,
+      actualSpent,
+      forecastAccuracy,
+      monthlyData,
+      variance,
+      variancePercentage,
+      status: year < new Date().getFullYear() ? 'completed' : 'in-progress'
+    };
+  });
+};
+
+// Generate yearly forecast summary
+export const generateYearlyForecastSummary = (
+  customerForecasts: CustomerItemForecast[],
+  customers: any[],
+  year: number = new Date().getFullYear()
+): YearlyForecastSummary => {
+  const yearForecasts = customerForecasts.filter(f =>
+    f.monthlyForecasts.some(mf => mf.year === year)
+  );
+
+  const totalForecast = yearForecasts.reduce((sum, f) => sum + f.yearlyTotal, 0);
+  const totalBudget = getYearlyBudgetTarget(year);
+
+  // Calculate top customers
+  const customerTotals: { [customerId: string]: number } = {};
+  yearForecasts.forEach(forecast => {
+    if (!customerTotals[forecast.customerId]) {
+      customerTotals[forecast.customerId] = 0;
+    }
+    customerTotals[forecast.customerId] += forecast.yearlyTotal;
+  });
+
+  const topCustomers = Object.entries(customerTotals)
+    .map(([customerId, value]) => {
+      const customer = customers.find(c => c.id === customerId);
+      return {
+        customerId,
+        customerName: customer?.name || 'Unknown',
+        forecastValue: value
+      };
+    })
+    .sort((a, b) => b.forecastValue - a.forecastValue)
+    .slice(0, 5);
+
+  // Calculate top categories
+  const categoryTotals: { [category: string]: { value: number; count: number } } = {};
+  yearForecasts.forEach(forecast => {
+    const category = forecast.item.category;
+    if (!categoryTotals[category]) {
+      categoryTotals[category] = { value: 0, count: 0 };
+    }
+    categoryTotals[category].value += forecast.yearlyTotal;
+    categoryTotals[category].count += 1;
+  });
+
+  const topCategories = Object.entries(categoryTotals)
+    .map(([category, data]) => ({
+      category,
+      forecastValue: data.value,
+      itemCount: data.count
+    }))
+    .sort((a, b) => b.forecastValue - a.forecastValue)
+    .slice(0, 5);
+
+  // Calculate average confidence
+  const avgConfidence = yearForecasts.length > 0 ?
+    yearForecasts.reduce((sum, f) => {
+      const confidenceValue = f.confidence === 'high' ? 3 : f.confidence === 'medium' ? 2 : 1;
+      return sum + confidenceValue;
+    }, 0) / yearForecasts.length * 33.33 : 0;
+
+  return {
+    year,
+    totalForecast,
+    totalBudget,
+    customerCount: new Set(yearForecasts.map(f => f.customerId)).size,
+    itemCount: new Set(yearForecasts.map(f => f.itemId)).size,
+    forecastCount: yearForecasts.length,
+    avgConfidence: Math.round(avgConfidence),
+    topCustomers,
+    topCategories
+  };
+};
+
+// Generate customer analytics
+export const generateCustomerAnalytics = (
+  customerId: string,
+  customerForecasts: CustomerItemForecast[]
+): CustomerAnalytics => {
+  const customerData = customerForecasts.filter(f => f.customerId === customerId);
+  const totalForecast = customerData.reduce((sum, f) => sum + f.yearlyTotal, 0);
+
+  // Monthly breakdown
+  const monthlyBreakdown: { [month: string]: number } = {};
+  customerData.forEach(forecast => {
+    forecast.monthlyForecasts.forEach(mf => {
+      if (!monthlyBreakdown[mf.month]) {
+        monthlyBreakdown[mf.month] = 0;
+      }
+      monthlyBreakdown[mf.month] += mf.totalValue;
+    });
+  });
+
+  // Category breakdown
+  const categoryBreakdown: { [category: string]: number } = {};
+  customerData.forEach(forecast => {
+    const category = forecast.item.category;
+    if (!categoryBreakdown[category]) {
+      categoryBreakdown[category] = 0;
+    }
+    categoryBreakdown[category] += forecast.yearlyTotal;
+  });
+
+  // Channel breakdown (simulated)
+  const channelBreakdown = {
+    'Direct Sales': totalForecast * 0.4,
+    'Online': totalForecast * 0.3,
+    'Retail Partners': totalForecast * 0.2,
+    'Distributors': totalForecast * 0.1
+  };
+
+  // Calculate seasonal trends
+  const seasonalTrends = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    .map(month => {
+      const averageValue = monthlyBreakdown[month] || 0;
+      const prevMonthIndex = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].indexOf(month);
+      const prevMonth = ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'][prevMonthIndex];
+      const prevValue = monthlyBreakdown[prevMonth] || 0;
+
+      let trend: 'up' | 'down' | 'stable' = 'stable';
+      if (averageValue > prevValue * 1.05) trend = 'up';
+      else if (averageValue < prevValue * 0.95) trend = 'down';
+
+      return { month, averageValue, trend };
+    });
+
+  // Calculate growth rate (simulated)
+  const growthRate = 5 + Math.random() * 15; // 5-20% growth
+
+  // Calculate risk and confidence scores
+  const confidenceScore = customerData.length > 0 ?
+    customerData.reduce((sum, f) => {
+      const confidenceValue = f.confidence === 'high' ? 3 : f.confidence === 'medium' ? 2 : 1;
+      return sum + confidenceValue;
+    }, 0) / customerData.length * 33.33 : 0;
+
+  const riskScore = Math.max(0, 100 - confidenceScore - (growthRate * 2));
+
+  return {
+    customerId,
+    totalForecast,
+    monthlyBreakdown,
+    categoryBreakdown,
+    channelBreakdown,
+    growthRate,
+    seasonalTrends,
+    riskScore: Math.round(riskScore),
+    confidenceScore: Math.round(confidenceScore)
+  };
+};
+
+// Get available years for selection
+export const getAvailableYears = (): number[] => {
+  return Object.keys(BUDGET_TARGETS_BY_YEAR).map(year => parseInt(year)).sort();
+};

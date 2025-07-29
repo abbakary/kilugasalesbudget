@@ -431,13 +431,44 @@ const RollingForecast: React.FC = () => {
           <p className="text-gray-600 text-sm">Create and manage customer-specific forecasts for remaining months of {new Date().getFullYear()}</p>
         </div>
         <div className="flex space-x-2">
-          <button
-            onClick={handleExportData}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <Download className="w-4 h-4" />
-            <span>Export Data</span>
-          </button>
+            {getAvailableYears().map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+          <div className="relative group">
+            <button
+              onClick={() => handleExportData('csv')}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              <span>Export CSV</span>
+            </button>
+            <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <button
+                onClick={() => handleExportData('json')}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                Export JSON
+              </button>
+              <button
+                onClick={() => handleExportData('budget-csv')}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                Export Budget Analysis
+              </button>
+              <button
+                onClick={handleDownloadTemplate}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                Download Template
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

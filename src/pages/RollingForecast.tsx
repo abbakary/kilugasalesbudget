@@ -195,7 +195,12 @@ const RollingForecast: React.FC = () => {
         currency: 'USD',
         unit: 'piece',
         active: true,
-        description: 'Premium noise-canceling headphones'
+        description: 'Premium noise-canceling headphones',
+        seasonal: true,
+        seasonalMonths: ['Nov', 'Dec', 'Jan'],
+        minOrderQuantity: 5,
+        leadTime: 3,
+        supplier: 'Sony Corporation'
       }
     ];
 

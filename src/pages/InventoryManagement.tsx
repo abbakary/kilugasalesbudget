@@ -331,21 +331,58 @@ const InventoryManagement: React.FC = () => {
     }
   };
 
-  const handleAddItem = (itemData: InventoryFormData) => {
-    const category = categories.find(c => c.id === itemData.categoryId);
-    const brand = brands.find(b => b.id === itemData.brandId);
-    
-    if (!category || !brand) return;
+  const handleUnifiedSubmit = (data: {
+    item: InventoryFormData;
+    category?: CategoryFormData;
+    brand?: BrandFormData;
+  }) => {
+    let categoryToUse: ItemCategory;
+    let brandToUse: ItemBrand;
 
+    // Handle new category creation
+    if (data.category) {
+      const newCategory: ItemCategory = {
+        id: Date.now().toString() + '_cat',
+        ...data.category,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setCategories(prev => [...prev, newCategory]);
+      categoryToUse = newCategory;
+    } else {
+      const existingCategory = categories.find(c => c.id === data.item.categoryId);
+      if (!existingCategory) return;
+      categoryToUse = existingCategory;
+    }
+
+    // Handle new brand creation
+    if (data.brand) {
+      const newBrand: ItemBrand = {
+        id: Date.now().toString() + '_brand',
+        ...data.brand,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setBrands(prev => [...prev, newBrand]);
+      brandToUse = newBrand;
+    } else {
+      const existingBrand = brands.find(b => b.id === data.item.brandId);
+      if (!existingBrand) return;
+      brandToUse = existingBrand;
+    }
+
+    // Create the item
     const newItem: InventoryItem = {
       id: Date.now().toString(),
-      ...itemData,
-      category,
-      brand,
-      totalValue: itemData.currentStock * itemData.unitCost,
-      averageCost: itemData.unitCost,
-      stockStatus: itemData.currentStock <= itemData.minStock ? 'low' : 
-                   itemData.currentStock >= itemData.maxStock ? 'high' : 'normal',
+      ...data.item,
+      categoryId: categoryToUse.id,
+      category: categoryToUse,
+      brandId: brandToUse.id,
+      brand: brandToUse,
+      totalValue: data.item.currentStock * data.item.unitCost,
+      averageCost: data.item.unitCost,
+      stockStatus: data.item.currentStock <= data.item.minStock ? 'low' :
+                   data.item.currentStock >= data.item.maxStock ? 'high' : 'normal',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       createdBy: 'admin',

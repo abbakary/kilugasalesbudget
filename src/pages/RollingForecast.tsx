@@ -1106,6 +1106,17 @@ const RollingForecast: React.FC = () => {
           notes: editingForecast.notes
         } : null}
       />
+
+      {/* Customer Analytics Modal */}
+      <CustomerAnalyticsModal
+        isOpen={isAnalyticsModalOpen}
+        onClose={() => {
+          setIsAnalyticsModalOpen(false);
+          setSelectedCustomer(null);
+        }}
+        customer={selectedCustomer}
+        customerForecasts={customerForecasts}
+      />
       </div>
     </Layout>
   );

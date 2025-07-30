@@ -8,6 +8,8 @@ import SalesBudget from './pages/SalesBudget';
 import RollingForecast from './pages/RollingForecast';
 import DistributionManagement from './pages/DistributionManagement';
 import UserManagement from './pages/UserManagement';
+import InventoryManagement from './pages/InventoryManagement';
+import { UserType } from './types/auth';
 import './index.css';
 
 function App() {
@@ -25,37 +27,45 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          <Route 
-            path="/sales-budget" 
+          <Route
+            path="/sales-budget"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.BRANCH_MANAGER]}>
                 <SalesBudget />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/rolling-forecast" 
+          <Route
+            path="/rolling-forecast"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.SALESMAN, UserType.MANAGER, UserType.BRANCH_MANAGER]}>
                 <RollingForecast />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/distribution-management" 
+          <Route
+            path="/distribution-management"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.SUPPLY_CHAIN]}>
                 <DistributionManagement />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/user-management" 
+          <Route
+            path="/user-management"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN]}>
                 <UserManagement />
               </ProtectedRoute>
-            } 
+            }
+          />
+          <Route
+            path="/inventory-management"
+            element={
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.SUPPLY_CHAIN, UserType.MANAGER]}>
+                <InventoryManagement />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </Router>

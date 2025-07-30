@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, Menu, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface NavbarProps {
   onPasswordModalOpen: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -31,6 +35,12 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
       clearInterval(colorInterval);
     };
   }, [colors.length]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    setIsUserMenuOpen(false);
+  };
 
   return (
     <>
@@ -157,11 +167,11 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
                 className="nav-link dropdown-toggle hide-arrow flex items-center space-x-2 p-2 rounded-md hover:bg-gray-700 transition-colors"
               >
                 <div className="avatar avatar-online">
-                  <img
-                    className="w-8 h-8 rounded-full"
-                  />
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">
+                    {user?.name.charAt(0).toUpperCase() || 'U'}
+                  </div>
                 </div>
-                <span className="mx-1 text-sm font-medium hidden md:block">USER</span>
+                <span className="mx-1 text-sm font-medium hidden md:block">{user?.name || 'User'}</span>
               </button>
               
               {isUserMenuOpen && (
@@ -177,7 +187,10 @@ const Navbar: React.FC<NavbarProps> = ({ onPasswordModalOpen }) => {
                       <Settings className="w-4 h-4" />
                       <span>Change Password</span>
                     </button>
-                    <button className="dropdown-item flex items-center space-x-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+                    <button
+                      onClick={handleLogout}
+                      className="dropdown-item flex items-center space-x-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
                       <LogOut className="w-4 h-4" />
                       <span>Log Out</span>
                     </button>

@@ -305,8 +305,8 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
 
             {/* Monthly Budget Table with Sticky Headers */}
             <div className="flex-1 p-3 sm:p-4 flex flex-col min-h-0">
-              <div className="border border-gray-300 rounded-lg overflow-hidden bg-white flex-1 min-h-0">
-                <div className="h-full overflow-auto max-h-96">
+              <div className="border border-gray-300 rounded-lg bg-white flex-1 flex flex-col min-h-0">
+                <div className="flex-1 overflow-auto" style={{ minHeight: '300px', maxHeight: '500px' }}>
                   <table className="w-full border-collapse min-w-[800px]">
                     {/* Sticky Header */}
                     <thead className="sticky top-0 z-10">

@@ -502,19 +502,32 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
 
             {/* Footer Actions */}
             <div className="p-4 sm:p-6 border-t bg-gray-50 flex flex-col sm:flex-row gap-3 sm:justify-between flex-shrink-0">
-              <button
-                onClick={onClose}
-                className="order-2 sm:order-1 px-4 sm:px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="order-1 sm:order-2 px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
-              >
-                <Save className="w-4 h-4" />
-                Save Yearly Budget
-              </button>
+              <div className="text-sm text-gray-600">
+                💡 <strong>Tip:</strong> Make sure all required fields are filled and your monthly distribution adds up to your target budget.
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={onClose}
+                  className="px-4 sm:px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={!budgetData.customer || !budgetData.item || !budgetData.totalBudget}
+                  className={`px-4 sm:px-6 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm sm:text-base ${
+                    budgetData.customer && budgetData.item && budgetData.totalBudget
+                      ? 'bg-green-600 text-white hover:bg-green-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  <Save className="w-4 h-4" />
+                  {budgetData.customer && budgetData.item && budgetData.totalBudget
+                    ? 'Save & Add to Budget Table'
+                    : 'Fill Required Fields'
+                  }
+                </button>
+              </div>
             </div>
           </div>
         </div>

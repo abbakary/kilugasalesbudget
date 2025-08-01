@@ -304,10 +304,10 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
             </div>
 
             {/* Monthly Budget Table with Sticky Headers */}
-            <div className="flex-1 p-3 sm:p-4">
-              <div className="border border-gray-300 rounded-lg overflow-hidden bg-white h-full">
-                <div className="h-full overflow-auto">
-                  <table className="w-full border-collapse">
+            <div className="flex-1 p-3 sm:p-4 flex flex-col min-h-0">
+              <div className="border border-gray-300 rounded-lg overflow-hidden bg-white flex-1 min-h-0">
+                <div className="h-full overflow-auto max-h-96">
+                  <table className="w-full border-collapse min-w-[800px]">
                     {/* Sticky Header */}
                     <thead className="sticky top-0 z-10">
                       <tr className="bg-gray-100 border-b-2 border-gray-300">

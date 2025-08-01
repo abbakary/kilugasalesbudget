@@ -337,7 +337,7 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
                 <div>
                   <h4 className="text-md font-medium text-gray-900 mb-4">Seasonal Trends</h4>
                   <div className="space-y-3">
-                    {analytics.seasonalTrends.map((trend, index) => (
+                    {(analytics?.seasonalTrends || []).map((trend, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <span className="font-medium text-gray-900">{trend.month}</span>

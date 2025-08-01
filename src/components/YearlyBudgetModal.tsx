@@ -381,23 +381,29 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
                         <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[80px]">
                           Month
                         </th>
-                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[120px]">
-                          Budget Units
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[120px]" title="Number of units to budget for this month">
+                          📦 Budget Units
+                          <div className="text-xs font-normal text-gray-500">Qty to sell</div>
                         </th>
-                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]">
-                          Rate ($)
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]" title="Price per unit">
+                          💰 Rate ($)
+                          <div className="text-xs font-normal text-gray-500">Price/unit</div>
                         </th>
-                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]">
-                          Stock
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]" title="Stock level">
+                          📊 Stock
+                          <div className="text-xs font-normal text-gray-500">Inventory</div>
                         </th>
-                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[80px]">
-                          GIT
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[80px]" title="Goods in Transit">
+                          🚛 GIT
+                          <div className="text-xs font-normal text-gray-500">In transit</div>
                         </th>
-                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]">
-                          Discount ($)
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]" title="Discount amount">
+                          🏷️ Discount ($)
+                          <div className="text-xs font-normal text-gray-500">Deduction</div>
                         </th>
-                        <th className="p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[120px]">
-                          Total Value ($)
+                        <th className="p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[120px]" title="Final calculated value">
+                          ✅ Total Value ($)
+                          <div className="text-xs font-normal text-gray-500">Units × Rate - Discount</div>
                         </th>
                       </tr>
                     </thead>

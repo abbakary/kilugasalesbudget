@@ -968,6 +968,14 @@ const SalesBudget: React.FC = () => {
           onClose={() => setIsDistributionModalOpen(false)}
           onApplyDistribution={handleApplyDistribution}
         />
+
+        <YearlyBudgetModal
+          isOpen={isYearlyBudgetModalOpen}
+          onClose={() => setIsYearlyBudgetModalOpen(false)}
+          onSave={handleYearlyBudgetSave}
+          selectedCustomer={selectedCustomer}
+          year={selectedYear2026}
+        />
       </div>
     </Layout>
   );

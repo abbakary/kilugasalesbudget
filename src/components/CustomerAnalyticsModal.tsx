@@ -183,7 +183,7 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
                   {item.category || item.channel}
                 </div>
                 <div className="text-xs text-gray-600">
-                  {formatCurrency(item.value)} ({item.percentage.toFixed(1)}%)
+                  {formatCurrency(item.value)} ({(item.percentage || 0).toFixed(1)}%)
                 </div>
               </div>
             </div>

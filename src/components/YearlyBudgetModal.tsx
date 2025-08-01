@@ -293,7 +293,7 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
                     Quarterly View
                   </button>
                 </div>
-
+                
                 <div className="flex gap-2">
                   <button className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-xs sm:text-sm hover:bg-gray-200 transition-colors flex items-center gap-2">
                     <Download className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -303,89 +303,127 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
               </div>
             </div>
 
-            {/* Monthly Budget Table */}
-            <div className="flex-1 overflow-auto p-3 sm:p-4">
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border border-gray-300 p-3 text-left text-sm font-medium">Month</th>
-                      <th className="border border-gray-300 p-3 text-left text-sm font-medium">Budget Units</th>
-                      <th className="border border-gray-300 p-3 text-left text-sm font-medium">Rate ($)</th>
-                      <th className="border border-gray-300 p-3 text-left text-sm font-medium">Stock</th>
-                      <th className="border border-gray-300 p-3 text-left text-sm font-medium">GIT</th>
-                      <th className="border border-gray-300 p-3 text-left text-sm font-medium">Discount ($)</th>
-                      <th className="border border-gray-300 p-3 text-left text-sm font-medium">Total Value ($)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {budgetData.monthlyData.map((month, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="border border-gray-300 p-3 font-medium">{month.month}</td>
-                        <td className="border border-gray-300 p-3">
-                          <input
-                            type="number"
-                            className="w-full p-2 border border-gray-300 rounded"
-                            value={month.budgetValue}
-                            onChange={(e) => handleMonthlyChange(index, 'budgetValue', parseInt(e.target.value) || 0)}
-                          />
+            {/* Monthly Budget Table with Sticky Headers */}
+            <div className="flex-1 p-3 sm:p-4">
+              <div className="border border-gray-300 rounded-lg overflow-hidden bg-white h-full">
+                <div className="h-full overflow-auto">
+                  <table className="w-full border-collapse">
+                    {/* Sticky Header */}
+                    <thead className="sticky top-0 z-10">
+                      <tr className="bg-gray-100 border-b-2 border-gray-300">
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[80px]">
+                          Month
+                        </th>
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[120px]">
+                          Budget Units
+                        </th>
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]">
+                          Rate ($)
+                        </th>
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]">
+                          Stock
+                        </th>
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[80px]">
+                          GIT
+                        </th>
+                        <th className="border-r border-gray-300 p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[100px]">
+                          Discount ($)
+                        </th>
+                        <th className="p-3 text-left text-sm font-semibold text-gray-700 bg-gray-100 min-w-[120px]">
+                          Total Value ($)
+                        </th>
+                      </tr>
+                    </thead>
+                    
+                    {/* Scrollable Body */}
+                    <tbody>
+                      {budgetData.monthlyData.map((month, index) => (
+                        <tr key={index} className="hover:bg-gray-50 border-b border-gray-200">
+                          <td className="border-r border-gray-200 p-3 font-medium bg-gray-50 sticky left-0 z-5">
+                            {month.month}
+                          </td>
+                          <td className="border-r border-gray-200 p-3">
+                            <input
+                              type="number"
+                              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              value={month.budgetValue}
+                              onChange={(e) => handleMonthlyChange(index, 'budgetValue', parseInt(e.target.value) || 0)}
+                              placeholder="0"
+                            />
+                          </td>
+                          <td className="border-r border-gray-200 p-3">
+                            <input
+                              type="number"
+                              step="0.01"
+                              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              value={month.rate}
+                              onChange={(e) => handleMonthlyChange(index, 'rate', parseFloat(e.target.value) || 0)}
+                              placeholder="0.00"
+                            />
+                          </td>
+                          <td className="border-r border-gray-200 p-3">
+                            <input
+                              type="number"
+                              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              value={month.stock}
+                              onChange={(e) => handleMonthlyChange(index, 'stock', parseInt(e.target.value) || 0)}
+                              placeholder="0"
+                            />
+                          </td>
+                          <td className="border-r border-gray-200 p-3">
+                            <input
+                              type="number"
+                              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              value={month.git}
+                              onChange={(e) => handleMonthlyChange(index, 'git', parseInt(e.target.value) || 0)}
+                              placeholder="0"
+                            />
+                          </td>
+                          <td className="border-r border-gray-200 p-3">
+                            <input
+                              type="number"
+                              step="0.01"
+                              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              value={month.discount}
+                              onChange={(e) => handleMonthlyChange(index, 'discount', parseFloat(e.target.value) || 0)}
+                              placeholder="0.00"
+                            />
+                          </td>
+                          <td className="p-3 font-semibold text-green-600 bg-green-50">
+                            ${((month.budgetValue * month.rate) - month.discount).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    
+                    {/* Sticky Footer */}
+                    <tfoot className="sticky bottom-0 z-10">
+                      <tr className="bg-gray-200 font-bold border-t-2 border-gray-400">
+                        <td className="border-r border-gray-400 p-3 font-bold text-gray-800 bg-gray-200 sticky left-0 z-15">
+                          TOTAL
                         </td>
-                        <td className="border border-gray-300 p-3">
-                          <input
-                            type="number"
-                            step="0.01"
-                            className="w-full p-2 border border-gray-300 rounded"
-                            value={month.rate}
-                            onChange={(e) => handleMonthlyChange(index, 'rate', parseFloat(e.target.value) || 0)}
-                          />
+                        <td className="border-r border-gray-400 p-3 font-bold text-blue-600 bg-blue-50">
+                          {totals.totalUnits.toLocaleString()}
                         </td>
-                        <td className="border border-gray-300 p-3">
-                          <input
-                            type="number"
-                            className="w-full p-2 border border-gray-300 rounded"
-                            value={month.stock}
-                            onChange={(e) => handleMonthlyChange(index, 'stock', parseInt(e.target.value) || 0)}
-                          />
+                        <td className="border-r border-gray-400 p-3 text-gray-500 bg-gray-200">
+                          -
                         </td>
-                        <td className="border border-gray-300 p-3">
-                          <input
-                            type="number"
-                            className="w-full p-2 border border-gray-300 rounded"
-                            value={month.git}
-                            onChange={(e) => handleMonthlyChange(index, 'git', parseInt(e.target.value) || 0)}
-                          />
+                        <td className="border-r border-gray-400 p-3 font-bold text-gray-800 bg-gray-200">
+                          {budgetData.monthlyData.reduce((sum, month) => sum + month.stock, 0).toLocaleString()}
                         </td>
-                        <td className="border border-gray-300 p-3">
-                          <input
-                            type="number"
-                            step="0.01"
-                            className="w-full p-2 border border-gray-300 rounded"
-                            value={month.discount}
-                            onChange={(e) => handleMonthlyChange(index, 'discount', parseFloat(e.target.value) || 0)}
-                          />
+                        <td className="border-r border-gray-400 p-3 font-bold text-gray-800 bg-gray-200">
+                          {budgetData.monthlyData.reduce((sum, month) => sum + month.git, 0).toLocaleString()}
                         </td>
-                        <td className="border border-gray-300 p-3 font-medium text-green-600">
-                          ${((month.budgetValue * month.rate) - month.discount).toLocaleString()}
+                        <td className="border-r border-gray-400 p-3 font-bold text-red-600 bg-red-50">
+                          ${totals.totalDiscount.toLocaleString()}
+                        </td>
+                        <td className="p-3 font-bold text-green-700 bg-green-100 text-lg">
+                          ${totals.netBudget.toLocaleString()}
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="bg-gray-100 font-bold">
-                      <td className="border border-gray-300 p-3">TOTAL</td>
-                      <td className="border border-gray-300 p-3">{totals.totalUnits.toLocaleString()}</td>
-                      <td className="border border-gray-300 p-3">-</td>
-                      <td className="border border-gray-300 p-3">
-                        {budgetData.monthlyData.reduce((sum, month) => sum + month.stock, 0).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 p-3">
-                        {budgetData.monthlyData.reduce((sum, month) => sum + month.git, 0).toLocaleString()}
-                      </td>
-                      <td className="border border-gray-300 p-3">${totals.totalDiscount.toLocaleString()}</td>
-                      <td className="border border-gray-300 p-3 text-green-600">${totals.netBudget.toLocaleString()}</td>
-                    </tr>
-                  </tfoot>
-                </table>
+                    </tfoot>
+                  </table>
+                </div>
               </div>
             </div>
 

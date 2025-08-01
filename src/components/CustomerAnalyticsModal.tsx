@@ -196,37 +196,37 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-blue-900">Total Forecast</p>
-                  <p className="text-xl font-semibold text-blue-800">{formatCurrency(analytics.totalForecast)}</p>
+                  <p className="text-xl font-semibold text-blue-800">{formatCurrency(analytics?.totalForecast || 0)}</p>
                 </div>
                 <DollarSign className="w-8 h-8 text-blue-600" />
               </div>
             </div>
-            
+
             <div className="bg-green-50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-green-900">Growth Rate</p>
-                  <p className="text-xl font-semibold text-green-800">{formatPercentage(analytics.growthRate)}</p>
+                  <p className="text-xl font-semibold text-green-800">{formatPercentage(analytics?.growthRate || 0)}</p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-green-600" />
               </div>
             </div>
-            
+
             <div className="bg-purple-50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-purple-900">Confidence Score</p>
-                  <p className="text-xl font-semibold text-purple-800">{analytics.confidenceScore}%</p>
+                  <p className="text-xl font-semibold text-purple-800">{analytics?.confidenceScore || 0}%</p>
                 </div>
                 <Target className="w-8 h-8 text-purple-600" />
               </div>
             </div>
-            
+
             <div className="bg-orange-50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-orange-900">Risk Score</p>
-                  <p className="text-xl font-semibold text-orange-800">{analytics.riskScore}%</p>
+                  <p className="text-xl font-semibold text-orange-800">{analytics?.riskScore || 0}%</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-600" />
               </div>

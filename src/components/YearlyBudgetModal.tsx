@@ -157,36 +157,80 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
         </div>
 
         <div className="flex flex-col lg:flex-row flex-1 min-h-0">
-          {/* Left Panel - Budget Info */}
+          {/* Left Panel - Step-by-Step Guide */}
           <div className="w-full lg:w-1/3 p-4 sm:p-6 border-r bg-gray-50 overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4">Budget Information</h3>
-            
+            {/* Steps Guide */}
+            <div className="bg-blue-100 border border-blue-200 rounded-lg p-4 mb-6">
+              <h3 className="text-lg font-semibold mb-3 text-blue-900">🎯 How to Create Your Budget</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start gap-3">
+                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                  <div>
+                    <p className="font-medium text-blue-900">Fill Basic Information</p>
+                    <p className="text-blue-700">Enter customer, item, category, and brand details</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                  <div>
+                    <p className="font-medium text-blue-900">Set Total Budget Amount</p>
+                    <p className="text-blue-700">Enter your total yearly budget in dollars</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                  <div>
+                    <p className="font-medium text-blue-900">Distribute to Months</p>
+                    <p className="text-blue-700">Use quick buttons or manually edit monthly values</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                  <div>
+                    <p className="font-medium text-blue-900">Save Your Budget</p>
+                    <p className="text-blue-700">Review and save to add to your budget table</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">1</span>
+              Basic Information
+            </h3>
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Customer <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
-                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   value={budgetData.customer}
                   onChange={(e) => setBudgetData(prev => ({ ...prev, customer: e.target.value }))}
+                  placeholder="Enter customer name"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Item</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Item/Product <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
-                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   value={budgetData.item}
                   onChange={(e) => setBudgetData(prev => ({ ...prev, item: e.target.value }))}
+                  placeholder="Enter product name"
                 />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                   <select
-                    className="w-full p-3 border border-gray-300 rounded-lg"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     value={budgetData.category}
                     onChange={(e) => setBudgetData(prev => ({ ...prev, category: e.target.value }))}
                   >
@@ -197,11 +241,11 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
                     <option value="Oil & Lubricants">Oil & Lubricants</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
                   <select
-                    className="w-full p-3 border border-gray-300 rounded-lg"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     value={budgetData.brand}
                     onChange={(e) => setBudgetData(prev => ({ ...prev, brand: e.target.value }))}
                   >
@@ -213,33 +257,61 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Total Yearly Budget</label>
-                <input
-                  type="number"
-                  className="w-full p-3 border border-gray-300 rounded-lg"
-                  value={budgetData.totalBudget}
-                  onChange={(e) => setBudgetData(prev => ({ ...prev, totalBudget: parseInt(e.target.value) || 0 }))}
-                />
+              <div className="pt-4 border-t">
+                <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">2</span>
+                  Set Total Budget
+                </h4>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Total Yearly Budget (USD) <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-3 text-gray-500">$</span>
+                    <input
+                      type="number"
+                      className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
+                      value={budgetData.totalBudget}
+                      onChange={(e) => setBudgetData(prev => ({ ...prev, totalBudget: parseInt(e.target.value) || 0 }))}
+                      placeholder="0"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1">This amount will be distributed across all 12 months</p>
+                </div>
               </div>
 
               {/* Distribution Buttons */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-gray-700">Quick Distribution</h4>
-                <div className="flex gap-2">
+              <div className="pt-4 border-t">
+                <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">3</span>
+                  Distribute to Months
+                </h4>
+                <p className="text-sm text-gray-600 mb-3">Choose how to spread your budget across the year:</p>
+                <div className="space-y-2">
                   <button
                     onClick={distributeEvenly}
-                    className="flex-1 bg-blue-100 text-blue-800 px-3 py-2 rounded-lg text-sm hover:bg-blue-200 transition-colors"
+                    className="w-full bg-blue-100 text-blue-800 px-4 py-3 rounded-lg text-sm hover:bg-blue-200 transition-colors flex items-center gap-2"
+                    disabled={!budgetData.totalBudget}
                   >
-                    Even Split
+                    <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                    <div className="text-left">
+                      <div className="font-medium">Equal Distribution</div>
+                      <div className="text-xs text-blue-600">Same amount each month (${Math.round((budgetData.totalBudget || 0) / 12).toLocaleString()}/month)</div>
+                    </div>
                   </button>
                   <button
                     onClick={applySeasonalPattern}
-                    className="flex-1 bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm hover:bg-green-200 transition-colors"
+                    className="w-full bg-green-100 text-green-800 px-4 py-3 rounded-lg text-sm hover:bg-green-200 transition-colors flex items-center gap-2"
+                    disabled={!budgetData.totalBudget}
                   >
-                    Seasonal
+                    <div className="w-4 h-4 bg-green-600 rounded"></div>
+                    <div className="text-left">
+                      <div className="font-medium">Seasonal Distribution</div>
+                      <div className="text-xs text-green-600">Higher in Q4, lower in Q1 (realistic seasonal pattern)</div>
+                    </div>
                   </button>
                 </div>
+                <p className="text-xs text-gray-500 mt-2">💡 Or manually edit each month in the table on the right</p>
               </div>
 
               {/* Summary Cards */}

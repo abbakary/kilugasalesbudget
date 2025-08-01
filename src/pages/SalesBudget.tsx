@@ -388,6 +388,32 @@ const SalesBudget: React.FC = () => {
     );
   };
 
+  const handleYearlyBudgetSave = (budgetData: any) => {
+    // Add new yearly budget item to table
+    const newId = Math.max(...originalTableData.map(item => item.id)) + 1;
+    const newRow: SalesBudgetItem = {
+      id: newId,
+      selected: false,
+      customer: budgetData.customer,
+      item: budgetData.item,
+      category: budgetData.category,
+      brand: budgetData.brand,
+      itemCombined: `${budgetData.item} (${budgetData.category} - ${budgetData.brand})`,
+      budget2025: 0,
+      actual2025: 0,
+      budget2026: budgetData.totalBudget,
+      rate: budgetData.monthlyData[0]?.rate || 0,
+      stock: budgetData.monthlyData.reduce((sum: number, month: any) => sum + month.stock, 0),
+      git: budgetData.monthlyData.reduce((sum: number, month: any) => sum + month.git, 0),
+      budgetValue2026: budgetData.totalBudget,
+      discount: budgetData.monthlyData.reduce((sum: number, month: any) => sum + month.discount, 0),
+      monthlyData: budgetData.monthlyData
+    };
+
+    setOriginalTableData(prev => [...prev, newRow]);
+    showNotification(`Yearly budget for "${budgetData.item}" created successfully`, 'success');
+  };
+
   // Calculate totals based on filtered data
   const totalBudget2025 = tableData.reduce((sum, item) => sum + item.budget2025, 0);
   const totalActual2025 = tableData.reduce((sum, item) => sum + item.actual2025, 0);

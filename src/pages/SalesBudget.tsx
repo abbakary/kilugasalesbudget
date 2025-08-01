@@ -725,14 +725,24 @@ const SalesBudget: React.FC = () => {
                 <div className="flex flex-col gap-1">
                   <p className="text-xs text-gray-600">Budget {selectedYear2025}</p>
                   <p className="text-lg font-semibold text-gray-900">${totalBudget2025.toLocaleString()}</p>
-                  <p className="text-xs text-gray-600">{tableData.reduce((sum, item) => sum + item.budget2026, 0).toLocaleString()} Units</p>
+                  <p className="text-xs text-gray-600">
+                    {selectedYear2025 === '2025'
+                      ? tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0).toLocaleString()
+                      : tableData.reduce((sum, item) => sum + Math.floor(item.budget2026 / (item.rate || 1)), 0).toLocaleString()
+                    } Units
+                  </p>
                 </div>
               </div>
               <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
                 <div className="flex flex-col gap-1">
                   <p className="text-xs text-gray-600">Actual {selectedYear2025}</p>
                   <p className="text-lg font-semibold text-gray-900">${totalActual2025.toLocaleString()}</p>
-                  <p className="text-xs text-gray-600">{tableData.reduce((sum, item) => sum + item.actual2025, 0).toLocaleString()} Units</p>
+                  <p className="text-xs text-gray-600">
+                    {selectedYear2025 === '2025'
+                      ? tableData.reduce((sum, item) => sum + Math.floor(item.actual2025 / (item.rate || 1)), 0).toLocaleString()
+                      : '0'
+                    } Units
+                  </p>
                 </div>
               </div>
               <div className="bg-white p-2 rounded shadow-sm border border-gray-200">

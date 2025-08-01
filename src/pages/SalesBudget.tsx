@@ -525,8 +525,9 @@ const SalesBudget: React.FC = () => {
                   onChange={(e) => setSelectedBrand(e.target.value)}
                 >
                   <option value="">Select brand</option>
-                  <option value="bf-goodrich">BF Goodrich</option>
-                  <option value="michelin">Michelin</option>
+                  <option value="BF Goodrich">BF Goodrich</option>
+                  <option value="Michelin">Michelin</option>
+                  <option value="Generic">Generic</option>
                 </select>
               </div>
 

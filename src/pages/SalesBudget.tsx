@@ -821,19 +821,39 @@ const SalesBudget: React.FC = () => {
                               onChange={() => handleSelectRow(row.id)}
                             />
                           </td>
-                          <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                            {row.customer}
-                          </td>
-                          <td className="sticky left-[280px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                            <div className="max-w-[300px]">
-                              <div className="font-medium text-gray-900 truncate" title={row.item}>
-                                {row.item}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {row.category} - {row.brand}
-                              </div>
-                            </div>
-                          </td>
+                          {activeView === 'customer-item' ? (
+                            <>
+                              <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
+                                {row.customer}
+                              </td>
+                              <td className="sticky left-[280px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
+                                <div className="max-w-[300px]">
+                                  <div className="font-medium text-gray-900 truncate" title={row.item}>
+                                    {row.item}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {row.category} - {row.brand}
+                                  </div>
+                                </div>
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
+                                <div className="max-w-[300px]">
+                                  <div className="font-medium text-gray-900 truncate" title={row.item}>
+                                    {row.item}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {row.category} - {row.brand}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="sticky left-[332px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
+                                {row.customer}
+                              </td>
+                            </>
+                          )}
                           <td className="p-3 border-b border-gray-200 text-sm">
                             ${row.budget2025.toLocaleString()}
                           </td>

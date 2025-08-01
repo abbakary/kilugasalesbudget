@@ -497,7 +497,7 @@ const SalesBudget: React.FC = () => {
                   onChange={(e) => setSelectedCustomer(e.target.value)}
                 >
                   <option value="">Select customer</option>
-                  <option value="action-aid">Action Aid International (Tz)</option>
+                  <option value="Action Aid International (Tz)">Action Aid International (Tz)</option>
                   <option value="other">Other Customer</option>
                 </select>
               </div>

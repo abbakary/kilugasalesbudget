@@ -768,310 +768,328 @@ const SalesBudget: React.FC = () => {
 
             {/* Enhanced Data Table with Sticky Headers */}
             <div className="relative">
-              <div className="overflow-auto max-h-[600px] border border-gray-300 rounded-lg">
-                <table className="w-full bg-white border-collapse">
-                  {/* Sticky Header */}
-                  <thead className="bg-gray-50 sticky top-0 z-10">
-                    <tr>
-                      <th className="sticky left-0 bg-gray-50 z-20 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
-                        <input
-                          type="checkbox"
-                          className="w-4 h-4 accent-blue-600"
-                          checked={tableData.every(item => item.selected)}
-                          onChange={handleSelectAll}
-                        />
-                      </th>
-                      {activeView === 'customer-item' ? (
-                        <>
-                          <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
-                            Customer <ChevronUp className="w-4 h-4 inline ml-1" />
-                          </th>
-                          <th className="sticky left-[280px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
-                            Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
-                          </th>
-                        </>
-                      ) : (
-                        <>
-                          <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
-                            Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
-                          </th>
-                          <th className="sticky left-[332px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
-                            Customer <ChevronUp className="w-4 h-4 inline ml-1" />
-                          </th>
-                        </>
-                      )}
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
-                        BUD {selectedYear2025}
-                      </th>
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
-                        ACT {selectedYear2025}
-                      </th>
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-blue-50 min-w-[100px]">
-                        BUD {selectedYear2026}
-                      </th>
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
-                        RATE
-                      </th>
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
-                        STK
-                      </th>
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
-                        GIT
-                      </th>
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[120px]">
-                        BUD {selectedYear2026} Value
-                      </th>
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
-                        DISCOUNT
-                      </th>
-                      <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  
-                  <tbody>
-                    {tableData.map(row => (
-                      <React.Fragment key={row.id}>
-                        <tr className={`hover:bg-gray-50 ${row.selected ? 'bg-blue-50' : ''}`}>
-                          <td className="sticky left-0 bg-white z-10 p-3 border-b border-r border-gray-200">
-                            <input
-                              type="checkbox"
-                              className="w-4 h-4 accent-blue-600"
-                              checked={row.selected}
-                              onChange={() => handleSelectRow(row.id)}
-                            />
-                          </td>
-                          {activeView === 'customer-item' ? (
-                            <>
-                              <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                {row.customer}
-                              </td>
-                              <td className="sticky left-[280px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                <div className="max-w-[300px]">
-                                  <div className="font-medium text-gray-900 truncate" title={row.item}>
-                                    {row.item}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {row.category} - {row.brand}
-                                  </div>
-                                </div>
-                              </td>
-                            </>
-                          ) : (
-                            <>
-                              <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                <div className="max-w-[300px]">
-                                  <div className="font-medium text-gray-900 truncate" title={row.item}>
-                                    {row.item}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {row.category} - {row.brand}
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="sticky left-[332px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                {row.customer}
-                              </td>
-                            </>
-                          )}
-                          <td className="p-3 border-b border-gray-200 text-sm">
-                            ${selectedYear2025 === '2025' ? row.budget2025.toLocaleString() : row.budget2026.toLocaleString()}
-                          </td>
-                          <td className="p-3 border-b border-gray-200 text-sm">
-                            ${selectedYear2025 === '2025' ? row.actual2025.toLocaleString() : '0'}
-                          </td>
-                          <td className="p-3 border-b border-gray-200 bg-blue-50 text-sm">
-                            <input
-                              type="number"
-                              className="w-20 p-1 text-center border border-gray-300 rounded"
-                              value={row.budget2026}
-                              onChange={(e) => {
-                                const value = parseInt(e.target.value) || 0;
-                                setTableData(prev => prev.map(item =>
-                                  item.id === row.id ? { ...item, budget2026: value } : item
-                                ));
-                              }}
-                            />
-                          </td>
-                          <td className="p-3 border-b border-gray-200 text-sm">
-                            ${row.rate}
-                          </td>
-                          <td className="p-3 border-b border-gray-200 text-sm">
-                            {row.stock}
-                          </td>
-                          <td className="p-3 border-b border-gray-200 text-sm">
-                            {row.git}
-                          </td>
-                          <td className="p-3 border-b border-gray-200 text-sm">
-                            ${row.budgetValue2026.toLocaleString()}
-                          </td>
-                          <td className="p-3 border-b border-gray-200 text-sm">
-                            ${row.discount.toLocaleString()}
-                          </td>
-                          <td className="p-3 border-b border-gray-200 text-sm">
-                            <div className="flex gap-1">
-                              {editingRowId === row.id ? (
-                                <>
-                                  <button
-                                    onClick={() => handleSaveMonthlyData(row.id)}
-                                    className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700 transition-colors"
-                                    title="Save monthly data"
-                                  >
-                                    <Save className="w-3 h-3" />
-                                  </button>
-                                  <button
-                                    onClick={() => handleCancelMonthlyEdit(row.id)}
-                                    className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors"
-                                    title="Cancel edit"
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </>
-                              ) : (
-                                <button
-                                  onClick={() => handleEditMonthlyData(row.id)}
-                                  className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
-                                  title="Edit monthly budget"
-                                >
-                                  <Calendar className="w-3 h-3" />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
+              {tableData.length === 0 ? (
+                <div className="text-center py-8 text-gray-500 border border-gray-300 rounded-lg bg-white">
+                  <p className="text-lg">No data available with current filters</p>
+                  <p className="text-sm">Try adjusting your filter criteria or clear the filters</p>
+                  <button
+                    onClick={() => {
+                      setSelectedCustomer('');
+                      setSelectedCategory('');
+                      setSelectedBrand('');
+                      setSelectedItem('');
+                    }}
+                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              ) : (
+                <div className="overflow-auto max-h-[600px] border border-gray-300 rounded-lg">
+                  <table className="w-full bg-white border-collapse">
+                    {/* Sticky Header */}
+                    <thead className="bg-gray-50 sticky top-0 z-10">
+                      <tr>
+                        <th className="sticky left-0 bg-gray-50 z-20 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 accent-blue-600"
+                            checked={tableData.every(item => item.selected)}
+                            onChange={handleSelectAll}
+                          />
+                        </th>
+                        {activeView === 'customer-item' ? (
+                          <>
+                            <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
+                              Customer <ChevronUp className="w-4 h-4 inline ml-1" />
+                            </th>
+                            <th className="sticky left-[280px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
+                              Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
+                            </th>
+                          </>
+                        ) : (
+                          <>
+                            <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
+                              Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
+                            </th>
+                            <th className="sticky left-[332px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
+                              Customer <ChevronUp className="w-4 h-4 inline ml-1" />
+                            </th>
+                          </>
+                        )}
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                          BUD {selectedYear2025}
+                        </th>
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                          ACT {selectedYear2025}
+                        </th>
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-blue-50 min-w-[100px]">
+                          BUD {selectedYear2026}
+                        </th>
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                          RATE
+                        </th>
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                          STK
+                        </th>
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                          GIT
+                        </th>
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[120px]">
+                          BUD {selectedYear2026} Value
+                        </th>
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                          DISCOUNT
+                        </th>
+                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
 
-                        {/* Monthly Data Entry Row */}
-                        {editingRowId === row.id && (
-                          <tr className="bg-gray-50">
-                            <td colSpan={12} className="p-4 border-b border-gray-200">
-                              <div className="bg-white rounded-lg p-4 border">
-                                <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                                  <Calendar className="w-5 h-5" />
-                                  Monthly Budget Data for {selectedYear2026}
-                                </h4>
-                                
-                                <div className="overflow-x-auto">
-                                  <table className="w-full text-sm">
-                                    <thead>
-                                      <tr className="bg-gray-100">
-                                        <th className="p-2 text-left">Month</th>
-                                        <th className="p-2 text-left">Budget Value</th>
-                                        <th className="p-2 text-left">Rate</th>
-                                        <th className="p-2 text-left">Stock</th>
-                                        <th className="p-2 text-left">GIT</th>
-                                        <th className="p-2 text-left">Discount</th>
-                                        <th className="p-2 text-left">Total</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {editingMonthlyData[row.id]?.map((month, monthIndex) => (
-                                        <tr key={monthIndex} className="border-b">
-                                          <td className="p-2 font-medium">{month.month}</td>
-                                          <td className="p-2">
-                                            <input
-                                              type="number"
-                                              className="w-20 p-1 border border-gray-300 rounded"
-                                              value={month.budgetValue}
-                                              onChange={(e) => handleMonthlyDataChange(
-                                                row.id, 
-                                                monthIndex, 
-                                                'budgetValue', 
-                                                parseInt(e.target.value) || 0
-                                              )}
-                                            />
-                                          </td>
-                                          <td className="p-2">
-                                            <input
-                                              type="number"
-                                              className="w-20 p-1 border border-gray-300 rounded"
-                                              value={month.rate}
-                                              onChange={(e) => handleMonthlyDataChange(
-                                                row.id, 
-                                                monthIndex, 
-                                                'rate', 
-                                                parseFloat(e.target.value) || 0
-                                              )}
-                                            />
-                                          </td>
-                                          <td className="p-2">
-                                            <input
-                                              type="number"
-                                              className="w-20 p-1 border border-gray-300 rounded"
-                                              value={month.stock}
-                                              onChange={(e) => handleMonthlyDataChange(
-                                                row.id, 
-                                                monthIndex, 
-                                                'stock', 
-                                                parseInt(e.target.value) || 0
-                                              )}
-                                            />
-                                          </td>
-                                          <td className="p-2">
-                                            <input
-                                              type="number"
-                                              className="w-20 p-1 border border-gray-300 rounded"
-                                              value={month.git}
-                                              onChange={(e) => handleMonthlyDataChange(
-                                                row.id, 
-                                                monthIndex, 
-                                                'git', 
-                                                parseInt(e.target.value) || 0
-                                              )}
-                                            />
-                                          </td>
-                                          <td className="p-2">
-                                            <input
-                                              type="number"
-                                              className="w-20 p-1 border border-gray-300 rounded"
-                                              value={month.discount}
-                                              onChange={(e) => handleMonthlyDataChange(
-                                                row.id, 
-                                                monthIndex, 
-                                                'discount', 
-                                                parseFloat(e.target.value) || 0
-                                              )}
-                                            />
-                                          </td>
-                                          <td className="p-2 font-medium">
-                                            ${((month.budgetValue * month.rate) - month.discount).toLocaleString()}
-                                          </td>
-                                        </tr>
-                                      )) || []}
-                                    </tbody>
-                                  </table>
-                                </div>
-                                
-                                <div className="mt-4 flex justify-between items-center">
-                                  <div className="text-sm text-gray-600">
-                                    <strong>Total Budget Value:</strong> ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * month.rate) - month.discount, 0).toLocaleString() || 0}
+                    <tbody>
+                      {tableData.map(row => (
+                        <React.Fragment key={row.id}>
+                          <tr className={`hover:bg-gray-50 ${row.selected ? 'bg-blue-50' : ''}`}>
+                            <td className="sticky left-0 bg-white z-10 p-3 border-b border-r border-gray-200">
+                              <input
+                                type="checkbox"
+                                className="w-4 h-4 accent-blue-600"
+                                checked={row.selected}
+                                onChange={() => handleSelectRow(row.id)}
+                              />
+                            </td>
+                            {activeView === 'customer-item' ? (
+                              <>
+                                <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
+                                  {row.customer}
+                                </td>
+                                <td className="sticky left-[280px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
+                                  <div className="max-w-[300px]">
+                                    <div className="font-medium text-gray-900 truncate" title={row.item}>
+                                      {row.item}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      {row.category} - {row.brand}
+                                    </div>
                                   </div>
-                                  <div className="flex gap-2">
+                                </td>
+                              </>
+                            ) : (
+                              <>
+                                <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
+                                  <div className="max-w-[300px]">
+                                    <div className="font-medium text-gray-900 truncate" title={row.item}>
+                                      {row.item}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      {row.category} - {row.brand}
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="sticky left-[332px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
+                                  {row.customer}
+                                </td>
+                              </>
+                            )}
+                            <td className="p-3 border-b border-gray-200 text-sm">
+                              ${selectedYear2025 === '2025' ? row.budget2025.toLocaleString() : row.budget2026.toLocaleString()}
+                            </td>
+                            <td className="p-3 border-b border-gray-200 text-sm">
+                              ${selectedYear2025 === '2025' ? row.actual2025.toLocaleString() : '0'}
+                            </td>
+                            <td className="p-3 border-b border-gray-200 bg-blue-50 text-sm">
+                              <input
+                                type="number"
+                                className="w-20 p-1 text-center border border-gray-300 rounded"
+                                value={row.budget2026}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value) || 0;
+                                  setTableData(prev => prev.map(item =>
+                                    item.id === row.id ? { ...item, budget2026: value } : item
+                                  ));
+                                }}
+                              />
+                            </td>
+                            <td className="p-3 border-b border-gray-200 text-sm">
+                              ${row.rate}
+                            </td>
+                            <td className="p-3 border-b border-gray-200 text-sm">
+                              {row.stock}
+                            </td>
+                            <td className="p-3 border-b border-gray-200 text-sm">
+                              {row.git}
+                            </td>
+                            <td className="p-3 border-b border-gray-200 text-sm">
+                              ${row.budgetValue2026.toLocaleString()}
+                            </td>
+                            <td className="p-3 border-b border-gray-200 text-sm">
+                              ${row.discount.toLocaleString()}
+                            </td>
+                            <td className="p-3 border-b border-gray-200 text-sm">
+                              <div className="flex gap-1">
+                                {editingRowId === row.id ? (
+                                  <>
                                     <button
                                       onClick={() => handleSaveMonthlyData(row.id)}
-                                      className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors flex items-center gap-2"
+                                      className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700 transition-colors"
+                                      title="Save monthly data"
                                     >
-                                      <Save className="w-4 h-4" />
-                                      Save & Apply
+                                      <Save className="w-3 h-3" />
                                     </button>
                                     <button
                                       onClick={() => handleCancelMonthlyEdit(row.id)}
-                                      className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors flex items-center gap-2"
+                                      className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors"
+                                      title="Cancel edit"
                                     >
-                                      <X className="w-4 h-4" />
-                                      Cancel
+                                      <X className="w-3 h-3" />
                                     </button>
-                                  </div>
-                                </div>
+                                  </>
+                                ) : (
+                                  <button
+                                    onClick={() => handleEditMonthlyData(row.id)}
+                                    className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
+                                    title="Edit monthly budget"
+                                  >
+                                    <Calendar className="w-3 h-3" />
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+
+                          {/* Monthly Data Entry Row */}
+                          {editingRowId === row.id && (
+                            <tr className="bg-gray-50">
+                              <td colSpan={12} className="p-4 border-b border-gray-200">
+                                <div className="bg-white rounded-lg p-4 border">
+                                  <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                                    <Calendar className="w-5 h-5" />
+                                    Monthly Budget Data for {selectedYear2026}
+                                  </h4>
+
+                                  <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                      <thead>
+                                        <tr className="bg-gray-100">
+                                          <th className="p-2 text-left">Month</th>
+                                          <th className="p-2 text-left">Budget Value</th>
+                                          <th className="p-2 text-left">Rate</th>
+                                          <th className="p-2 text-left">Stock</th>
+                                          <th className="p-2 text-left">GIT</th>
+                                          <th className="p-2 text-left">Discount</th>
+                                          <th className="p-2 text-left">Total</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {editingMonthlyData[row.id]?.map((month, monthIndex) => (
+                                          <tr key={monthIndex} className="border-b">
+                                            <td className="p-2 font-medium">{month.month}</td>
+                                            <td className="p-2">
+                                              <input
+                                                type="number"
+                                                className="w-20 p-1 border border-gray-300 rounded"
+                                                value={month.budgetValue}
+                                                onChange={(e) => handleMonthlyDataChange(
+                                                  row.id,
+                                                  monthIndex,
+                                                  'budgetValue',
+                                                  parseInt(e.target.value) || 0
+                                                )}
+                                              />
+                                            </td>
+                                            <td className="p-2">
+                                              <input
+                                                type="number"
+                                                className="w-20 p-1 border border-gray-300 rounded"
+                                                value={month.rate}
+                                                onChange={(e) => handleMonthlyDataChange(
+                                                  row.id,
+                                                  monthIndex,
+                                                  'rate',
+                                                  parseFloat(e.target.value) || 0
+                                                )}
+                                              />
+                                            </td>
+                                            <td className="p-2">
+                                              <input
+                                                type="number"
+                                                className="w-20 p-1 border border-gray-300 rounded"
+                                                value={month.stock}
+                                                onChange={(e) => handleMonthlyDataChange(
+                                                  row.id,
+                                                  monthIndex,
+                                                  'stock',
+                                                  parseInt(e.target.value) || 0
+                                                )}
+                                              />
+                                            </td>
+                                            <td className="p-2">
+                                              <input
+                                                type="number"
+                                                className="w-20 p-1 border border-gray-300 rounded"
+                                                value={month.git}
+                                                onChange={(e) => handleMonthlyDataChange(
+                                                  row.id,
+                                                  monthIndex,
+                                                  'git',
+                                                  parseInt(e.target.value) || 0
+                                                )}
+                                              />
+                                            </td>
+                                            <td className="p-2">
+                                              <input
+                                                type="number"
+                                                className="w-20 p-1 border border-gray-300 rounded"
+                                                value={month.discount}
+                                                onChange={(e) => handleMonthlyDataChange(
+                                                  row.id,
+                                                  monthIndex,
+                                                  'discount',
+                                                  parseFloat(e.target.value) || 0
+                                                )}
+                                              />
+                                            </td>
+                                            <td className="p-2 font-medium">
+                                              ${((month.budgetValue * month.rate) - month.discount).toLocaleString()}
+                                            </td>
+                                          </tr>
+                                        )) || []}
+                                      </tbody>
+                                    </table>
+                                  </div>
+
+                                  <div className="mt-4 flex justify-between items-center">
+                                    <div className="text-sm text-gray-600">
+                                      <strong>Total Budget Value:</strong> ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * month.rate) - month.discount, 0).toLocaleString() || 0}
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <button
+                                        onClick={() => handleSaveMonthlyData(row.id)}
+                                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors flex items-center gap-2"
+                                      >
+                                        <Save className="w-4 h-4" />
+                                        Save & Apply
+                                      </button>
+                                      <button
+                                        onClick={() => handleCancelMonthlyEdit(row.id)}
+                                        className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors flex items-center gap-2"
+                                      >
+                                        <X className="w-4 h-4" />
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

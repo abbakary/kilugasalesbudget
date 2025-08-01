@@ -20,13 +20,32 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
   const [activeChart, setActiveChart] = useState<'monthly' | 'category' | 'channel' | 'seasonal'>('monthly');
 
   useEffect(() => {
-    if (customer && customerForecasts.length > 0) {
-      const customerAnalytics = generateCustomerAnalytics(customer.id, customerForecasts);
-      setAnalytics(customerAnalytics);
+    if (customer) {
+      if (customerForecasts.length > 0) {
+        const customerAnalytics = generateCustomerAnalytics(customer.id, customerForecasts);
+        setAnalytics(customerAnalytics);
+      } else {
+        // Create empty analytics for customers with no forecasts
+        setAnalytics({
+          customerId: customer.id,
+          totalForecast: 0,
+          averageConfidence: 0,
+          totalItems: 0,
+          monthlyBreakdown: {},
+          categoryBreakdown: {},
+          channelBreakdown: {},
+          seasonalTrends: {},
+          riskAssessment: {
+            riskLevel: 'Low',
+            confidenceScore: 0,
+            riskFactors: ['No forecasts available']
+          }
+        });
+      }
     }
   }, [customer, customerForecasts]);
 
-  if (!isOpen || !customer || !analytics) return null;
+  if (!isOpen || !customer) return null;
 
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   

@@ -301,7 +301,6 @@ const RollingForecast: React.FC = () => {
   };
 
   const handleViewCustomerAnalytics = (customer: Customer) => {
-    console.log('Opening analytics for customer:', customer.name);
     setSelectedCustomer(customer);
     setIsAnalyticsModalOpen(true);
     showNotification(`Opening analytics for ${customer.name}`, 'success');

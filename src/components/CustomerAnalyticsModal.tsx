@@ -20,67 +20,112 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
   const [activeChart, setActiveChart] = useState<'monthly' | 'category' | 'channel' | 'seasonal'>('monthly');
 
   useEffect(() => {
-    if (customer && customerForecasts.length > 0) {
-      const customerAnalytics = generateCustomerAnalytics(customer.id, customerForecasts);
-      setAnalytics(customerAnalytics);
+    if (customer) {
+      if (customerForecasts.length > 0) {
+        const customerAnalytics = generateCustomerAnalytics(customer.id, customerForecasts);
+        setAnalytics(customerAnalytics);
+      } else {
+        // Create empty analytics for customers with no forecasts
+        setAnalytics({
+          customerId: customer.id,
+          totalForecast: 0,
+          averageConfidence: 0,
+          totalItems: 0,
+          monthlyBreakdown: {},
+          categoryBreakdown: {},
+          channelBreakdown: {},
+          seasonalTrends: {},
+          riskAssessment: {
+            riskLevel: 'Low',
+            confidenceScore: 0,
+            riskFactors: ['No forecasts available']
+          }
+        });
+      }
     }
   }, [customer, customerForecasts]);
 
-  if (!isOpen || !customer || !analytics) return null;
+  if (!isOpen || !customer) return null;
 
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   
   // Prepare data for charts
   const monthlyData = monthNames.map(month => ({
     month,
-    value: analytics.monthlyBreakdown[month] || 0
+    value: analytics?.monthlyBreakdown?.[month] || 0
   }));
 
-  const categoryData = Object.entries(analytics.categoryBreakdown).map(([category, value]) => ({
+  const categoryData = Object.entries(analytics?.categoryBreakdown || {}).map(([category, value]) => ({
     category,
     value,
-    percentage: (value / analytics.totalForecast) * 100
+    percentage: analytics?.totalForecast ? (value / analytics.totalForecast) * 100 : 0
   }));
 
-  const channelData = Object.entries(analytics.channelBreakdown).map(([channel, value]) => ({
+  const channelData = Object.entries(analytics?.channelBreakdown || {}).map(([channel, value]) => ({
     channel,
     value,
-    percentage: (value / analytics.totalForecast) * 100
+    percentage: analytics?.totalForecast ? (value / analytics.totalForecast) * 100 : 0
   }));
 
-  const maxMonthlyValue = Math.max(...monthlyData.map(d => d.value));
+  const maxMonthlyValue = Math.max(...monthlyData.map(d => d.value), 1) || 1;
 
   // Simple bar chart component
-  const BarChart = ({ data, color = '#3B82F6' }: { data: any[]; color?: string }) => (
-    <div className="space-y-2">
-      {data.map((item, index) => (
-        <div key={index} className="flex items-center">
-          <div className="w-16 text-sm text-gray-600 flex-shrink-0">
-            {item.month || item.category || item.channel}
-          </div>
-          <div className="flex-1 mx-3">
-            <div className="bg-gray-200 rounded-full h-4">
-              <div
-                className="h-4 rounded-full transition-all duration-500"
-                style={{
-                  width: `${(item.value / (maxMonthlyValue || analytics.totalForecast)) * 100}%`,
-                  backgroundColor: color
-                }}
-              ></div>
-            </div>
-          </div>
-          <div className="w-20 text-sm font-medium text-gray-900 text-right">
-            {formatCurrency(item.value)}
+  const BarChart = ({ data, color = '#3B82F6' }: { data: any[]; color?: string }) => {
+    // Handle undefined or empty data
+    if (!data || data.length === 0) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-gray-400 mb-2">No data available</div>
+            <div className="text-sm text-gray-500">Create forecasts to see chart data</div>
           </div>
         </div>
-      ))}
-    </div>
-  );
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        {data.map((item, index) => (
+          <div key={index} className="flex items-center">
+            <div className="w-16 text-sm text-gray-600 flex-shrink-0">
+              {item.month || item.category || item.channel}
+            </div>
+            <div className="flex-1 mx-3">
+              <div className="bg-gray-200 rounded-full h-4">
+                <div
+                  className="h-4 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${(item.value / (maxMonthlyValue || analytics?.totalForecast || 1)) * 100}%`,
+                    backgroundColor: color
+                  }}
+                ></div>
+              </div>
+            </div>
+            <div className="w-20 text-sm font-medium text-gray-900 text-right">
+              {formatCurrency(item.value)}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   // Simple pie chart component
   const PieChart = ({ data, colors }: { data: any[]; colors: string[] }) => {
     let cumulativePercentage = 0;
-    
+
+    // Handle undefined or empty data
+    if (!data || data.length === 0) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-gray-400 mb-2">No data available</div>
+            <div className="text-sm text-gray-500">Create forecasts to see chart data</div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center justify-center">
         <div className="relative">
@@ -120,14 +165,14 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
           
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{formatCurrency(analytics.totalForecast)}</div>
+              <div className="text-2xl font-bold text-gray-900">{formatCurrency(analytics?.totalForecast || 0)}</div>
               <div className="text-sm text-gray-600">Total</div>
             </div>
           </div>
         </div>
         
         <div className="ml-8 space-y-2">
-          {data.map((item, index) => (
+          {(data || []).map((item, index) => (
             <div key={index} className="flex items-center">
               <div 
                 className="w-4 h-4 rounded mr-3" 
@@ -138,7 +183,7 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
                   {item.category || item.channel}
                 </div>
                 <div className="text-xs text-gray-600">
-                  {formatCurrency(item.value)} ({item.percentage.toFixed(1)}%)
+                  {formatCurrency(item.value)} ({(item.percentage || 0).toFixed(1)}%)
                 </div>
               </div>
             </div>
@@ -177,37 +222,37 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-blue-900">Total Forecast</p>
-                  <p className="text-xl font-semibold text-blue-800">{formatCurrency(analytics.totalForecast)}</p>
+                  <p className="text-xl font-semibold text-blue-800">{formatCurrency(analytics?.totalForecast || 0)}</p>
                 </div>
                 <DollarSign className="w-8 h-8 text-blue-600" />
               </div>
             </div>
-            
+
             <div className="bg-green-50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-green-900">Growth Rate</p>
-                  <p className="text-xl font-semibold text-green-800">{formatPercentage(analytics.growthRate)}</p>
+                  <p className="text-xl font-semibold text-green-800">{formatPercentage(analytics?.growthRate || 0)}</p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-green-600" />
               </div>
             </div>
-            
+
             <div className="bg-purple-50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-purple-900">Confidence Score</p>
-                  <p className="text-xl font-semibold text-purple-800">{analytics.confidenceScore}%</p>
+                  <p className="text-xl font-semibold text-purple-800">{analytics?.confidenceScore || 0}%</p>
                 </div>
                 <Target className="w-8 h-8 text-purple-600" />
               </div>
             </div>
-            
+
             <div className="bg-orange-50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-orange-900">Risk Score</p>
-                  <p className="text-xl font-semibold text-orange-800">{analytics.riskScore}%</p>
+                  <p className="text-xl font-semibold text-orange-800">{analytics?.riskScore || 0}%</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-600" />
               </div>
@@ -318,20 +363,20 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
                 <div>
                   <h4 className="text-md font-medium text-gray-900 mb-4">Seasonal Trends</h4>
                   <div className="space-y-3">
-                    {analytics.seasonalTrends.map((trend, index) => (
+                    {(analytics?.seasonalTrends || []).map((trend, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
-                          <span className="font-medium text-gray-900">{trend.month}</span>
+                          <span className="font-medium text-gray-900">{trend?.month || 'Unknown'}</span>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            trend.trend === 'up' ? 'bg-green-100 text-green-800' :
-                            trend.trend === 'down' ? 'bg-red-100 text-red-800' :
+                            trend?.trend === 'up' ? 'bg-green-100 text-green-800' :
+                            trend?.trend === 'down' ? 'bg-red-100 text-red-800' :
                             'bg-gray-100 text-gray-800'
                           }`}>
-                            {trend.trend === 'up' ? '↑ Growing' : trend.trend === 'down' ? '↓ Declining' : '→ Stable'}
+                            {trend?.trend === 'up' ? '↑ Growing' : trend?.trend === 'down' ? '↓ Declining' : '→ Stable'}
                           </span>
                         </div>
                         <span className="font-medium text-gray-900">
-                          {formatCurrency(trend.averageValue)}
+                          {formatCurrency(trend?.averageValue || 0)}
                         </span>
                       </div>
                     ))}

@@ -121,7 +121,7 @@ const SalesBudget: React.FC = () => {
     return months;
   };
 
-  const months = getCurrentYearMonths();
+  const months = getAllYearMonths();
 
   // Initial data
   const initialData: SalesBudgetItem[] = [

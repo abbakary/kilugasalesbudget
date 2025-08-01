@@ -499,10 +499,16 @@ const SalesBudget: React.FC = () => {
     showNotification(`Yearly budget for "${budgetData.item}" created successfully`, 'success');
   };
 
-  // Calculate totals based on filtered data
-  const totalBudget2025 = tableData.reduce((sum, item) => sum + item.budget2025, 0);
-  const totalActual2025 = tableData.reduce((sum, item) => sum + item.actual2025, 0);
-  const totalBudget2026 = tableData.reduce((sum, item) => sum + item.budget2026, 0);
+  // Calculate totals based on filtered data and year selection
+  const totalBudget2025 = selectedYear2025 === '2025'
+    ? tableData.reduce((sum, item) => sum + item.budget2025, 0)
+    : tableData.reduce((sum, item) => sum + item.budget2026, 0);
+  const totalActual2025 = selectedYear2025 === '2025'
+    ? tableData.reduce((sum, item) => sum + item.actual2025, 0)
+    : 0; // No actual data for future years
+  const totalBudget2026 = selectedYear2026 === '2026'
+    ? tableData.reduce((sum, item) => sum + item.budget2026, 0)
+    : tableData.reduce((sum, item) => sum + item.budget2025, 0);
   const budgetGrowth = totalBudget2025 > 0 ? ((totalBudget2026 - totalBudget2025) / totalBudget2025) * 100 : 0;
 
   return (

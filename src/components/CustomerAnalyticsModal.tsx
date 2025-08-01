@@ -99,7 +99,19 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
   // Simple pie chart component
   const PieChart = ({ data, colors }: { data: any[]; colors: string[] }) => {
     let cumulativePercentage = 0;
-    
+
+    // Handle undefined or empty data
+    if (!data || data.length === 0) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-gray-400 mb-2">No data available</div>
+            <div className="text-sm text-gray-500">Create forecasts to see chart data</div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center justify-center">
         <div className="relative">

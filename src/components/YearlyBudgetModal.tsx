@@ -390,16 +390,16 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
             </div>
 
             {/* Footer Actions */}
-            <div className="p-6 border-t bg-gray-50 flex justify-between">
+            <div className="p-4 sm:p-6 border-t bg-gray-50 flex flex-col sm:flex-row gap-3 sm:justify-between flex-shrink-0">
               <button
                 onClick={onClose}
-                className="px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="order-2 sm:order-1 px-4 sm:px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                className="order-1 sm:order-2 px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 <Save className="w-4 h-4" />
                 Save Yearly Budget

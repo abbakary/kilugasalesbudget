@@ -70,31 +70,45 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
   const maxMonthlyValue = Math.max(...monthlyData.map(d => d.value), 1);
 
   // Simple bar chart component
-  const BarChart = ({ data, color = '#3B82F6' }: { data: any[]; color?: string }) => (
-    <div className="space-y-2">
-      {data.map((item, index) => (
-        <div key={index} className="flex items-center">
-          <div className="w-16 text-sm text-gray-600 flex-shrink-0">
-            {item.month || item.category || item.channel}
-          </div>
-          <div className="flex-1 mx-3">
-            <div className="bg-gray-200 rounded-full h-4">
-              <div
-                className="h-4 rounded-full transition-all duration-500"
-                style={{
-                  width: `${(item.value / (maxMonthlyValue || analytics.totalForecast)) * 100}%`,
-                  backgroundColor: color
-                }}
-              ></div>
-            </div>
-          </div>
-          <div className="w-20 text-sm font-medium text-gray-900 text-right">
-            {formatCurrency(item.value)}
+  const BarChart = ({ data, color = '#3B82F6' }: { data: any[]; color?: string }) => {
+    // Handle undefined or empty data
+    if (!data || data.length === 0) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-gray-400 mb-2">No data available</div>
+            <div className="text-sm text-gray-500">Create forecasts to see chart data</div>
           </div>
         </div>
-      ))}
-    </div>
-  );
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        {data.map((item, index) => (
+          <div key={index} className="flex items-center">
+            <div className="w-16 text-sm text-gray-600 flex-shrink-0">
+              {item.month || item.category || item.channel}
+            </div>
+            <div className="flex-1 mx-3">
+              <div className="bg-gray-200 rounded-full h-4">
+                <div
+                  className="h-4 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${(item.value / (maxMonthlyValue || analytics?.totalForecast || 1)) * 100}%`,
+                    backgroundColor: color
+                  }}
+                ></div>
+              </div>
+            </div>
+            <div className="w-20 text-sm font-medium text-gray-900 text-right">
+              {formatCurrency(item.value)}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   // Simple pie chart component
   const PieChart = ({ data, colors }: { data: any[]; colors: string[] }) => {

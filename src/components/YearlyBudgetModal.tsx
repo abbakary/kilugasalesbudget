@@ -135,25 +135,25 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl max-h-[95vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b bg-white flex-shrink-0">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Yearly Budget Planning - {year}</h2>
-            <p className="text-gray-600">Create comprehensive budget for all months</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Yearly Budget Planning - {year}</h2>
+            <p className="text-gray-600 text-sm sm:text-base">Create comprehensive budget for all months</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <div className="flex flex-col lg:flex-row h-full">
+        <div className="flex flex-col lg:flex-row flex-1 min-h-0">
           {/* Left Panel - Budget Info */}
-          <div className="w-full lg:w-1/3 p-6 border-r bg-gray-50">
+          <div className="w-full lg:w-1/3 p-4 sm:p-6 border-r bg-gray-50 overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Budget Information</h3>
             
             <div className="space-y-4">

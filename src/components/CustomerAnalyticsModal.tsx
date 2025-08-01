@@ -67,7 +67,7 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
     percentage: analytics?.totalForecast ? (value / analytics.totalForecast) * 100 : 0
   }));
 
-  const maxMonthlyValue = Math.max(...monthlyData.map(d => d.value), 1);
+  const maxMonthlyValue = Math.max(...monthlyData.map(d => d.value), 1) || 1;
 
   // Simple bar chart component
   const BarChart = ({ data, color = '#3B82F6' }: { data: any[]; color?: string }) => {

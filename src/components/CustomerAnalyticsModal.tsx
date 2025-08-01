@@ -52,19 +52,19 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
   // Prepare data for charts
   const monthlyData = monthNames.map(month => ({
     month,
-    value: analytics.monthlyBreakdown[month] || 0
+    value: analytics?.monthlyBreakdown?.[month] || 0
   }));
 
-  const categoryData = Object.entries(analytics.categoryBreakdown).map(([category, value]) => ({
+  const categoryData = Object.entries(analytics?.categoryBreakdown || {}).map(([category, value]) => ({
     category,
     value,
-    percentage: (value / analytics.totalForecast) * 100
+    percentage: analytics?.totalForecast ? (value / analytics.totalForecast) * 100 : 0
   }));
 
-  const channelData = Object.entries(analytics.channelBreakdown).map(([channel, value]) => ({
+  const channelData = Object.entries(analytics?.channelBreakdown || {}).map(([channel, value]) => ({
     channel,
     value,
-    percentage: (value / analytics.totalForecast) * 100
+    percentage: analytics?.totalForecast ? (value / analytics.totalForecast) * 100 : 0
   }));
 
   const maxMonthlyValue = Math.max(...monthlyData.map(d => d.value));

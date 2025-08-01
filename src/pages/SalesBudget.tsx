@@ -692,8 +692,12 @@ const SalesBudget: React.FC = () => {
               <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
                 <div className="flex flex-col gap-1">
                   <button
-                    onClick={() => setIsYearlyBudgetModalOpen(true)}
+                    onClick={() => {
+                      console.log('Yearly Budget button clicked');
+                      setIsYearlyBudgetModalOpen(true);
+                    }}
                     className="bg-green-600 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-700 transition-colors"
+                    title="Open Yearly Budget Planning Modal"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Yearly Budget</span>

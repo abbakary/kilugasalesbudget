@@ -511,8 +511,8 @@ const SalesBudget: React.FC = () => {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
                   <option value="">Select category</option>
-                  <option value="tyres">Tyres</option>
-                  <option value="accessories">Accessories</option>
+                  <option value="Tyres">Tyres</option>
+                  <option value="Accessories">Accessories</option>
                 </select>
               </div>
 

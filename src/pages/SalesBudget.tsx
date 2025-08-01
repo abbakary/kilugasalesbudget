@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import {
   Search,
@@ -124,7 +124,8 @@ const SalesBudget: React.FC = () => {
 
   const months = getCurrentYearMonths();
 
-  const [tableData, setTableData] = useState<SalesBudgetItem[]>([
+  // Initial data
+  const initialData: SalesBudgetItem[] = [
     {
       id: 1,
       selected: false,
@@ -151,6 +152,129 @@ const SalesBudget: React.FC = () => {
         discount: 0
       }))
     },
+    {
+      id: 2,
+      selected: false,
+      customer: "Action Aid International (Tz)",
+      item: "BF GOODRICH TYRE 265/65R17 120/117S TL AT/TA KO2 LRERWLGO",
+      category: "Tyres",
+      brand: "BF Goodrich",
+      itemCombined: "BF GOODRICH TYRE 265/65R17 (Tyres - BF Goodrich)",
+      budget2025: 980000,
+      actual2025: 720000,
+      budget2026: 0,
+      rate: 412,
+      stock: 7,
+      git: 0,
+      budgetValue2026: 0,
+      discount: 0,
+      monthlyData: months.map(month => ({
+        month: month.short,
+        budgetValue: 0,
+        actualValue: 0,
+        rate: 412,
+        stock: Math.floor(Math.random() * 50) + 10,
+        git: Math.floor(Math.random() * 15),
+        discount: 0
+      }))
+    },
+    {
+      id: 3,
+      selected: false,
+      customer: "Action Aid International (Tz)",
+      item: "VALVE 0214 TR 414J FOR CAR TUBELESS TYRE",
+      category: "Accessories",
+      brand: "Generic",
+      itemCombined: "VALVE 0214 TR 414J (Accessories - Generic)",
+      budget2025: 15000,
+      actual2025: 18000,
+      budget2026: 0,
+      rate: 0.5,
+      stock: 2207,
+      git: 0,
+      budgetValue2026: 0,
+      discount: 0,
+      monthlyData: months.map(month => ({
+        month: month.short,
+        budgetValue: 0,
+        actualValue: 0,
+        rate: 0.5,
+        stock: Math.floor(Math.random() * 500) + 1000,
+        git: 0,
+        discount: 0
+      }))
+    },
+    {
+      id: 4,
+      selected: false,
+      customer: "Action Aid International (Tz)",
+      item: "MICHELIN TYRE 265/65R17 112T TL LTX TRAIL",
+      category: "Tyres",
+      brand: "Michelin",
+      itemCombined: "MICHELIN TYRE 265/65R17 (Tyres - Michelin)",
+      budget2025: 875000,
+      actual2025: 920000,
+      budget2026: 0,
+      rate: 300,
+      stock: 127,
+      git: 0,
+      budgetValue2026: 0,
+      discount: 0,
+      monthlyData: months.map(month => ({
+        month: month.short,
+        budgetValue: 0,
+        actualValue: 0,
+        rate: 300,
+        stock: Math.floor(Math.random() * 80) + 50,
+        git: Math.floor(Math.random() * 25),
+        discount: 0
+      }))
+    }
+  ];
+
+  const [originalTableData, setOriginalTableData] = useState<SalesBudgetItem[]>(initialData);
+  const [tableData, setTableData] = useState<SalesBudgetItem[]>(initialData);
+
+  // Add event listeners for filter changes
+  useEffect(() => {
+    // Apply filters whenever any filter changes
+    const filteredData = originalTableData.filter(item => {
+      const matchesCustomer = !selectedCustomer || item.customer.toLowerCase().includes(selectedCustomer.toLowerCase());
+      const matchesCategory = !selectedCategory || item.category.toLowerCase().includes(selectedCategory.toLowerCase());
+      const matchesBrand = !selectedBrand || item.brand.toLowerCase().includes(selectedBrand.toLowerCase());
+      const matchesItem = !selectedItem || item.item.toLowerCase().includes(selectedItem.toLowerCase());
+      return matchesCustomer && matchesCategory && matchesBrand && matchesItem;
+    });
+    setTableData(filteredData);
+  }, [selectedCustomer, selectedCategory, selectedBrand, selectedItem]);
+
+  const initialData: SalesBudgetItem[] = [
+    {
+      id: 1,
+      selected: false,
+      customer: "Action Aid International (Tz)",
+      item: "BF GOODRICH TYRE 235/85R16 120/116S TL AT/TA KO2 LRERWLGO",
+      category: "Tyres",
+      brand: "BF Goodrich",
+      itemCombined: "BF GOODRICH TYRE 235/85R16 (Tyres - BF Goodrich)",
+      budget2025: 1200000,
+      actual2025: 850000,
+      budget2026: 0,
+      rate: 341,
+      stock: 232,
+      git: 0,
+      budgetValue2026: 0,
+      discount: 0,
+      monthlyData: months.map(month => ({
+        month: month.short,
+        budgetValue: 0,
+        actualValue: 0,
+        rate: 341,
+        stock: Math.floor(Math.random() * 100) + 50,
+        git: Math.floor(Math.random() * 20),
+        discount: 0
+      }))
+    }
     {
       id: 2,
       selected: false,
@@ -325,8 +449,8 @@ const SalesBudget: React.FC = () => {
     if (newAdditionType === 'customer') {
       showNotification(`Customer "${itemData.customerName}" added successfully`, 'success');
     } else {
-      // Add new item to table data
-      const newId = Math.max(...tableData.map(item => item.id)) + 1;
+      // Add new item to original data
+      const newId = Math.max(...originalTableData.map(item => item.id)) + 1;
       const newRow: SalesBudgetItem = {
         id: newId,
         selected: false,
@@ -353,7 +477,7 @@ const SalesBudget: React.FC = () => {
           discount: 0
         }))
       };
-      setTableData(prev => [...prev, newRow]);
+      setOriginalTableData(prev => [...prev, newRow]);
       showNotification(`Item "${itemData.itemName}" added successfully`, 'success');
     }
   };
@@ -371,9 +495,22 @@ const SalesBudget: React.FC = () => {
   };
 
   // Calculate totals
-  const totalBudget2025 = tableData.reduce((sum, item) => sum + item.budget2025, 0);
-  const totalActual2025 = tableData.reduce((sum, item) => sum + item.actual2025, 0);
-  const totalBudget2026 = tableData.reduce((sum, item) => sum + item.budgetValue2026, 0);
+  // Apply filters to original data
+  const filteredData = originalTableData.filter(item => {
+    const matchesCustomer = !selectedCustomer || item.customer.toLowerCase().includes(selectedCustomer.toLowerCase());
+    const matchesCategory = !selectedCategory || item.category.toLowerCase().includes(selectedCategory.toLowerCase());
+    const matchesBrand = !selectedBrand || item.brand.toLowerCase().includes(selectedBrand.toLowerCase());
+    const matchesItem = !selectedItem || item.item.toLowerCase().includes(selectedItem.toLowerCase());
+    return matchesCustomer && matchesCategory && matchesBrand && matchesItem;
+  });
+
+  // Update table data with filtered results
+  setTableData(filteredData);
+
+  // Calculate totals based on filtered data
+  const totalBudget2025 = filteredData.reduce((sum, item) => sum + item.budget2025, 0);
+  const totalActual2025 = filteredData.reduce((sum, item) => sum + item.actual2025, 0);
+  const totalBudget2026 = filteredData.reduce((sum, item) => sum + item.budget2026, 0);
   const budgetGrowth = totalBudget2025 > 0 ? ((totalBudget2026 - totalBudget2025) / totalBudget2025) * 100 : 0;
 
   return (

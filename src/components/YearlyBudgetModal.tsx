@@ -267,14 +267,14 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
           </div>
 
           {/* Right Panel - Monthly Budget Table */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-h-0">
             {/* View Toggle */}
-            <div className="p-4 border-b bg-white">
-              <div className="flex items-center justify-between">
+            <div className="p-3 sm:p-4 border-b bg-white flex-shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex rounded-lg border overflow-hidden">
                   <button
                     onClick={() => setActiveView('monthly')}
-                    className={`px-4 py-2 text-sm font-medium ${
+                    className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium ${
                       activeView === 'monthly'
                         ? 'bg-blue-600 text-white'
                         : 'bg-white text-gray-700 hover:bg-gray-50'
@@ -284,7 +284,7 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
                   </button>
                   <button
                     onClick={() => setActiveView('quarterly')}
-                    className={`px-4 py-2 text-sm font-medium ${
+                    className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium ${
                       activeView === 'quarterly'
                         ? 'bg-blue-600 text-white'
                         : 'bg-white text-gray-700 hover:bg-gray-50'
@@ -293,10 +293,10 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
                     Quarterly View
                   </button>
                 </div>
-                
+
                 <div className="flex gap-2">
-                  <button className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 transition-colors flex items-center gap-2">
-                    <Download className="w-4 h-4" />
+                  <button className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-xs sm:text-sm hover:bg-gray-200 transition-colors flex items-center gap-2">
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                     Export
                   </button>
                 </div>
@@ -304,7 +304,7 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
             </div>
 
             {/* Monthly Budget Table */}
-            <div className="flex-1 overflow-auto p-4">
+            <div className="flex-1 overflow-auto p-3 sm:p-4">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300">
                   <thead>

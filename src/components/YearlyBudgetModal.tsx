@@ -267,7 +267,7 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
           </div>
 
           {/* Right Panel - Monthly Budget Table */}
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 flex flex-col min-h-0 h-full">
             {/* View Toggle */}
             <div className="p-3 sm:p-4 border-b bg-white flex-shrink-0">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

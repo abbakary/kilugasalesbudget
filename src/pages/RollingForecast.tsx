@@ -4,6 +4,7 @@ import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, Aler
 import CustomerForecastModal from '../components/CustomerForecastModal';
 import AdvancedCustomerTable from '../components/AdvancedCustomerTable';
 import CustomerAnalyticsModal from '../components/CustomerAnalyticsModal';
+import ExcelLikeCustomerTable from '../components/ExcelLikeCustomerTable';
 import { Customer, Item, CustomerItemForecast, ForecastFormData, MonthlyForecast, BudgetHistory, YearlyForecastSummary, FilterOptions } from '../types/forecast';
 import { getBudgetImpactAnalysis, formatCurrency, formatPercentage, getVarianceColor, getConfidenceColor, getRemainingMonths, generateBudgetHistory, generateYearlyForecastSummary, getAvailableYears } from '../utils/budgetCalculations';
 import { exportForecastData, downloadImportTemplate, ExportData } from '../utils/exportUtils';

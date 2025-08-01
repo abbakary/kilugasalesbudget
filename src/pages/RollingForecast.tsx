@@ -618,70 +618,149 @@ const RollingForecast: React.FC = () => {
         <div className="p-6">
           {activeTab === 'customer-forecast' && (
             <div className="space-y-6">
-              {/* Customer List */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {getFilteredCustomers().map(customer => {
-                  const forecasts = getCustomerForecasts(customer.id);
-                  const summary = getCustomerForecastSummary(customer.id);
+              {/* Header Actions */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Customer Forecasts</h3>
+                  <p className="text-sm text-gray-600">Manage forecasts for all customers</p>
+                </div>
+                <div className="flex gap-3">
+                  <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2">
+                    <Filter className="w-4 h-4" />
+                    Filter
+                  </button>
+                  <button className="bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors flex items-center gap-2">
+                    <Download className="w-4 h-4" />
+                    Export
+                  </button>
+                  <button
+                    onClick={() => setIsForecastModalOpen(true)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    New Forecast
+                  </button>
+                </div>
+              </div>
 
-                  return (
-                    <div key={customer.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Users className="w-5 h-5 text-blue-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-gray-900">{customer.name}</h3>
-                            <p className="text-sm text-gray-600">{customer.code}</p>
-                          </div>
-                        </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          customer.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {customer.active ? 'Active' : 'Inactive'}
-                        </span>
-                      </div>
+              {/* Customer Table */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Segment</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active Forecasts</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Forecast</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {getFilteredCustomers().map((customer, index) => {
+                        const forecasts = getCustomerForecasts(customer.id);
+                        const summary = getCustomerForecastSummary(customer.id);
 
-                      <div className="space-y-3 mb-4">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Region:</span>
-                          <span className="font-medium">{customer.region}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Segment:</span>
-                          <span className="font-medium">{customer.segment}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Active Forecasts:</span>
-                          <span className="font-medium">{summary.totalItems}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Total Forecast:</span>
-                          <span className="font-medium text-green-600">{formatCurrency(summary.totalValue)}</span>
-                        </div>
-                      </div>
+                        return (
+                          <tr key={customer.id} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                  <Users className="w-4 h-4 text-blue-600" />
+                                </div>
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{customer.name}</div>
+                                  <div className="text-xs text-gray-500">ID: {customer.id}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="text-sm font-mono text-gray-900">{customer.code}</span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                customer.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                              }`}>
+                                {customer.active ? 'Active' : 'Inactive'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {customer.region}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {customer.segment}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {summary.totalItems}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                              {formatCurrency(summary.totalValue)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              <div className="truncate max-w-[150px]" title={customer.email}>
+                                {customer.email}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  onClick={() => handleCreateForecast(customer)}
+                                  className="bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1 text-xs"
+                                  title="Create New Forecast"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  New
+                                </button>
+                                {forecasts.length > 0 && (
+                                  <button
+                                    onClick={() => setSelectedCustomerId(customer.id)}
+                                    className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-200 transition-colors flex items-center gap-1 text-xs"
+                                    title="View Details"
+                                  >
+                                    <Eye className="w-3 h-3" />
+                                    View
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => handleViewCustomerAnalytics(customer)}
+                                  className="bg-purple-100 text-purple-700 px-3 py-1.5 rounded-md hover:bg-purple-200 transition-colors flex items-center gap-1 text-xs"
+                                  title="Analytics"
+                                >
+                                  <BarChart3 className="w-3 h-3" />
+                                  Stats
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
 
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleCreateForecast(customer)}
-                          className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
-                        >
-                          <Plus className="w-4 h-4" />
-                          <span>New Forecast</span>
-                        </button>
-                        {forecasts.length > 0 && (
-                          <button
-                            onClick={() => setSelectedCustomerId(customer.id)}
-                            className="flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
+                {/* Empty State */}
+                {getFilteredCustomers().length === 0 && (
+                  <div className="text-center py-12">
+                    <Users className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">No customers found</h3>
+                    <p className="mt-1 text-sm text-gray-500">Get started by creating a new forecast.</p>
+                    <div className="mt-6">
+                      <button
+                        onClick={() => setIsForecastModalOpen(true)}
+                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        New Forecast
+                      </button>
                     </div>
-                  );
-                })}
+                  </div>
+                )}
               </div>
 
               {/* Selected Customer Forecasts */}

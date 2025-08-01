@@ -760,12 +760,25 @@ const SalesBudget: React.FC = () => {
                           onChange={handleSelectAll}
                         />
                       </th>
-                      <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
-                        Customer <ChevronUp className="w-4 h-4 inline ml-1" />
-                      </th>
-                      <th className="sticky left-[280px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
-                        Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
-                      </th>
+                      {activeView === 'customer-item' ? (
+                        <>
+                          <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
+                            Customer <ChevronUp className="w-4 h-4 inline ml-1" />
+                          </th>
+                          <th className="sticky left-[280px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
+                            Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
+                          </th>
+                        </>
+                      ) : (
+                        <>
+                          <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
+                            Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
+                          </th>
+                          <th className="sticky left-[332px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
+                            Customer <ChevronUp className="w-4 h-4 inline ml-1" />
+                          </th>
+                        </>
+                      )}
                       <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
                         BUD {selectedYear2025}
                       </th>

@@ -77,6 +77,7 @@ const SalesBudget: React.FC = () => {
   const [isNewAdditionModalOpen, setIsNewAdditionModalOpen] = useState(false);
   const [newAdditionType, setNewAdditionType] = useState<'customer' | 'item'>('item');
   const [isDistributionModalOpen, setIsDistributionModalOpen] = useState(false);
+  const [isYearlyBudgetModalOpen, setIsYearlyBudgetModalOpen] = useState(false);
 
   // Notification state
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);

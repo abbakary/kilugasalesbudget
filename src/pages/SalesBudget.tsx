@@ -855,10 +855,10 @@ const SalesBudget: React.FC = () => {
                             </>
                           )}
                           <td className="p-3 border-b border-gray-200 text-sm">
-                            ${row.budget2025.toLocaleString()}
+                            ${selectedYear2025 === '2025' ? row.budget2025.toLocaleString() : row.budget2026.toLocaleString()}
                           </td>
                           <td className="p-3 border-b border-gray-200 text-sm">
-                            ${row.actual2025.toLocaleString()}
+                            ${selectedYear2025 === '2025' ? row.actual2025.toLocaleString() : '0'}
                           </td>
                           <td className="p-3 border-b border-gray-200 bg-blue-50 text-sm">
                             <input

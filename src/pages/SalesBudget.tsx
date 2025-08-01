@@ -326,12 +326,97 @@ const SalesBudget: React.FC = () => {
 
   const handleExport = (config: ExportConfig) => {
     const fileName = `budget_${config.year}.${config.format === 'excel' ? 'xlsx' : config.format}`;
-    showNotification(`Downloading budget for ${config.year} as ${fileName}...`, 'success');
+    showNotification(`Preparing download for ${config.year}...`, 'success');
 
-    // Simulate download
-    setTimeout(() => {
-      showNotification(`Download completed: ${fileName}`, 'success');
-    }, 2000);
+    // Prepare export data based on current filtered table data
+    const exportData = {
+      metadata: {
+        exportDate: new Date().toISOString(),
+        year: config.year,
+        totalRecords: tableData.length,
+        filters: {
+          customer: selectedCustomer,
+          category: selectedCategory,
+          brand: selectedBrand,
+          item: selectedItem
+        }
+      },
+      budget: tableData.map(item => ({
+        customer: item.customer,
+        item: item.item,
+        category: item.category,
+        brand: item.brand,
+        [`budget_${selectedYear2025}`]: item.budget2025,
+        [`actual_${selectedYear2025}`]: item.actual2025,
+        [`budget_${selectedYear2026}`]: item.budget2026,
+        rate: item.rate,
+        stock: item.stock,
+        git: item.git,
+        budgetValue2026: item.budgetValue2026,
+        discount: item.discount,
+        ...(config.includeMetadata && {
+          monthlyData: item.monthlyData
+        })
+      })),
+      summary: {
+        totalBudget2025: totalBudget2025,
+        totalActual2025: totalActual2025,
+        totalBudget2026: totalBudget2026,
+        budgetGrowth: budgetGrowth
+      }
+    };
+
+    // Convert to different formats
+    let downloadContent = '';
+    let mimeType = '';
+
+    switch (config.format) {
+      case 'csv':
+        // Convert to CSV
+        const csvHeaders = Object.keys(exportData.budget[0] || {}).join(',');
+        const csvRows = exportData.budget.map(row =>
+          Object.values(row).map(value =>
+            typeof value === 'string' ? `"${value}"` : value
+          ).join(',')
+        );
+        downloadContent = [csvHeaders, ...csvRows].join('\n');
+        mimeType = 'text/csv';
+        break;
+
+      case 'json':
+        downloadContent = JSON.stringify(exportData, null, 2);
+        mimeType = 'application/json';
+        break;
+
+      case 'excel':
+        // For Excel, we'll create a CSV that can be opened in Excel
+        const excelHeaders = Object.keys(exportData.budget[0] || {}).join(',');
+        const excelRows = exportData.budget.map(row =>
+          Object.values(row).map(value =>
+            typeof value === 'string' ? `"${value}"` : value
+          ).join(',')
+        );
+        downloadContent = [excelHeaders, ...excelRows].join('\n');
+        mimeType = 'text/csv';
+        break;
+
+      default:
+        downloadContent = JSON.stringify(exportData, null, 2);
+        mimeType = 'application/json';
+    }
+
+    // Create and trigger download
+    const blob = new Blob([downloadContent], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showNotification(`Download completed: ${fileName}`, 'success');
   };
 
   const handleNewAddition = (type: 'customer' | 'item') => {

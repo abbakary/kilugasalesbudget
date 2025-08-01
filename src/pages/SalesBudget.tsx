@@ -28,6 +28,7 @@ import ExportModal, { ExportConfig } from '../components/ExportModal';
 import NewAdditionModal, { NewItemData } from '../components/NewAdditionModal';
 import DistributionModal, { DistributionConfig } from '../components/DistributionModal';
 import DistributionManager from '../components/DistributionManager';
+import YearlyBudgetModal from '../components/YearlyBudgetModal';
 
 interface MonthlyBudget {
   month: string;

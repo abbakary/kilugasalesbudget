@@ -158,7 +158,7 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
         </div>
         
         <div className="ml-8 space-y-2">
-          {data.map((item, index) => (
+          {(data || []).map((item, index) => (
             <div key={index} className="flex items-center">
               <div 
                 className="w-4 h-4 rounded mr-3" 

@@ -132,7 +132,12 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
 
   const totals = calculateTotals();
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    console.log('YearlyBudgetModal is not open');
+    return null;
+  }
+
+  console.log('YearlyBudgetModal is rendering, isOpen:', isOpen);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-2 sm:p-4">

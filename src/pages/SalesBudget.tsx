@@ -540,8 +540,10 @@ const SalesBudget: React.FC = () => {
                   onChange={(e) => setSelectedItem(e.target.value)}
                 >
                   <option value="">Select item</option>
-                  <option value="tyre-235">BF GOODRICH TYRE 235/85R16</option>
-                  <option value="tyre-265">BF GOODRICH TYRE 265/65R17</option>
+                  <option value="BF GOODRICH TYRE 235/85R16">BF GOODRICH TYRE 235/85R16</option>
+                  <option value="BF GOODRICH TYRE 265/65R17">BF GOODRICH TYRE 265/65R17</option>
+                  <option value="VALVE 0214 TR 414J">VALVE 0214 TR 414J</option>
+                  <option value="MICHELIN TYRE 265/65R17">MICHELIN TYRE 265/65R17</option>
                 </select>
               </div>
 

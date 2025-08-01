@@ -345,32 +345,22 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
 
           {/* Right Panel - Monthly Budget Table */}
           <div className="flex-1 flex flex-col min-h-0 h-full">
-            {/* View Toggle */}
+            {/* Monthly Budget Header */}
             <div className="p-3 sm:p-4 border-b bg-white flex-shrink-0">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex rounded-lg border overflow-hidden">
-                  <button
-                    onClick={() => setActiveView('monthly')}
-                    className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium ${
-                      activeView === 'monthly'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    Monthly View
-                  </button>
-                  <button
-                    onClick={() => setActiveView('quarterly')}
-                    className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium ${
-                      activeView === 'quarterly'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    Quarterly View
-                  </button>
+                <div>
+                  <h4 className="text-lg font-semibold flex items-center gap-2">
+                    <span className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">4</span>
+                    Monthly Budget Details
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    {budgetData.totalBudget > 0
+                      ? `Edit individual months below. Total: $${budgetData.totalBudget.toLocaleString()}`
+                      : "Enter total budget amount first, then distribute to months"
+                    }
+                  </p>
                 </div>
-                
+
                 <div className="flex gap-2">
                   <button className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-xs sm:text-sm hover:bg-gray-200 transition-colors flex items-center gap-2">
                     <Download className="w-3 h-3 sm:w-4 sm:h-4" />

@@ -143,10 +143,10 @@ const YearlyBudgetModal: React.FC<YearlyBudgetModalProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-2 sm:p-4">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[95vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b bg-white flex-shrink-0">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b bg-gradient-to-r from-blue-50 to-green-50 flex-shrink-0">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Yearly Budget Planning - {year}</h2>
-            <p className="text-gray-600 text-sm sm:text-base">Create comprehensive budget for all months</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">📊 Create Yearly Budget - {year}</h2>
+            <p className="text-gray-600 text-sm sm:text-base">Follow these simple steps to create your comprehensive yearly budget plan</p>
           </div>
           <button
             onClick={onClose}

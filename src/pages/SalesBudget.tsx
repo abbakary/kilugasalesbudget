@@ -105,13 +105,12 @@ const SalesBudget: React.FC = () => {
     }>;
   }>>([]);
 
-  // Generate months for the current year
-  const getCurrentYearMonths = () => {
+  // Generate all months for the year
+  const getAllYearMonths = () => {
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
     const months = [];
-    
-    for (let i = currentMonth; i < 12; i++) {
+
+    for (let i = 0; i < 12; i++) {
       const date = new Date(currentDate.getFullYear(), i, 1);
       months.push({
         short: date.toLocaleDateString('en-US', { month: 'short' }),

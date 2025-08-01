@@ -139,7 +139,7 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
           
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{formatCurrency(analytics.totalForecast)}</div>
+              <div className="text-2xl font-bold text-gray-900">{formatCurrency(analytics?.totalForecast || 0)}</div>
               <div className="text-sm text-gray-600">Total</div>
             </div>
           </div>

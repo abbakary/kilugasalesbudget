@@ -366,17 +366,17 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
                     {(analytics?.seasonalTrends || []).map((trend, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
-                          <span className="font-medium text-gray-900">{trend.month}</span>
+                          <span className="font-medium text-gray-900">{trend?.month || 'Unknown'}</span>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            trend.trend === 'up' ? 'bg-green-100 text-green-800' :
-                            trend.trend === 'down' ? 'bg-red-100 text-red-800' :
+                            trend?.trend === 'up' ? 'bg-green-100 text-green-800' :
+                            trend?.trend === 'down' ? 'bg-red-100 text-red-800' :
                             'bg-gray-100 text-gray-800'
                           }`}>
-                            {trend.trend === 'up' ? '↑ Growing' : trend.trend === 'down' ? '↓ Declining' : '→ Stable'}
+                            {trend?.trend === 'up' ? '↑ Growing' : trend?.trend === 'down' ? '↓ Declining' : '→ Stable'}
                           </span>
                         </div>
                         <span className="font-medium text-gray-900">
-                          {formatCurrency(trend.averageValue)}
+                          {formatCurrency(trend?.averageValue || 0)}
                         </span>
                       </div>
                     ))}

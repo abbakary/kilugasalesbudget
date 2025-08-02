@@ -608,7 +608,10 @@ const SalesBudget: React.FC = () => {
             <div className="flex justify-between items-center mb-4">
               <div className="bg-blue-50 border-l-4 border-blue-600 text-blue-800 p-4 rounded-r-lg flex items-center gap-2">
                 <InfoIcon className="w-5 h-5" />
-                <p className="font-bold">Instructions: Select a customer row to open monthly budget forms</p>
+                <div>
+                  <p className="font-bold">Instructions: Select a customer row to open monthly budget forms</p>
+                  <p className="text-xs text-blue-700 mt-1">💡 Simplified 2-row layout shows months and budget values for easy entry and budget growth tracking</p>
+                </div>
               </div>
               <div className="flex">
                 <button 

@@ -23,7 +23,6 @@ const CustomerForecastModal: React.FC<CustomerForecastModalProps> = ({
   const [confidence, setConfidence] = useState<'low' | 'medium' | 'high'>('medium');
   const [notes, setNotes] = useState<string>('');
   const [monthlyData, setMonthlyData] = useState<{ [month: string]: { quantity: number; unitPrice: number; notes?: string } }>({});
-  const [simplifiedForecastMode, setSimplifiedForecastMode] = useState(false);
 
   // Get remaining months of the current year
   const getCurrentYearRemainingMonths = () => {
@@ -236,27 +235,16 @@ const CustomerForecastModal: React.FC<CustomerForecastModalProps> = ({
           {/* Monthly Forecast Input */}
           {selectedItemId && (
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4">
                 <h3 className="text-lg font-medium text-gray-900 flex items-center">
                   <Calendar className="w-5 h-5 mr-2" />
                   Monthly Forecast Data
                 </h3>
-                <div className="flex items-center gap-2">
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={simplifiedForecastMode}
-                      onChange={(e) => setSimplifiedForecastMode(e.target.checked)}
-                      className="w-4 h-4 accent-blue-600"
-                    />
-                    <span className="text-gray-700">Simplified Mode (Month + Quantity Only)</span>
-                  </label>
-                </div>
+                <p className="text-sm text-gray-600 mt-1">Enter forecast quantities for each month using the simplified 2-row layout</p>
               </div>
               
-              {simplifiedForecastMode ? (
-                // Simplified 2-row horizontal layout - Month and Quantity only
-                <div className="space-y-4">
+              {/* Simplified 2-row horizontal layout - Month and Quantity only */}
+              <div className="space-y-4">
                   {/* Quick Distribution Tools */}
                   <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
                     <h5 className="text-sm font-medium text-yellow-800 mb-2">Quick Forecast Distribution</h5>
@@ -412,77 +400,7 @@ const CustomerForecastModal: React.FC<CustomerForecastModalProps> = ({
                       </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                // Original detailed table view
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Month
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Quantity
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Unit Price ($)
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Total Value ($)
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Notes
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {remainingMonths.map((month) => (
-                          <tr key={month.name} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {month.name} {month.year}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <input
-                                type="number"
-                                min="0"
-                                value={monthlyData[month.name]?.quantity || 0}
-                                onChange={(e) => handleMonthlyDataChange(month.name, 'quantity', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="0"
-                              />
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={monthlyData[month.name]?.unitPrice || 0}
-                                onChange={(e) => handleMonthlyDataChange(month.name, 'unitPrice', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="0.00"
-                              />
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                              ${calculateMonthlyTotal(month.name).toFixed(2)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <input
-                                type="text"
-                                value={monthlyData[month.name]?.notes || ''}
-                                onChange={(e) => handleMonthlyDataChange(month.name, 'notes', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Optional notes..."
-                              />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+              </div>
 
               {/* Summary */}
               <div className="mt-4 bg-green-50 rounded-lg p-4">

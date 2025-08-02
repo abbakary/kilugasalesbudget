@@ -794,11 +794,39 @@ const SalesBudget: React.FC = () => {
                   )}
                 </div>
               </div>
-              <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
+              <div className={`p-2 rounded shadow-sm border-2 transition-all duration-500 hover:shadow-lg ${
+                budgetGrowth > 0
+                  ? 'bg-gradient-to-br from-green-50 to-green-100 border-green-300'
+                  : budgetGrowth < 0
+                    ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-300'
+                    : 'bg-white border-gray-200'
+              }`}>
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-600">Budget Growth (%)</p>
-                  <p className="text-lg font-semibold text-gray-900">{budgetGrowth.toFixed(1)}%</p>
+                  <p className="text-xs text-gray-600 font-medium">Budget Growth (%)</p>
+                  <p className={`text-lg font-bold transition-all duration-500 flex items-center gap-1 ${
+                    budgetGrowth > 0
+                      ? 'text-green-900'
+                      : budgetGrowth < 0
+                        ? 'text-red-900'
+                        : 'text-gray-500'
+                  }`}>
+                    {budgetGrowth > 0 && '📈'}
+                    {budgetGrowth < 0 && '📉'}
+                    {budgetGrowth === 0 && '➡️'}
+                    {budgetGrowth.toFixed(1)}%
+                  </p>
                   <p className="text-xs text-gray-600">From {selectedYear2025} to {selectedYear2026}</p>
+                  {budgetGrowth !== -100 && totalBudget2026 > 0 && (
+                    <div className="mt-1">
+                      <span className={`inline-block px-1.5 py-0.5 text-xs rounded-full font-medium ${
+                        budgetGrowth > 0
+                          ? 'bg-green-200 text-green-800'
+                          : 'bg-orange-200 text-orange-800'
+                      }`}>
+                        {budgetGrowth > 0 ? '🚀 Growing!' : '⚠️ Declining'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

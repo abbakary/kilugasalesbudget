@@ -29,17 +29,13 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
         setAnalytics({
           customerId: customer.id,
           totalForecast: 0,
-          averageConfidence: 0,
-          totalItems: 0,
           monthlyBreakdown: {},
           categoryBreakdown: {},
           channelBreakdown: {},
-          seasonalTrends: {},
-          riskAssessment: {
-            riskLevel: 'Low',
-            confidenceScore: 0,
-            riskFactors: ['No forecasts available']
-          }
+          growthRate: 0,
+          seasonalTrends: [],
+          riskScore: 0,
+          confidenceScore: 0
         });
       }
     }
@@ -363,7 +359,7 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
                 <div>
                   <h4 className="text-md font-medium text-gray-900 mb-4">Seasonal Trends</h4>
                   <div className="space-y-3">
-                    {(analytics?.seasonalTrends || []).map((trend, index) => (
+                    {Array.isArray(analytics?.seasonalTrends) ? analytics.seasonalTrends.map((trend, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <span className="font-medium text-gray-900">{trend?.month || 'Unknown'}</span>
@@ -379,7 +375,11 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
                           {formatCurrency(trend?.averageValue || 0)}
                         </span>
                       </div>
-                    ))}
+                    )) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>No seasonal trend data available</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

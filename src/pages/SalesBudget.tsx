@@ -250,14 +250,25 @@ const SalesBudget: React.FC = () => {
   }, [selectedCustomer, selectedCategory, selectedBrand, selectedItem, originalTableData]);
 
   const handleSelectRow = (id: number) => {
-    setTableData(prev => prev.map(item =>
-      item.id === id ? { ...item, selected: !item.selected } : item
-    ));
+    console.log('Row selection toggled for ID:', id);
+    setTableData(prev => prev.map(item => {
+      if (item.id === id) {
+        const newSelected = !item.selected;
+        if (newSelected) {
+          showNotification(`Selected: ${item.customer} - ${item.item}`, 'success');
+        }
+        return { ...item, selected: newSelected };
+      }
+      return item;
+    }));
   };
 
   const handleSelectAll = () => {
     const allSelected = tableData.every(item => item.selected);
-    setTableData(prev => prev.map(item => ({ ...item, selected: !allSelected })));
+    const newState = !allSelected;
+    console.log('Select all toggled:', newState);
+    setTableData(prev => prev.map(item => ({ ...item, selected: newState })));
+    showNotification(newState ? `Selected all ${tableData.length} items` : 'Deselected all items', 'success');
   };
 
   const handleEditMonthlyData = (rowId: number) => {
@@ -282,26 +293,38 @@ const SalesBudget: React.FC = () => {
   const handleSaveMonthlyData = (rowId: number) => {
     const monthlyData = editingMonthlyData[rowId];
     if (monthlyData) {
-      // Calculate budget value 2026 from monthly data
+      const row = tableData.find(item => item.id === rowId);
+      // Use simplified mode calculation
       const budgetValue2026 = monthlyData.reduce((sum, month) => sum + month.budgetValue, 0);
-      const totalBudget2026 = monthlyData.reduce((sum, month) => sum + (month.budgetValue * month.rate), 0);
-      
-      setTableData(prev => prev.map(item => 
+      // Use the row's default rate for calculation if available
+      const defaultRate = row?.rate || 1;
+      const totalBudget2026 = monthlyData.reduce((sum, month) => sum + (month.budgetValue * defaultRate), 0);
+
+      // Update monthly data with default values for other fields
+      const updatedMonthlyData = monthlyData.map(month => ({
+        ...month,
+        rate: defaultRate,
+        stock: row?.stock || 0,
+        git: row?.git || 0,
+        discount: 0
+      }));
+
+      setTableData(prev => prev.map(item =>
         item.id === rowId ? {
           ...item,
-          monthlyData: monthlyData,
+          monthlyData: updatedMonthlyData,
           budget2026: budgetValue2026,
           budgetValue2026: totalBudget2026
         } : item
       ));
-      
+
       setEditingRowId(null);
       setEditingMonthlyData(prev => {
         const newData = { ...prev };
         delete newData[rowId];
         return newData;
       });
-      
+
       showNotification(`Monthly budget data saved for row ${rowId}`, 'success');
     }
   };
@@ -502,13 +525,25 @@ const SalesBudget: React.FC = () => {
   // Calculate totals based on filtered data and year selection
   const totalBudget2025 = selectedYear2025 === '2025'
     ? tableData.reduce((sum, item) => sum + item.budget2025, 0)
-    : tableData.reduce((sum, item) => sum + item.budget2026, 0);
+    : tableData.reduce((sum, item) => sum + item.budgetValue2026, 0);
   const totalActual2025 = selectedYear2025 === '2025'
     ? tableData.reduce((sum, item) => sum + item.actual2025, 0)
     : 0; // No actual data for future years
   const totalBudget2026 = selectedYear2026 === '2026'
-    ? tableData.reduce((sum, item) => sum + item.budget2026, 0)
+    ? tableData.reduce((sum, item) => sum + item.budgetValue2026, 0)
     : tableData.reduce((sum, item) => sum + item.budget2025, 0);
+
+  // Calculate units from monthly data for 2026, otherwise use standard calculation
+  const totalUnits2025 = selectedYear2025 === '2025'
+    ? tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0)
+    : tableData.reduce((sum, item) => sum + item.budget2026, 0);
+  const totalUnits2026 = selectedYear2026 === '2026'
+    ? tableData.reduce((sum, item) => sum + item.budget2026, 0) // budget2026 stores total units from monthly data
+    : tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0);
+  const totalActualUnits2025 = selectedYear2025 === '2025'
+    ? tableData.reduce((sum, item) => sum + Math.floor(item.actual2025 / (item.rate || 1)), 0)
+    : 0;
+
   const budgetGrowth = totalBudget2025 > 0 ? ((totalBudget2026 - totalBudget2025) / totalBudget2025) * 100 : 0;
 
   return (
@@ -566,7 +601,8 @@ const SalesBudget: React.FC = () => {
               <div className="flex items-center justify-end">
                 <button
                   onClick={handleDownloadBudget}
-                  className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
+                  className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors transform hover:scale-105 active:scale-95"
+                  title="Download budget data for current year"
                 >
                   <DownloadIcon className="w-5 h-5" />
                   <span>Download Budget ({selectedYear2026})</span>
@@ -578,41 +614,94 @@ const SalesBudget: React.FC = () => {
             <div className="flex justify-between items-center mb-4">
               <div className="bg-blue-50 border-l-4 border-blue-600 text-blue-800 p-4 rounded-r-lg flex items-center gap-2">
                 <InfoIcon className="w-5 h-5" />
-                <p className="font-bold">Instructions: Select a customer row to open monthly budget forms</p>
+                <div>
+                  <p className="font-bold">Instructions: Select a customer row to open monthly budget forms</p>
+                  <p className="text-xs text-blue-700 mt-1">💡 Simplified 2-row layout shows months and budget values for easy entry and budget growth tracking</p>
+                </div>
               </div>
-              <div className="flex">
-                <button 
-                  onClick={() => setActiveView('customer-item')}
-                  className={`px-6 py-2 font-semibold rounded-l-md ${
-                    activeView === 'customer-item' 
-                      ? 'bg-orange-500 text-white' 
-                      : 'bg-white text-gray-600 border border-gray-300'
+              <div className="flex shadow-sm rounded-md overflow-hidden">
+                <button
+                  onClick={() => {
+                    console.log('Switching to customer-item view');
+                    setActiveView('customer-item');
+                    showNotification('Switched to Customer-Item view', 'success');
+                  }}
+                  className={`px-6 py-2 font-semibold transition-all duration-200 ${
+                    activeView === 'customer-item'
+                      ? 'bg-orange-500 text-white shadow-md transform scale-105'
+                      : 'bg-white text-gray-600 border border-gray-300 hover:bg-orange-50 hover:text-orange-600'
                   }`}
+                  title="View data organized by customer and their items"
                 >
                   Customer - Item
                 </button>
-                <button 
-                  onClick={() => setActiveView('item-wise')}
-                  className={`px-6 py-2 font-semibold rounded-r-md ${
-                    activeView === 'item-wise' 
-                      ? 'bg-orange-500 text-white' 
-                      : 'bg-white text-gray-600 border border-gray-300'
+                <button
+                  onClick={() => {
+                    console.log('Switching to item-wise view');
+                    setActiveView('item-wise');
+                    showNotification('Switched to Item-Wise view', 'success');
+                  }}
+                  className={`px-6 py-2 font-semibold transition-all duration-200 ${
+                    activeView === 'item-wise'
+                      ? 'bg-orange-500 text-white shadow-md transform scale-105'
+                      : 'bg-white text-gray-600 border border-gray-300 hover:bg-orange-50 hover:text-orange-600'
                   }`}
+                  title="View data organized by items and their customers"
                 >
                   Item Wise
                 </button>
               </div>
             </div>
 
+            {/* Quick Filter Actions */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-sm text-gray-600">
+                <span className="font-medium">Active Filters:</span>
+                {!selectedCustomer && !selectedCategory && !selectedBrand && !selectedItem && (
+                  <span className="text-gray-400 ml-1">None</span>
+                )}
+                {selectedCustomer && <span className="ml-1 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Customer: {selectedCustomer}</span>}
+                {selectedCategory && <span className="ml-1 px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Category: {selectedCategory}</span>}
+                {selectedBrand && <span className="ml-1 px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Brand: {selectedBrand}</span>}
+                {selectedItem && <span className="ml-1 px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">Item: {selectedItem}</span>}
+              </div>
+              {(selectedCustomer || selectedCategory || selectedBrand || selectedItem) && (
+                <button
+                  onClick={() => {
+                    console.log('Quick clearing all filters');
+                    setSelectedCustomer('');
+                    setSelectedCategory('');
+                    setSelectedBrand('');
+                    setSelectedItem('');
+                    showNotification('All filters cleared', 'success');
+                  }}
+                  className="text-xs bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition-colors flex items-center gap-1"
+                  title="Clear all active filters"
+                >
+                  <X className="w-3 h-3" />
+                  Clear Filters
+                </button>
+              )}
+            </div>
+
             {/* Filters and Action Buttons Row */}
             <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
               {/* Customer Filter */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">CUSTOMER:</label>
-                <select 
-                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className={`bg-white p-3 rounded-lg shadow-sm border-2 transition-all duration-200 ${
+                selectedCustomer ? 'border-blue-400 bg-blue-50' : 'border-yellow-400'
+              }`}>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  👤 CUSTOMER:
+                  {selectedCustomer && <span className="text-blue-600">✓</span>}
+                </label>
+                <select
+                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   value={selectedCustomer}
-                  onChange={(e) => setSelectedCustomer(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Customer filter changed:', e.target.value);
+                    setSelectedCustomer(e.target.value);
+                    if (e.target.value) showNotification(`Filtered by customer: ${e.target.value}`, 'success');
+                  }}
                 >
                   <option value="">Select customer</option>
                   <option value="Action Aid International (Tz)">Action Aid International (Tz)</option>
@@ -621,12 +710,21 @@ const SalesBudget: React.FC = () => {
               </div>
 
               {/* Category Filter */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">CATEGORY:</label>
-                <select 
-                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className={`bg-white p-3 rounded-lg shadow-sm border-2 transition-all duration-200 ${
+                selectedCategory ? 'border-green-400 bg-green-50' : 'border-yellow-400'
+              }`}>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  📦 CATEGORY:
+                  {selectedCategory && <span className="text-green-600">✓</span>}
+                </label>
+                <select
+                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Category filter changed:', e.target.value);
+                    setSelectedCategory(e.target.value);
+                    if (e.target.value) showNotification(`Filtered by category: ${e.target.value}`, 'success');
+                  }}
                 >
                   <option value="">Select category</option>
                   <option value="Tyres">Tyres</option>
@@ -635,12 +733,21 @@ const SalesBudget: React.FC = () => {
               </div>
 
               {/* Brand Filter */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">BRAND:</label>
-                <select 
-                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className={`bg-white p-3 rounded-lg shadow-sm border-2 transition-all duration-200 ${
+                selectedBrand ? 'border-purple-400 bg-purple-50' : 'border-yellow-400'
+              }`}>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  🏷️ BRAND:
+                  {selectedBrand && <span className="text-purple-600">✓</span>}
+                </label>
+                <select
+                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                   value={selectedBrand}
-                  onChange={(e) => setSelectedBrand(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Brand filter changed:', e.target.value);
+                    setSelectedBrand(e.target.value);
+                    if (e.target.value) showNotification(`Filtered by brand: ${e.target.value}`, 'success');
+                  }}
                 >
                   <option value="">Select brand</option>
                   <option value="BF Goodrich">BF Goodrich</option>
@@ -650,12 +757,21 @@ const SalesBudget: React.FC = () => {
               </div>
 
               {/* Item Filter */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">ITEM:</label>
-                <select 
-                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className={`bg-white p-3 rounded-lg shadow-sm border-2 transition-all duration-200 ${
+                selectedItem ? 'border-orange-400 bg-orange-50' : 'border-yellow-400'
+              }`}>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  🔧 ITEM:
+                  {selectedItem && <span className="text-orange-600">✓</span>}
+                </label>
+                <select
+                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
                   value={selectedItem}
-                  onChange={(e) => setSelectedItem(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Item filter changed:', e.target.value);
+                    setSelectedItem(e.target.value);
+                    if (e.target.value) showNotification(`Filtered by item: ${e.target.value}`, 'success');
+                  }}
                 >
                   <option value="">Select item</option>
                   <option value="BF GOODRICH TYRE 235/85R16">BF GOODRICH TYRE 235/85R16</option>
@@ -666,21 +782,31 @@ const SalesBudget: React.FC = () => {
               </div>
 
               {/* Year Selectors */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">YEARS:</label>
+              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-indigo-400">
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  📅 YEARS:
+                </label>
                 <div className="flex gap-1">
-                  <select 
-                    className="w-full text-xs p-1 border border-gray-300 rounded-md"
+                  <select
+                    className="w-full text-xs p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                     value={selectedYear2025}
-                    onChange={(e) => setSelectedYear2025(e.target.value)}
+                    onChange={(e) => {
+                      console.log('Year 2025 changed:', e.target.value);
+                      setSelectedYear2025(e.target.value);
+                      showNotification(`Changed base year to ${e.target.value}`, 'success');
+                    }}
                   >
                     <option value="2024">2024</option>
                     <option value="2025">2025</option>
                   </select>
-                  <select 
-                    className="w-full text-xs p-1 border border-gray-300 rounded-md"
+                  <select
+                    className="w-full text-xs p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                     value={selectedYear2026}
-                    onChange={(e) => setSelectedYear2026(e.target.value)}
+                    onChange={(e) => {
+                      console.log('Year 2026 changed:', e.target.value);
+                      setSelectedYear2026(e.target.value);
+                      showNotification(`Changed target year to ${e.target.value}`, 'success');
+                    }}
                   >
                     <option value="2025">2025</option>
                     <option value="2026">2026</option>
@@ -696,15 +822,19 @@ const SalesBudget: React.FC = () => {
                       console.log('Yearly Budget button clicked');
                       setIsYearlyBudgetModalOpen(true);
                     }}
-                    className="bg-green-600 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-700 transition-colors"
-                    title="Open Yearly Budget Planning Modal"
+                    className="bg-green-600 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-700 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                    title="Create new yearly budget plan with monthly breakdown"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Yearly Budget</span>
                   </button>
                   <button
-                    onClick={setDistribution}
-                    className="bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-blue-200 transition-colors"
+                    onClick={() => {
+                      console.log('Distribution button clicked');
+                      setDistribution();
+                    }}
+                    className="bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-blue-200 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                    title="Open distribution management for budget allocation"
                   >
                     <PieChart className="w-4 h-4" />
                     <span>Distribution</span>
@@ -716,56 +846,125 @@ const SalesBudget: React.FC = () => {
             {/* Distribution Management */}
             <DistributionManager
               distributions={appliedDistributions}
-              onEditDistribution={() => {}}
-              onDeleteDistribution={() => {}}
-              onDuplicateDistribution={() => {}}
-              onToggleDistribution={() => {}}
-              onCreateNew={() => setIsDistributionModalOpen(true)}
+              onEditDistribution={(id) => {
+                console.log('Edit distribution:', id);
+                showNotification('Distribution editing feature coming soon', 'success');
+              }}
+              onDeleteDistribution={(id) => {
+                console.log('Delete distribution:', id);
+                setAppliedDistributions(prev => prev.filter(d => d.id !== id));
+                showNotification('Distribution deleted successfully', 'success');
+              }}
+              onDuplicateDistribution={(id) => {
+                console.log('Duplicate distribution:', id);
+                const dist = appliedDistributions.find(d => d.id === id);
+                if (dist) {
+                  const newDist = { ...dist, id: `${dist.id}_copy_${Date.now()}`, name: `${dist.name} (Copy)` };
+                  setAppliedDistributions(prev => [...prev, newDist]);
+                  showNotification('Distribution duplicated successfully', 'success');
+                }
+              }}
+              onToggleDistribution={(id) => {
+                console.log('Toggle distribution:', id);
+                setAppliedDistributions(prev => prev.map(d =>
+                  d.id === id ? { ...d, isActive: !d.isActive } : d
+                ));
+                showNotification('Distribution status updated', 'success');
+              }}
+              onCreateNew={() => {
+                console.log('Create new distribution');
+                setIsDistributionModalOpen(true);
+              }}
             />
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-              <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
+            {/* Real-time Update Indicator */}
+            {totalBudget2026 > 0 && (
+              <div className="mb-2 p-2 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                <p className="text-sm text-blue-800 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                  <span className="font-medium">Budget statistics updated in real-time</span>
+                  <span className="text-xs text-blue-600">• Enter monthly data to see growth calculations</span>
+                </p>
+              </div>
+            )}
+
+            {/* Stats Grid - Real-time Budget Statistics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">{/* Animated when data changes */}
+              <div className="bg-white p-2 rounded shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-600">Budget {selectedYear2025}</p>
-                  <p className="text-lg font-semibold text-gray-900">${totalBudget2025.toLocaleString()}</p>
-                  <p className="text-xs text-gray-600">
-                    {selectedYear2025 === '2025'
-                      ? tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0).toLocaleString()
-                      : tableData.reduce((sum, item) => sum + Math.floor(item.budget2026 / (item.rate || 1)), 0).toLocaleString()
-                    } Units
+                  <p className="text-xs text-gray-600 font-medium">Budget {selectedYear2025}</p>
+                  <p className="text-lg font-bold text-blue-900 transition-colors duration-300">${totalBudget2025.toLocaleString()}</p>
+                  <p className="text-xs text-blue-600 font-medium">
+                    {totalUnits2025.toLocaleString()} Units
                   </p>
                 </div>
               </div>
-              <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
+              <div className="bg-white p-2 rounded shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-600">Actual {selectedYear2025}</p>
-                  <p className="text-lg font-semibold text-gray-900">${totalActual2025.toLocaleString()}</p>
-                  <p className="text-xs text-gray-600">
-                    {selectedYear2025 === '2025'
-                      ? tableData.reduce((sum, item) => sum + Math.floor(item.actual2025 / (item.rate || 1)), 0).toLocaleString()
-                      : '0'
-                    } Units
+                  <p className="text-xs text-gray-600 font-medium">Actual {selectedYear2025}</p>
+                  <p className="text-lg font-bold text-green-900 transition-colors duration-300">${totalActual2025.toLocaleString()}</p>
+                  <p className="text-xs text-green-600 font-medium">
+                    {totalActualUnits2025.toLocaleString()} Units
                   </p>
                 </div>
               </div>
-              <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
+              <div className={`p-2 rounded shadow-sm border-2 transition-all duration-500 hover:shadow-lg ${
+                totalBudget2026 > 0
+                  ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300 shadow-purple-100'
+                  : 'bg-white border-gray-200'
+              }`}>
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-600">Budget {selectedYear2026}</p>
-                  <p className="text-lg font-semibold text-gray-900">${totalBudget2026.toLocaleString()}</p>
-                  <p className="text-xs text-gray-600">
-                    {selectedYear2026 === '2026'
-                      ? tableData.reduce((sum, item) => sum + Math.floor(item.budget2026 / (item.rate || 1)), 0).toLocaleString()
-                      : tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0).toLocaleString()
-                    } Units
+                  <p className="text-xs text-gray-600 font-medium">Budget {selectedYear2026}</p>
+                  <p className={`text-lg font-bold transition-all duration-500 ${
+                    totalBudget2026 > 0 ? 'text-purple-900 scale-105' : 'text-gray-500'
+                  }`}>${totalBudget2026.toLocaleString()}</p>
+                  <p className={`text-xs font-medium transition-colors duration-500 ${
+                    totalBudget2026 > 0 ? 'text-purple-600' : 'text-gray-400'
+                  }`}>
+                    {totalUnits2026.toLocaleString()} Units
                   </p>
+                  {totalBudget2026 > 0 && (
+                    <div className="mt-1">
+                      <span className="inline-block px-1.5 py-0.5 bg-purple-200 text-purple-800 text-xs rounded-full font-medium animate-pulse">
+                        📈 Updated
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
+              <div className={`p-2 rounded shadow-sm border-2 transition-all duration-500 hover:shadow-lg ${
+                budgetGrowth > 0
+                  ? 'bg-gradient-to-br from-green-50 to-green-100 border-green-300'
+                  : budgetGrowth < 0
+                    ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-300'
+                    : 'bg-white border-gray-200'
+              }`}>
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-600">Budget Growth (%)</p>
-                  <p className="text-lg font-semibold text-gray-900">{budgetGrowth.toFixed(1)}%</p>
+                  <p className="text-xs text-gray-600 font-medium">Budget Growth (%)</p>
+                  <p className={`text-lg font-bold transition-all duration-500 flex items-center gap-1 ${
+                    budgetGrowth > 0
+                      ? 'text-green-900'
+                      : budgetGrowth < 0
+                        ? 'text-red-900'
+                        : 'text-gray-500'
+                  }`}>
+                    {budgetGrowth > 0 && '📈'}
+                    {budgetGrowth < 0 && '📉'}
+                    {budgetGrowth === 0 && '➡️'}
+                    {budgetGrowth.toFixed(1)}%
+                  </p>
                   <p className="text-xs text-gray-600">From {selectedYear2025} to {selectedYear2026}</p>
+                  {budgetGrowth !== -100 && totalBudget2026 > 0 && (
+                    <div className="mt-1">
+                      <span className={`inline-block px-1.5 py-0.5 text-xs rounded-full font-medium ${
+                        budgetGrowth > 0
+                          ? 'bg-green-200 text-green-800'
+                          : 'bg-orange-200 text-orange-800'
+                      }`}>
+                        {budgetGrowth > 0 ? '🚀 Growing!' : '⚠️ Declining'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -778,10 +977,12 @@ const SalesBudget: React.FC = () => {
                   <p className="text-sm">Try adjusting your filter criteria or clear the filters</p>
                   <button
                     onClick={() => {
+                      console.log('Clearing all filters');
                       setSelectedCustomer('');
                       setSelectedCategory('');
                       setSelectedBrand('');
                       setSelectedItem('');
+                      showNotification('All filters cleared', 'success');
                     }}
                     className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
                   >
@@ -967,105 +1168,143 @@ const SalesBudget: React.FC = () => {
                             <tr className="bg-gray-50">
                               <td colSpan={12} className="p-4 border-b border-gray-200">
                                 <div className="bg-white rounded-lg p-4 border">
-                                  <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                                    <Calendar className="w-5 h-5" />
-                                    Monthly Budget Data for {selectedYear2026}
-                                  </h4>
+                                  <div className="mb-4">
+                                    <h4 className="text-lg font-semibold flex items-center gap-2">
+                                      <Calendar className="w-5 h-5" />
+                                      Monthly Budget Data for {selectedYear2026}
+                                    </h4>
+                                    <p className="text-sm text-gray-600 mt-1">Enter budget values for each month using the simplified 2-row layout</p>
+                                  </div>
 
-                                  <div className="overflow-x-auto">
-                                    <table className="w-full text-sm">
-                                      <thead>
-                                        <tr className="bg-gray-100">
-                                          <th className="p-2 text-left">Month</th>
-                                          <th className="p-2 text-left">Budget Value</th>
-                                          <th className="p-2 text-left">Rate</th>
-                                          <th className="p-2 text-left">Stock</th>
-                                          <th className="p-2 text-left">GIT</th>
-                                          <th className="p-2 text-left">Discount</th>
-                                          <th className="p-2 text-left">Total</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {editingMonthlyData[row.id]?.map((month, monthIndex) => (
-                                          <tr key={monthIndex} className="border-b">
-                                            <td className="p-2 font-medium">{month.month}</td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.budgetValue}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'budgetValue',
-                                                  parseInt(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.rate}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'rate',
-                                                  parseFloat(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.stock}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'stock',
-                                                  parseInt(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.git}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'git',
-                                                  parseInt(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.discount}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'discount',
-                                                  parseFloat(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2 font-medium">
-                                              ${((month.budgetValue * month.rate) - month.discount).toLocaleString()}
-                                            </td>
+                                  {/* Simplified 2-row horizontal layout - Month and Budget Value only */}
+                                  <div className="space-y-4">
+                                    {/* Quick Distribution Tools */}
+                                    <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                      <h5 className="text-sm font-medium text-yellow-800 mb-2">Quick Budget Distribution</h5>
+                                      <div className="flex flex-wrap gap-2">
+                                        <button
+                                          onClick={() => {
+                                            const totalBudget = editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0;
+                                            const monthlyAverage = Math.round(totalBudget / 12);
+                                            setEditingMonthlyData(prev => ({
+                                              ...prev,
+                                              [row.id]: prev[row.id]?.map(month => ({ ...month, budgetValue: monthlyAverage })) || []
+                                            }));
+                                          }}
+                                          className="bg-blue-100 text-blue-800 px-3 py-1 rounded text-xs hover:bg-blue-200 transition-colors"
+                                        >
+                                          📊 Equal Distribution
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            const seasonalMultipliers = [0.8, 0.8, 0.9, 0.9, 1.0, 1.0, 1.1, 1.1, 1.2, 1.2, 1.3, 1.4];
+                                            const totalBudget = editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0;
+                                            const baseValue = totalBudget / 12;
+                                            setEditingMonthlyData(prev => ({
+                                              ...prev,
+                                              [row.id]: prev[row.id]?.map((month, index) => ({
+                                                ...month,
+                                                budgetValue: Math.round(baseValue * seasonalMultipliers[index])
+                                              })) || []
+                                            }));
+                                          }}
+                                          className="bg-green-100 text-green-800 px-3 py-1 rounded text-xs hover:bg-green-200 transition-colors"
+                                        >
+                                          📈 Seasonal Growth
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            setEditingMonthlyData(prev => ({
+                                              ...prev,
+                                              [row.id]: prev[row.id]?.map(month => ({ ...month, budgetValue: 0 })) || []
+                                            }));
+                                          }}
+                                          className="bg-red-100 text-red-800 px-3 py-1 rounded text-xs hover:bg-red-200 transition-colors"
+                                        >
+                                          🗑️ Clear All
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    {/* 2-Row Horizontal Table */}
+                                    <div className="overflow-x-auto">
+                                      <table className="w-full min-w-[800px] border border-gray-300 rounded-lg">
+                                        <thead>
+                                          <tr className="bg-gray-100">
+                                            <th className="p-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">Month</th>
+                                            {editingMonthlyData[row.id]?.map((month, monthIndex) => (
+                                              <th key={monthIndex} className="p-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">
+                                                {month.month}
+                                              </th>
+                                            )) || []}
                                           </tr>
-                                        )) || []}
-                                      </tbody>
-                                    </table>
+                                        </thead>
+                                        <tbody>
+                                          <tr className="bg-white">
+                                            <td className="p-3 font-medium text-gray-800 border-r border-gray-300 bg-gray-50">Budget Units</td>
+                                            {editingMonthlyData[row.id]?.map((month, monthIndex) => (
+                                              <td key={monthIndex} className="p-2 border-r border-gray-300">
+                                                <input
+                                                  type="number"
+                                                  className="w-full p-2 text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                  value={month.budgetValue}
+                                                  onChange={(e) => handleMonthlyDataChange(
+                                                    row.id,
+                                                    monthIndex,
+                                                    'budgetValue',
+                                                    parseInt(e.target.value) || 0
+                                                  )}
+                                                  placeholder="0"
+                                                />
+                                              </td>
+                                            )) || []}
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+
+                                    {/* Summary Stats */}
+                                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                        <div>
+                                          <div className="text-sm text-blue-600 font-medium">Total Units</div>
+                                          <div className="text-lg font-bold text-blue-800">
+                                            {editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0).toLocaleString() || 0}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <div className="text-sm text-green-600 font-medium">Total Value</div>
+                                          <div className="text-lg font-bold text-green-800">
+                                            ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * (row.rate || 1)), 0).toLocaleString() || 0}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <div className="text-sm text-purple-600 font-medium">Avg/Month</div>
+                                          <div className="text-lg font-bold text-purple-800">
+                                            {Math.round((editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0) / 12).toLocaleString()}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <div className="text-sm text-orange-600 font-medium">Budget Growth</div>
+                                          <div className="text-lg font-bold text-orange-800">
+                                            {(() => {
+                                              const monthlyData = editingMonthlyData[row.id] || [];
+                                              if (monthlyData.length < 12) return '0%';
+                                              const firstHalf = monthlyData.slice(0, 6).reduce((sum, m) => sum + m.budgetValue, 0);
+                                              const secondHalf = monthlyData.slice(6, 12).reduce((sum, m) => sum + m.budgetValue, 0);
+                                              const growth = firstHalf > 0 ? ((secondHalf - firstHalf) / firstHalf * 100) : 0;
+                                              return `${growth > 0 ? '+' : ''}${growth.toFixed(1)}%`;
+                                            })()
+                                          }
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
 
                                   <div className="mt-4 flex justify-between items-center">
                                     <div className="text-sm text-gray-600">
-                                      <strong>Total Budget Value:</strong> ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * month.rate) - month.discount, 0).toLocaleString() || 0}
+                                      <strong>Total Budget Value:</strong> ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * (row.rate || 1)), 0).toLocaleString() || 0}
                                     </div>
                                     <div className="flex gap-2">
                                       <button

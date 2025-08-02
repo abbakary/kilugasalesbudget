@@ -265,7 +265,10 @@ const SalesBudget: React.FC = () => {
 
   const handleSelectAll = () => {
     const allSelected = tableData.every(item => item.selected);
-    setTableData(prev => prev.map(item => ({ ...item, selected: !allSelected })));
+    const newState = !allSelected;
+    console.log('Select all toggled:', newState);
+    setTableData(prev => prev.map(item => ({ ...item, selected: newState })));
+    showNotification(newState ? `Selected all ${tableData.length} items` : 'Deselected all items', 'success');
   };
 
   const handleEditMonthlyData = (rowId: number) => {

@@ -750,8 +750,8 @@ const SalesBudget: React.FC = () => {
               onCreateNew={() => setIsDistributionModalOpen(true)}
             />
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+            {/* Stats Grid - Real-time Budget Statistics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">{/* Animated when data changes */}
               <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
                 <div className="flex flex-col gap-1">
                   <p className="text-xs text-gray-600">Budget {selectedYear2025}</p>

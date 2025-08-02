@@ -283,47 +283,29 @@ const SalesBudget: React.FC = () => {
     const monthlyData = editingMonthlyData[rowId];
     if (monthlyData) {
       const row = tableData.find(item => item.id === rowId);
-      let budgetValue2026: number;
-      let totalBudget2026: number;
+      // Use simplified mode calculation
+      const budgetValue2026 = monthlyData.reduce((sum, month) => sum + month.budgetValue, 0);
+      // Use the row's default rate for calculation if available
+      const defaultRate = row?.rate || 1;
+      const totalBudget2026 = monthlyData.reduce((sum, month) => sum + (month.budgetValue * defaultRate), 0);
 
-      if (simplifiedBudgetMode) {
-        // In simplified mode, use only budget value
-        budgetValue2026 = monthlyData.reduce((sum, month) => sum + month.budgetValue, 0);
-        // Use the row's default rate for calculation if available
-        const defaultRate = row?.rate || 1;
-        totalBudget2026 = monthlyData.reduce((sum, month) => sum + (month.budgetValue * defaultRate), 0);
+      // Update monthly data with default values for other fields
+      const updatedMonthlyData = monthlyData.map(month => ({
+        ...month,
+        rate: defaultRate,
+        stock: row?.stock || 0,
+        git: row?.git || 0,
+        discount: 0
+      }));
 
-        // Update monthly data with default values for other fields
-        const updatedMonthlyData = monthlyData.map(month => ({
-          ...month,
-          rate: defaultRate,
-          stock: row?.stock || 0,
-          git: row?.git || 0,
-          discount: 0
-        }));
-
-        setTableData(prev => prev.map(item =>
-          item.id === rowId ? {
-            ...item,
-            monthlyData: updatedMonthlyData,
-            budget2026: budgetValue2026,
-            budgetValue2026: totalBudget2026
-          } : item
-        ));
-      } else {
-        // Original calculation with all fields
-        budgetValue2026 = monthlyData.reduce((sum, month) => sum + month.budgetValue, 0);
-        totalBudget2026 = monthlyData.reduce((sum, month) => sum + (month.budgetValue * month.rate) - month.discount, 0);
-
-        setTableData(prev => prev.map(item =>
-          item.id === rowId ? {
-            ...item,
-            monthlyData: monthlyData,
-            budget2026: budgetValue2026,
-            budgetValue2026: totalBudget2026
-          } : item
-        ));
-      }
+      setTableData(prev => prev.map(item =>
+        item.id === rowId ? {
+          ...item,
+          monthlyData: updatedMonthlyData,
+          budget2026: budgetValue2026,
+          budgetValue2026: totalBudget2026
+        } : item
+      ));
 
       setEditingRowId(null);
       setEditingMonthlyData(prev => {

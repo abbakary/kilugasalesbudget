@@ -1136,10 +1136,7 @@ const SalesBudget: React.FC = () => {
 
                                   <div className="mt-4 flex justify-between items-center">
                                     <div className="text-sm text-gray-600">
-                                      <strong>Total Budget Value:</strong> ${simplifiedBudgetMode
-                                        ? editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * (row.rate || 1)), 0).toLocaleString() || 0
-                                        : editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * month.rate) - month.discount, 0).toLocaleString() || 0
-                                      }
+                                      <strong>Total Budget Value:</strong> ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * (row.rate || 1)), 0).toLocaleString() || 0}
                                     </div>
                                     <div className="flex gap-2">
                                       <button

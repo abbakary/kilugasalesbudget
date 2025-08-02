@@ -1008,155 +1008,77 @@ const SalesBudget: React.FC = () => {
                                     <p className="text-sm text-gray-600 mt-1">Enter budget values for each month using the simplified 2-row layout</p>
                                   </div>
 
-                                  {simplifiedBudgetMode ? (
-                                    // Simplified 2-row horizontal layout - Month and Budget Value only
-                                    <div className="space-y-4">
-                                      {/* Quick Distribution Tools */}
-                                      <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                                        <h5 className="text-sm font-medium text-yellow-800 mb-2">Quick Budget Distribution</h5>
-                                        <div className="flex flex-wrap gap-2">
-                                          <button
-                                            onClick={() => {
-                                              const totalBudget = editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0;
-                                              const monthlyAverage = Math.round(totalBudget / 12);
-                                              setEditingMonthlyData(prev => ({
-                                                ...prev,
-                                                [row.id]: prev[row.id]?.map(month => ({ ...month, budgetValue: monthlyAverage })) || []
-                                              }));
-                                            }}
-                                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded text-xs hover:bg-blue-200 transition-colors"
-                                          >
-                                            📊 Equal Distribution
-                                          </button>
-                                          <button
-                                            onClick={() => {
-                                              const seasonalMultipliers = [0.8, 0.8, 0.9, 0.9, 1.0, 1.0, 1.1, 1.1, 1.2, 1.2, 1.3, 1.4];
-                                              const totalBudget = editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0;
-                                              const baseValue = totalBudget / 12;
-                                              setEditingMonthlyData(prev => ({
-                                                ...prev,
-                                                [row.id]: prev[row.id]?.map((month, index) => ({
-                                                  ...month,
-                                                  budgetValue: Math.round(baseValue * seasonalMultipliers[index])
-                                                })) || []
-                                              }));
-                                            }}
-                                            className="bg-green-100 text-green-800 px-3 py-1 rounded text-xs hover:bg-green-200 transition-colors"
-                                          >
-                                            📈 Seasonal Growth
-                                          </button>
-                                          <button
-                                            onClick={() => {
-                                              setEditingMonthlyData(prev => ({
-                                                ...prev,
-                                                [row.id]: prev[row.id]?.map(month => ({ ...month, budgetValue: 0 })) || []
-                                              }));
-                                            }}
-                                            className="bg-red-100 text-red-800 px-3 py-1 rounded text-xs hover:bg-red-200 transition-colors"
-                                          >
-                                            🗑️ Clear All
-                                          </button>
-                                        </div>
-                                      </div>
-
-                                      {/* 2-Row Horizontal Table */}
-                                      <div className="overflow-x-auto">
-                                        <table className="w-full min-w-[800px] border border-gray-300 rounded-lg">
-                                          <thead>
-                                            <tr className="bg-gray-100">
-                                              <th className="p-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">Month</th>
-                                              {editingMonthlyData[row.id]?.map((month, monthIndex) => (
-                                                <th key={monthIndex} className="p-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">
-                                                  {month.month}
-                                                </th>
-                                              )) || []}
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            <tr className="bg-white">
-                                              <td className="p-3 font-medium text-gray-800 border-r border-gray-300 bg-gray-50">Budget Units</td>
-                                              {editingMonthlyData[row.id]?.map((month, monthIndex) => (
-                                                <td key={monthIndex} className="p-2 border-r border-gray-300">
-                                                  <input
-                                                    type="number"
-                                                    className="w-full p-2 text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                    value={month.budgetValue}
-                                                    onChange={(e) => handleMonthlyDataChange(
-                                                      row.id,
-                                                      monthIndex,
-                                                      'budgetValue',
-                                                      parseInt(e.target.value) || 0
-                                                    )}
-                                                    placeholder="0"
-                                                  />
-                                                </td>
-                                              )) || []}
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </div>
-
-                                      {/* Summary Stats */}
-                                      <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                                          <div>
-                                            <div className="text-sm text-blue-600 font-medium">Total Units</div>
-                                            <div className="text-lg font-bold text-blue-800">
-                                              {editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0).toLocaleString() || 0}
-                                            </div>
-                                          </div>
-                                          <div>
-                                            <div className="text-sm text-green-600 font-medium">Total Value</div>
-                                            <div className="text-lg font-bold text-green-800">
-                                              ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * (row.rate || 1)), 0).toLocaleString() || 0}
-                                            </div>
-                                          </div>
-                                          <div>
-                                            <div className="text-sm text-purple-600 font-medium">Avg/Month</div>
-                                            <div className="text-lg font-bold text-purple-800">
-                                              {Math.round((editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0) / 12).toLocaleString()}
-                                            </div>
-                                          </div>
-                                          <div>
-                                            <div className="text-sm text-orange-600 font-medium">Budget Growth</div>
-                                            <div className="text-lg font-bold text-orange-800">
-                                              {(() => {
-                                                const monthlyData = editingMonthlyData[row.id] || [];
-                                                if (monthlyData.length < 12) return '0%';
-                                                const firstHalf = monthlyData.slice(0, 6).reduce((sum, m) => sum + m.budgetValue, 0);
-                                                const secondHalf = monthlyData.slice(6, 12).reduce((sum, m) => sum + m.budgetValue, 0);
-                                                const growth = firstHalf > 0 ? ((secondHalf - firstHalf) / firstHalf * 100) : 0;
-                                                return `${growth > 0 ? '+' : ''}${growth.toFixed(1)}%`;
-                                              })()
-                                            }
-                                            </div>
-                                          </div>
-                                        </div>
+                                  {/* Simplified 2-row horizontal layout - Month and Budget Value only */}
+                                  <div className="space-y-4">
+                                    {/* Quick Distribution Tools */}
+                                    <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                      <h5 className="text-sm font-medium text-yellow-800 mb-2">Quick Budget Distribution</h5>
+                                      <div className="flex flex-wrap gap-2">
+                                        <button
+                                          onClick={() => {
+                                            const totalBudget = editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0;
+                                            const monthlyAverage = Math.round(totalBudget / 12);
+                                            setEditingMonthlyData(prev => ({
+                                              ...prev,
+                                              [row.id]: prev[row.id]?.map(month => ({ ...month, budgetValue: monthlyAverage })) || []
+                                            }));
+                                          }}
+                                          className="bg-blue-100 text-blue-800 px-3 py-1 rounded text-xs hover:bg-blue-200 transition-colors"
+                                        >
+                                          📊 Equal Distribution
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            const seasonalMultipliers = [0.8, 0.8, 0.9, 0.9, 1.0, 1.0, 1.1, 1.1, 1.2, 1.2, 1.3, 1.4];
+                                            const totalBudget = editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0;
+                                            const baseValue = totalBudget / 12;
+                                            setEditingMonthlyData(prev => ({
+                                              ...prev,
+                                              [row.id]: prev[row.id]?.map((month, index) => ({
+                                                ...month,
+                                                budgetValue: Math.round(baseValue * seasonalMultipliers[index])
+                                              })) || []
+                                            }));
+                                          }}
+                                          className="bg-green-100 text-green-800 px-3 py-1 rounded text-xs hover:bg-green-200 transition-colors"
+                                        >
+                                          📈 Seasonal Growth
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            setEditingMonthlyData(prev => ({
+                                              ...prev,
+                                              [row.id]: prev[row.id]?.map(month => ({ ...month, budgetValue: 0 })) || []
+                                            }));
+                                          }}
+                                          className="bg-red-100 text-red-800 px-3 py-1 rounded text-xs hover:bg-red-200 transition-colors"
+                                        >
+                                          🗑️ Clear All
+                                        </button>
                                       </div>
                                     </div>
-                                  ) : (
-                                    // Original detailed table view
+
+                                    {/* 2-Row Horizontal Table */}
                                     <div className="overflow-x-auto">
-                                      <table className="w-full text-sm">
+                                      <table className="w-full min-w-[800px] border border-gray-300 rounded-lg">
                                         <thead>
                                           <tr className="bg-gray-100">
-                                            <th className="p-2 text-left">Month</th>
-                                            <th className="p-2 text-left">Budget Value</th>
-                                            <th className="p-2 text-left">Rate</th>
-                                            <th className="p-2 text-left">Stock</th>
-                                            <th className="p-2 text-left">GIT</th>
-                                            <th className="p-2 text-left">Discount</th>
-                                            <th className="p-2 text-left">Total</th>
+                                            <th className="p-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">Month</th>
+                                            {editingMonthlyData[row.id]?.map((month, monthIndex) => (
+                                              <th key={monthIndex} className="p-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">
+                                                {month.month}
+                                              </th>
+                                            )) || []}
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          {editingMonthlyData[row.id]?.map((month, monthIndex) => (
-                                            <tr key={monthIndex} className="border-b">
-                                              <td className="p-2 font-medium">{month.month}</td>
-                                              <td className="p-2">
+                                          <tr className="bg-white">
+                                            <td className="p-3 font-medium text-gray-800 border-r border-gray-300 bg-gray-50">Budget Units</td>
+                                            {editingMonthlyData[row.id]?.map((month, monthIndex) => (
+                                              <td key={monthIndex} className="p-2 border-r border-gray-300">
                                                 <input
                                                   type="number"
-                                                  className="w-20 p-1 border border-gray-300 rounded"
+                                                  className="w-full p-2 text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                   value={month.budgetValue}
                                                   onChange={(e) => handleMonthlyDataChange(
                                                     row.id,
@@ -1164,69 +1086,53 @@ const SalesBudget: React.FC = () => {
                                                     'budgetValue',
                                                     parseInt(e.target.value) || 0
                                                   )}
+                                                  placeholder="0"
                                                 />
                                               </td>
-                                              <td className="p-2">
-                                                <input
-                                                  type="number"
-                                                  className="w-20 p-1 border border-gray-300 rounded"
-                                                  value={month.rate}
-                                                  onChange={(e) => handleMonthlyDataChange(
-                                                    row.id,
-                                                    monthIndex,
-                                                    'rate',
-                                                    parseFloat(e.target.value) || 0
-                                                  )}
-                                                />
-                                              </td>
-                                              <td className="p-2">
-                                                <input
-                                                  type="number"
-                                                  className="w-20 p-1 border border-gray-300 rounded"
-                                                  value={month.stock}
-                                                  onChange={(e) => handleMonthlyDataChange(
-                                                    row.id,
-                                                    monthIndex,
-                                                    'stock',
-                                                    parseInt(e.target.value) || 0
-                                                  )}
-                                                />
-                                              </td>
-                                              <td className="p-2">
-                                                <input
-                                                  type="number"
-                                                  className="w-20 p-1 border border-gray-300 rounded"
-                                                  value={month.git}
-                                                  onChange={(e) => handleMonthlyDataChange(
-                                                    row.id,
-                                                    monthIndex,
-                                                    'git',
-                                                    parseInt(e.target.value) || 0
-                                                  )}
-                                                />
-                                              </td>
-                                              <td className="p-2">
-                                                <input
-                                                  type="number"
-                                                  className="w-20 p-1 border border-gray-300 rounded"
-                                                  value={month.discount}
-                                                  onChange={(e) => handleMonthlyDataChange(
-                                                    row.id,
-                                                    monthIndex,
-                                                    'discount',
-                                                    parseFloat(e.target.value) || 0
-                                                  )}
-                                                />
-                                              </td>
-                                              <td className="p-2 font-medium">
-                                                ${((month.budgetValue * month.rate) - month.discount).toLocaleString()}
-                                              </td>
-                                            </tr>
-                                          )) || []}
+                                            )) || []}
+                                          </tr>
                                         </tbody>
                                       </table>
                                     </div>
-                                  )}
+
+                                    {/* Summary Stats */}
+                                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                        <div>
+                                          <div className="text-sm text-blue-600 font-medium">Total Units</div>
+                                          <div className="text-lg font-bold text-blue-800">
+                                            {editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0).toLocaleString() || 0}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <div className="text-sm text-green-600 font-medium">Total Value</div>
+                                          <div className="text-lg font-bold text-green-800">
+                                            ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * (row.rate || 1)), 0).toLocaleString() || 0}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <div className="text-sm text-purple-600 font-medium">Avg/Month</div>
+                                          <div className="text-lg font-bold text-purple-800">
+                                            {Math.round((editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0) / 12).toLocaleString()}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <div className="text-sm text-orange-600 font-medium">Budget Growth</div>
+                                          <div className="text-lg font-bold text-orange-800">
+                                            {(() => {
+                                              const monthlyData = editingMonthlyData[row.id] || [];
+                                              if (monthlyData.length < 12) return '0%';
+                                              const firstHalf = monthlyData.slice(0, 6).reduce((sum, m) => sum + m.budgetValue, 0);
+                                              const secondHalf = monthlyData.slice(6, 12).reduce((sum, m) => sum + m.budgetValue, 0);
+                                              const growth = firstHalf > 0 ? ((secondHalf - firstHalf) / firstHalf * 100) : 0;
+                                              return `${growth > 0 ? '+' : ''}${growth.toFixed(1)}%`;
+                                            })()
+                                          }
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
 
                                   <div className="mt-4 flex justify-between items-center">
                                     <div className="text-sm text-gray-600">

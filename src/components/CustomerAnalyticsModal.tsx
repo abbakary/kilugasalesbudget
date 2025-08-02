@@ -29,17 +29,13 @@ const CustomerAnalyticsModal: React.FC<CustomerAnalyticsModalProps> = ({
         setAnalytics({
           customerId: customer.id,
           totalForecast: 0,
-          averageConfidence: 0,
-          totalItems: 0,
           monthlyBreakdown: {},
           categoryBreakdown: {},
           channelBreakdown: {},
-          seasonalTrends: {},
-          riskAssessment: {
-            riskLevel: 'Low',
-            confidenceScore: 0,
-            riskFactors: ['No forecasts available']
-          }
+          growthRate: 0,
+          seasonalTrends: [],
+          riskScore: 0,
+          confidenceScore: 0
         });
       }
     }

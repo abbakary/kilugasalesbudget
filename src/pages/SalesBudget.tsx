@@ -514,13 +514,25 @@ const SalesBudget: React.FC = () => {
   // Calculate totals based on filtered data and year selection
   const totalBudget2025 = selectedYear2025 === '2025'
     ? tableData.reduce((sum, item) => sum + item.budget2025, 0)
-    : tableData.reduce((sum, item) => sum + item.budget2026, 0);
+    : tableData.reduce((sum, item) => sum + item.budgetValue2026, 0);
   const totalActual2025 = selectedYear2025 === '2025'
     ? tableData.reduce((sum, item) => sum + item.actual2025, 0)
     : 0; // No actual data for future years
   const totalBudget2026 = selectedYear2026 === '2026'
-    ? tableData.reduce((sum, item) => sum + item.budget2026, 0)
+    ? tableData.reduce((sum, item) => sum + item.budgetValue2026, 0)
     : tableData.reduce((sum, item) => sum + item.budget2025, 0);
+
+  // Calculate units from monthly data for 2026, otherwise use standard calculation
+  const totalUnits2025 = selectedYear2025 === '2025'
+    ? tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0)
+    : tableData.reduce((sum, item) => sum + item.budget2026, 0);
+  const totalUnits2026 = selectedYear2026 === '2026'
+    ? tableData.reduce((sum, item) => sum + item.budget2026, 0) // budget2026 stores total units from monthly data
+    : tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0);
+  const totalActualUnits2025 = selectedYear2025 === '2025'
+    ? tableData.reduce((sum, item) => sum + Math.floor(item.actual2025 / (item.rate || 1)), 0)
+    : 0;
+
   const budgetGrowth = totalBudget2025 > 0 ? ((totalBudget2026 - totalBudget2025) / totalBudget2025) * 100 : 0;
 
   return (
@@ -745,10 +757,7 @@ const SalesBudget: React.FC = () => {
                   <p className="text-xs text-gray-600">Budget {selectedYear2025}</p>
                   <p className="text-lg font-semibold text-gray-900">${totalBudget2025.toLocaleString()}</p>
                   <p className="text-xs text-gray-600">
-                    {selectedYear2025 === '2025'
-                      ? tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0).toLocaleString()
-                      : tableData.reduce((sum, item) => sum + Math.floor(item.budget2026 / (item.rate || 1)), 0).toLocaleString()
-                    } Units
+                    {totalUnits2025.toLocaleString()} Units
                   </p>
                 </div>
               </div>
@@ -757,10 +766,7 @@ const SalesBudget: React.FC = () => {
                   <p className="text-xs text-gray-600">Actual {selectedYear2025}</p>
                   <p className="text-lg font-semibold text-gray-900">${totalActual2025.toLocaleString()}</p>
                   <p className="text-xs text-gray-600">
-                    {selectedYear2025 === '2025'
-                      ? tableData.reduce((sum, item) => sum + Math.floor(item.actual2025 / (item.rate || 1)), 0).toLocaleString()
-                      : '0'
-                    } Units
+                    {totalActualUnits2025.toLocaleString()} Units
                   </p>
                 </div>
               </div>
@@ -769,10 +775,7 @@ const SalesBudget: React.FC = () => {
                   <p className="text-xs text-gray-600">Budget {selectedYear2026}</p>
                   <p className="text-lg font-semibold text-gray-900">${totalBudget2026.toLocaleString()}</p>
                   <p className="text-xs text-gray-600">
-                    {selectedYear2026 === '2026'
-                      ? tableData.reduce((sum, item) => sum + Math.floor(item.budget2026 / (item.rate || 1)), 0).toLocaleString()
-                      : tableData.reduce((sum, item) => sum + Math.floor(item.budget2025 / (item.rate || 1)), 0).toLocaleString()
-                    } Units
+                    {totalUnits2026.toLocaleString()} Units
                   </p>
                 </div>
               </div>

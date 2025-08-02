@@ -87,6 +87,7 @@ const SalesBudget: React.FC = () => {
 
   // Monthly editing state
   const [editingMonthlyData, setEditingMonthlyData] = useState<{[key: number]: MonthlyBudget[]}>({});
+  const [simplifiedBudgetMode, setSimplifiedBudgetMode] = useState(false);
 
   // Distribution tracking state
   const [appliedDistributions, setAppliedDistributions] = useState<Array<{
@@ -282,26 +283,56 @@ const SalesBudget: React.FC = () => {
   const handleSaveMonthlyData = (rowId: number) => {
     const monthlyData = editingMonthlyData[rowId];
     if (monthlyData) {
-      // Calculate budget value 2026 from monthly data
-      const budgetValue2026 = monthlyData.reduce((sum, month) => sum + month.budgetValue, 0);
-      const totalBudget2026 = monthlyData.reduce((sum, month) => sum + (month.budgetValue * month.rate), 0);
-      
-      setTableData(prev => prev.map(item => 
-        item.id === rowId ? {
-          ...item,
-          monthlyData: monthlyData,
-          budget2026: budgetValue2026,
-          budgetValue2026: totalBudget2026
-        } : item
-      ));
-      
+      const row = tableData.find(item => item.id === rowId);
+      let budgetValue2026: number;
+      let totalBudget2026: number;
+
+      if (simplifiedBudgetMode) {
+        // In simplified mode, use only budget value
+        budgetValue2026 = monthlyData.reduce((sum, month) => sum + month.budgetValue, 0);
+        // Use the row's default rate for calculation if available
+        const defaultRate = row?.rate || 1;
+        totalBudget2026 = monthlyData.reduce((sum, month) => sum + (month.budgetValue * defaultRate), 0);
+
+        // Update monthly data with default values for other fields
+        const updatedMonthlyData = monthlyData.map(month => ({
+          ...month,
+          rate: defaultRate,
+          stock: row?.stock || 0,
+          git: row?.git || 0,
+          discount: 0
+        }));
+
+        setTableData(prev => prev.map(item =>
+          item.id === rowId ? {
+            ...item,
+            monthlyData: updatedMonthlyData,
+            budget2026: budgetValue2026,
+            budgetValue2026: totalBudget2026
+          } : item
+        ));
+      } else {
+        // Original calculation with all fields
+        budgetValue2026 = monthlyData.reduce((sum, month) => sum + month.budgetValue, 0);
+        totalBudget2026 = monthlyData.reduce((sum, month) => sum + (month.budgetValue * month.rate) - month.discount, 0);
+
+        setTableData(prev => prev.map(item =>
+          item.id === rowId ? {
+            ...item,
+            monthlyData: monthlyData,
+            budget2026: budgetValue2026,
+            budgetValue2026: totalBudget2026
+          } : item
+        ));
+      }
+
       setEditingRowId(null);
       setEditingMonthlyData(prev => {
         const newData = { ...prev };
         delete newData[rowId];
         return newData;
       });
-      
+
       showNotification(`Monthly budget data saved for row ${rowId}`, 'success');
     }
   };
@@ -967,32 +998,35 @@ const SalesBudget: React.FC = () => {
                             <tr className="bg-gray-50">
                               <td colSpan={12} className="p-4 border-b border-gray-200">
                                 <div className="bg-white rounded-lg p-4 border">
-                                  <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                                    <Calendar className="w-5 h-5" />
-                                    Monthly Budget Data for {selectedYear2026}
-                                  </h4>
+                                  <div className="flex items-center justify-between mb-4">
+                                    <h4 className="text-lg font-semibold flex items-center gap-2">
+                                      <Calendar className="w-5 h-5" />
+                                      Monthly Budget Data for {selectedYear2026}
+                                    </h4>
+                                    <div className="flex items-center gap-2">
+                                      <label className="flex items-center gap-2 text-sm">
+                                        <input
+                                          type="checkbox"
+                                          checked={simplifiedBudgetMode}
+                                          onChange={(e) => setSimplifiedBudgetMode(e.target.checked)}
+                                          className="w-4 h-4 accent-blue-600"
+                                        />
+                                        <span className="text-gray-700">Simplified Mode (Month + Budget Only)</span>
+                                      </label>
+                                    </div>
+                                  </div>
 
-                                  <div className="overflow-x-auto">
-                                    <table className="w-full text-sm">
-                                      <thead>
-                                        <tr className="bg-gray-100">
-                                          <th className="p-2 text-left">Month</th>
-                                          <th className="p-2 text-left">Budget Value</th>
-                                          <th className="p-2 text-left">Rate</th>
-                                          <th className="p-2 text-left">Stock</th>
-                                          <th className="p-2 text-left">GIT</th>
-                                          <th className="p-2 text-left">Discount</th>
-                                          <th className="p-2 text-left">Total</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
+                                  {simplifiedBudgetMode ? (
+                                    // Simplified horizontal layout - only Month and Budget Value
+                                    <div className="space-y-4">
+                                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                                         {editingMonthlyData[row.id]?.map((month, monthIndex) => (
-                                          <tr key={monthIndex} className="border-b">
-                                            <td className="p-2 font-medium">{month.month}</td>
-                                            <td className="p-2">
+                                          <div key={monthIndex} className="bg-gray-50 p-3 rounded-lg border">
+                                            <div className="text-center">
+                                              <div className="text-sm font-medium text-gray-700 mb-2">{month.month}</div>
                                               <input
                                                 type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
+                                                className="w-full p-2 text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                                                 value={month.budgetValue}
                                                 onChange={(e) => handleMonthlyDataChange(
                                                   row.id,
@@ -1000,72 +1034,152 @@ const SalesBudget: React.FC = () => {
                                                   'budgetValue',
                                                   parseInt(e.target.value) || 0
                                                 )}
+                                                placeholder="0"
                                               />
-                                            </td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.rate}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'rate',
-                                                  parseFloat(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.stock}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'stock',
-                                                  parseInt(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.git}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'git',
-                                                  parseInt(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2">
-                                              <input
-                                                type="number"
-                                                className="w-20 p-1 border border-gray-300 rounded"
-                                                value={month.discount}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'discount',
-                                                  parseFloat(e.target.value) || 0
-                                                )}
-                                              />
-                                            </td>
-                                            <td className="p-2 font-medium">
-                                              ${((month.budgetValue * month.rate) - month.discount).toLocaleString()}
-                                            </td>
-                                          </tr>
+                                              <div className="text-xs text-gray-500 mt-1">Budget Units</div>
+                                            </div>
+                                          </div>
                                         )) || []}
-                                      </tbody>
-                                    </table>
-                                  </div>
+                                      </div>
+
+                                      {/* Budget Growth Summary */}
+                                      <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                          <div>
+                                            <div className="text-sm text-blue-600 font-medium">Total Units</div>
+                                            <div className="text-lg font-bold text-blue-800">
+                                              {editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0).toLocaleString() || 0}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <div className="text-sm text-green-600 font-medium">Total Value</div>
+                                            <div className="text-lg font-bold text-green-800">
+                                              ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * (row.rate || 1)), 0).toLocaleString() || 0}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <div className="text-sm text-purple-600 font-medium">Avg/Month</div>
+                                            <div className="text-lg font-bold text-purple-800">
+                                              {Math.round((editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0) / 12).toLocaleString()}
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <div className="text-sm text-orange-600 font-medium">Growth Rate</div>
+                                            <div className="text-lg font-bold text-orange-800">
+                                              {(() => {
+                                                const monthlyData = editingMonthlyData[row.id] || [];
+                                                if (monthlyData.length < 2) return '0%';
+                                                const firstHalf = monthlyData.slice(0, 6).reduce((sum, m) => sum + m.budgetValue, 0);
+                                                const secondHalf = monthlyData.slice(6, 12).reduce((sum, m) => sum + m.budgetValue, 0);
+                                                const growth = firstHalf > 0 ? ((secondHalf - firstHalf) / firstHalf * 100) : 0;
+                                                return `${growth > 0 ? '+' : ''}${growth.toFixed(1)}%`;
+                                              })()
+                                            }
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    // Original detailed table view
+                                    <div className="overflow-x-auto">
+                                      <table className="w-full text-sm">
+                                        <thead>
+                                          <tr className="bg-gray-100">
+                                            <th className="p-2 text-left">Month</th>
+                                            <th className="p-2 text-left">Budget Value</th>
+                                            <th className="p-2 text-left">Rate</th>
+                                            <th className="p-2 text-left">Stock</th>
+                                            <th className="p-2 text-left">GIT</th>
+                                            <th className="p-2 text-left">Discount</th>
+                                            <th className="p-2 text-left">Total</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {editingMonthlyData[row.id]?.map((month, monthIndex) => (
+                                            <tr key={monthIndex} className="border-b">
+                                              <td className="p-2 font-medium">{month.month}</td>
+                                              <td className="p-2">
+                                                <input
+                                                  type="number"
+                                                  className="w-20 p-1 border border-gray-300 rounded"
+                                                  value={month.budgetValue}
+                                                  onChange={(e) => handleMonthlyDataChange(
+                                                    row.id,
+                                                    monthIndex,
+                                                    'budgetValue',
+                                                    parseInt(e.target.value) || 0
+                                                  )}
+                                                />
+                                              </td>
+                                              <td className="p-2">
+                                                <input
+                                                  type="number"
+                                                  className="w-20 p-1 border border-gray-300 rounded"
+                                                  value={month.rate}
+                                                  onChange={(e) => handleMonthlyDataChange(
+                                                    row.id,
+                                                    monthIndex,
+                                                    'rate',
+                                                    parseFloat(e.target.value) || 0
+                                                  )}
+                                                />
+                                              </td>
+                                              <td className="p-2">
+                                                <input
+                                                  type="number"
+                                                  className="w-20 p-1 border border-gray-300 rounded"
+                                                  value={month.stock}
+                                                  onChange={(e) => handleMonthlyDataChange(
+                                                    row.id,
+                                                    monthIndex,
+                                                    'stock',
+                                                    parseInt(e.target.value) || 0
+                                                  )}
+                                                />
+                                              </td>
+                                              <td className="p-2">
+                                                <input
+                                                  type="number"
+                                                  className="w-20 p-1 border border-gray-300 rounded"
+                                                  value={month.git}
+                                                  onChange={(e) => handleMonthlyDataChange(
+                                                    row.id,
+                                                    monthIndex,
+                                                    'git',
+                                                    parseInt(e.target.value) || 0
+                                                  )}
+                                                />
+                                              </td>
+                                              <td className="p-2">
+                                                <input
+                                                  type="number"
+                                                  className="w-20 p-1 border border-gray-300 rounded"
+                                                  value={month.discount}
+                                                  onChange={(e) => handleMonthlyDataChange(
+                                                    row.id,
+                                                    monthIndex,
+                                                    'discount',
+                                                    parseFloat(e.target.value) || 0
+                                                  )}
+                                                />
+                                              </td>
+                                              <td className="p-2 font-medium">
+                                                ${((month.budgetValue * month.rate) - month.discount).toLocaleString()}
+                                              </td>
+                                            </tr>
+                                          )) || []}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  )}
 
                                   <div className="mt-4 flex justify-between items-center">
                                     <div className="text-sm text-gray-600">
-                                      <strong>Total Budget Value:</strong> ${editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * month.rate) - month.discount, 0).toLocaleString() || 0}
+                                      <strong>Total Budget Value:</strong> ${simplifiedBudgetMode
+                                        ? editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * (row.rate || 1)), 0).toLocaleString() || 0
+                                        : editingMonthlyData[row.id]?.reduce((sum, month) => sum + (month.budgetValue * month.rate) - month.discount, 0).toLocaleString() || 0
+                                      }
                                     </div>
                                     <div className="flex gap-2">
                                       <button

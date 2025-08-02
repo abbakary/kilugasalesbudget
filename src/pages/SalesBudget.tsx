@@ -770,13 +770,28 @@ const SalesBudget: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
+              <div className={`p-2 rounded shadow-sm border-2 transition-all duration-500 hover:shadow-lg ${
+                totalBudget2026 > 0
+                  ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300 shadow-purple-100'
+                  : 'bg-white border-gray-200'
+              }`}>
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-600">Budget {selectedYear2026}</p>
-                  <p className="text-lg font-semibold text-gray-900">${totalBudget2026.toLocaleString()}</p>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600 font-medium">Budget {selectedYear2026}</p>
+                  <p className={`text-lg font-bold transition-all duration-500 ${
+                    totalBudget2026 > 0 ? 'text-purple-900 scale-105' : 'text-gray-500'
+                  }`}>${totalBudget2026.toLocaleString()}</p>
+                  <p className={`text-xs font-medium transition-colors duration-500 ${
+                    totalBudget2026 > 0 ? 'text-purple-600' : 'text-gray-400'
+                  }`}>
                     {totalUnits2026.toLocaleString()} Units
                   </p>
+                  {totalBudget2026 > 0 && (
+                    <div className="mt-1">
+                      <span className="inline-block px-1.5 py-0.5 bg-purple-200 text-purple-800 text-xs rounded-full font-medium animate-pulse">
+                        📈 Updated
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="bg-white p-2 rounded shadow-sm border border-gray-200">

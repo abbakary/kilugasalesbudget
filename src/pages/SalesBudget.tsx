@@ -642,6 +642,37 @@ const SalesBudget: React.FC = () => {
               </div>
             </div>
 
+            {/* Quick Filter Actions */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-sm text-gray-600">
+                <span className="font-medium">Active Filters:</span>
+                {!selectedCustomer && !selectedCategory && !selectedBrand && !selectedItem && (
+                  <span className="text-gray-400 ml-1">None</span>
+                )}
+                {selectedCustomer && <span className="ml-1 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Customer: {selectedCustomer}</span>}
+                {selectedCategory && <span className="ml-1 px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Category: {selectedCategory}</span>}
+                {selectedBrand && <span className="ml-1 px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Brand: {selectedBrand}</span>}
+                {selectedItem && <span className="ml-1 px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">Item: {selectedItem}</span>}
+              </div>
+              {(selectedCustomer || selectedCategory || selectedBrand || selectedItem) && (
+                <button
+                  onClick={() => {
+                    console.log('Quick clearing all filters');
+                    setSelectedCustomer('');
+                    setSelectedCategory('');
+                    setSelectedBrand('');
+                    setSelectedItem('');
+                    showNotification('All filters cleared', 'success');
+                  }}
+                  className="text-xs bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition-colors flex items-center gap-1"
+                  title="Clear all active filters"
+                >
+                  <X className="w-3 h-3" />
+                  Clear Filters
+                </button>
+              )}
+            </div>
+
             {/* Filters and Action Buttons Row */}
             <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
               {/* Customer Filter */}

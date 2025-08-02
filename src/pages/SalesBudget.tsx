@@ -676,12 +676,21 @@ const SalesBudget: React.FC = () => {
             {/* Filters and Action Buttons Row */}
             <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
               {/* Customer Filter */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">CUSTOMER:</label>
-                <select 
-                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className={`bg-white p-3 rounded-lg shadow-sm border-2 transition-all duration-200 ${
+                selectedCustomer ? 'border-blue-400 bg-blue-50' : 'border-yellow-400'
+              }`}>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  👤 CUSTOMER:
+                  {selectedCustomer && <span className="text-blue-600">✓</span>}
+                </label>
+                <select
+                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   value={selectedCustomer}
-                  onChange={(e) => setSelectedCustomer(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Customer filter changed:', e.target.value);
+                    setSelectedCustomer(e.target.value);
+                    if (e.target.value) showNotification(`Filtered by customer: ${e.target.value}`, 'success');
+                  }}
                 >
                   <option value="">Select customer</option>
                   <option value="Action Aid International (Tz)">Action Aid International (Tz)</option>
@@ -690,12 +699,21 @@ const SalesBudget: React.FC = () => {
               </div>
 
               {/* Category Filter */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">CATEGORY:</label>
-                <select 
-                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className={`bg-white p-3 rounded-lg shadow-sm border-2 transition-all duration-200 ${
+                selectedCategory ? 'border-green-400 bg-green-50' : 'border-yellow-400'
+              }`}>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  📦 CATEGORY:
+                  {selectedCategory && <span className="text-green-600">✓</span>}
+                </label>
+                <select
+                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Category filter changed:', e.target.value);
+                    setSelectedCategory(e.target.value);
+                    if (e.target.value) showNotification(`Filtered by category: ${e.target.value}`, 'success');
+                  }}
                 >
                   <option value="">Select category</option>
                   <option value="Tyres">Tyres</option>
@@ -704,12 +722,21 @@ const SalesBudget: React.FC = () => {
               </div>
 
               {/* Brand Filter */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">BRAND:</label>
-                <select 
-                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className={`bg-white p-3 rounded-lg shadow-sm border-2 transition-all duration-200 ${
+                selectedBrand ? 'border-purple-400 bg-purple-50' : 'border-yellow-400'
+              }`}>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  🏷️ BRAND:
+                  {selectedBrand && <span className="text-purple-600">✓</span>}
+                </label>
+                <select
+                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
                   value={selectedBrand}
-                  onChange={(e) => setSelectedBrand(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Brand filter changed:', e.target.value);
+                    setSelectedBrand(e.target.value);
+                    if (e.target.value) showNotification(`Filtered by brand: ${e.target.value}`, 'success');
+                  }}
                 >
                   <option value="">Select brand</option>
                   <option value="BF Goodrich">BF Goodrich</option>

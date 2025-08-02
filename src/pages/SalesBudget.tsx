@@ -590,7 +590,8 @@ const SalesBudget: React.FC = () => {
               <div className="flex items-center justify-end">
                 <button
                   onClick={handleDownloadBudget}
-                  className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
+                  className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors transform hover:scale-105 active:scale-95"
+                  title="Download budget data for current year"
                 >
                   <DownloadIcon className="w-5 h-5" />
                   <span>Download Budget ({selectedYear2026})</span>
@@ -607,24 +608,34 @@ const SalesBudget: React.FC = () => {
                   <p className="text-xs text-blue-700 mt-1">💡 Simplified 2-row layout shows months and budget values for easy entry and budget growth tracking</p>
                 </div>
               </div>
-              <div className="flex">
-                <button 
-                  onClick={() => setActiveView('customer-item')}
-                  className={`px-6 py-2 font-semibold rounded-l-md ${
-                    activeView === 'customer-item' 
-                      ? 'bg-orange-500 text-white' 
-                      : 'bg-white text-gray-600 border border-gray-300'
+              <div className="flex shadow-sm rounded-md overflow-hidden">
+                <button
+                  onClick={() => {
+                    console.log('Switching to customer-item view');
+                    setActiveView('customer-item');
+                    showNotification('Switched to Customer-Item view', 'success');
+                  }}
+                  className={`px-6 py-2 font-semibold transition-all duration-200 ${
+                    activeView === 'customer-item'
+                      ? 'bg-orange-500 text-white shadow-md transform scale-105'
+                      : 'bg-white text-gray-600 border border-gray-300 hover:bg-orange-50 hover:text-orange-600'
                   }`}
+                  title="View data organized by customer and their items"
                 >
                   Customer - Item
                 </button>
-                <button 
-                  onClick={() => setActiveView('item-wise')}
-                  className={`px-6 py-2 font-semibold rounded-r-md ${
-                    activeView === 'item-wise' 
-                      ? 'bg-orange-500 text-white' 
-                      : 'bg-white text-gray-600 border border-gray-300'
+                <button
+                  onClick={() => {
+                    console.log('Switching to item-wise view');
+                    setActiveView('item-wise');
+                    showNotification('Switched to Item-Wise view', 'success');
+                  }}
+                  className={`px-6 py-2 font-semibold transition-all duration-200 ${
+                    activeView === 'item-wise'
+                      ? 'bg-orange-500 text-white shadow-md transform scale-105'
+                      : 'bg-white text-gray-600 border border-gray-300 hover:bg-orange-50 hover:text-orange-600'
                   }`}
+                  title="View data organized by items and their customers"
                 >
                   Item Wise
                 </button>
@@ -723,15 +734,19 @@ const SalesBudget: React.FC = () => {
                       console.log('Yearly Budget button clicked');
                       setIsYearlyBudgetModalOpen(true);
                     }}
-                    className="bg-green-600 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-700 transition-colors"
-                    title="Open Yearly Budget Planning Modal"
+                    className="bg-green-600 text-white font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-green-700 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                    title="Create new yearly budget plan with monthly breakdown"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Yearly Budget</span>
                   </button>
                   <button
-                    onClick={setDistribution}
-                    className="bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-blue-200 transition-colors"
+                    onClick={() => {
+                      console.log('Distribution button clicked');
+                      setDistribution();
+                    }}
+                    className="bg-blue-100 text-blue-800 font-semibold px-2 py-1 rounded-md text-xs flex items-center gap-1 hover:bg-blue-200 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                    title="Open distribution management for budget allocation"
                   >
                     <PieChart className="w-4 h-4" />
                     <span>Distribution</span>
@@ -743,11 +758,35 @@ const SalesBudget: React.FC = () => {
             {/* Distribution Management */}
             <DistributionManager
               distributions={appliedDistributions}
-              onEditDistribution={() => {}}
-              onDeleteDistribution={() => {}}
-              onDuplicateDistribution={() => {}}
-              onToggleDistribution={() => {}}
-              onCreateNew={() => setIsDistributionModalOpen(true)}
+              onEditDistribution={(id) => {
+                console.log('Edit distribution:', id);
+                showNotification('Distribution editing feature coming soon', 'success');
+              }}
+              onDeleteDistribution={(id) => {
+                console.log('Delete distribution:', id);
+                setAppliedDistributions(prev => prev.filter(d => d.id !== id));
+                showNotification('Distribution deleted successfully', 'success');
+              }}
+              onDuplicateDistribution={(id) => {
+                console.log('Duplicate distribution:', id);
+                const dist = appliedDistributions.find(d => d.id === id);
+                if (dist) {
+                  const newDist = { ...dist, id: `${dist.id}_copy_${Date.now()}`, name: `${dist.name} (Copy)` };
+                  setAppliedDistributions(prev => [...prev, newDist]);
+                  showNotification('Distribution duplicated successfully', 'success');
+                }
+              }}
+              onToggleDistribution={(id) => {
+                console.log('Toggle distribution:', id);
+                setAppliedDistributions(prev => prev.map(d =>
+                  d.id === id ? { ...d, isActive: !d.isActive } : d
+                ));
+                showNotification('Distribution status updated', 'success');
+              }}
+              onCreateNew={() => {
+                console.log('Create new distribution');
+                setIsDistributionModalOpen(true);
+              }}
             />
 
             {/* Real-time Update Indicator */}
@@ -850,10 +889,12 @@ const SalesBudget: React.FC = () => {
                   <p className="text-sm">Try adjusting your filter criteria or clear the filters</p>
                   <button
                     onClick={() => {
+                      console.log('Clearing all filters');
                       setSelectedCustomer('');
                       setSelectedCategory('');
                       setSelectedBrand('');
                       setSelectedItem('');
+                      showNotification('All filters cleared', 'success');
                     }}
                     className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
                   >

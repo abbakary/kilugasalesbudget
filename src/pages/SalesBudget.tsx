@@ -752,11 +752,11 @@ const SalesBudget: React.FC = () => {
 
             {/* Stats Grid - Real-time Budget Statistics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">{/* Animated when data changes */}
-              <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
+              <div className="bg-white p-2 rounded shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-600">Budget {selectedYear2025}</p>
-                  <p className="text-lg font-semibold text-gray-900">${totalBudget2025.toLocaleString()}</p>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600 font-medium">Budget {selectedYear2025}</p>
+                  <p className="text-lg font-bold text-blue-900 transition-colors duration-300">${totalBudget2025.toLocaleString()}</p>
+                  <p className="text-xs text-blue-600 font-medium">
                     {totalUnits2025.toLocaleString()} Units
                   </p>
                 </div>

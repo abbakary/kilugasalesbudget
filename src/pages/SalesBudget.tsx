@@ -761,11 +761,11 @@ const SalesBudget: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <div className="bg-white p-2 rounded shadow-sm border border-gray-200">
+              <div className="bg-white p-2 rounded shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-600">Actual {selectedYear2025}</p>
-                  <p className="text-lg font-semibold text-gray-900">${totalActual2025.toLocaleString()}</p>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600 font-medium">Actual {selectedYear2025}</p>
+                  <p className="text-lg font-bold text-green-900 transition-colors duration-300">${totalActual2025.toLocaleString()}</p>
+                  <p className="text-xs text-green-600 font-medium">
                     {totalActualUnits2025.toLocaleString()} Units
                   </p>
                 </div>

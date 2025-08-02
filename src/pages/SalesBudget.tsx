@@ -1017,32 +1017,94 @@ const SalesBudget: React.FC = () => {
                                   </div>
 
                                   {simplifiedBudgetMode ? (
-                                    // Simplified horizontal layout - only Month and Budget Value
+                                    // Simplified 2-row horizontal layout - Month and Budget Value only
                                     <div className="space-y-4">
-                                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                                        {editingMonthlyData[row.id]?.map((month, monthIndex) => (
-                                          <div key={monthIndex} className="bg-gray-50 p-3 rounded-lg border">
-                                            <div className="text-center">
-                                              <div className="text-sm font-medium text-gray-700 mb-2">{month.month}</div>
-                                              <input
-                                                type="number"
-                                                className="w-full p-2 text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                                                value={month.budgetValue}
-                                                onChange={(e) => handleMonthlyDataChange(
-                                                  row.id,
-                                                  monthIndex,
-                                                  'budgetValue',
-                                                  parseInt(e.target.value) || 0
-                                                )}
-                                                placeholder="0"
-                                              />
-                                              <div className="text-xs text-gray-500 mt-1">Budget Units</div>
-                                            </div>
-                                          </div>
-                                        )) || []}
+                                      {/* Quick Distribution Tools */}
+                                      <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                        <h5 className="text-sm font-medium text-yellow-800 mb-2">Quick Budget Distribution</h5>
+                                        <div className="flex flex-wrap gap-2">
+                                          <button
+                                            onClick={() => {
+                                              const totalBudget = editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0;
+                                              const monthlyAverage = Math.round(totalBudget / 12);
+                                              setEditingMonthlyData(prev => ({
+                                                ...prev,
+                                                [row.id]: prev[row.id]?.map(month => ({ ...month, budgetValue: monthlyAverage })) || []
+                                              }));
+                                            }}
+                                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded text-xs hover:bg-blue-200 transition-colors"
+                                          >
+                                            📊 Equal Distribution
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              const seasonalMultipliers = [0.8, 0.8, 0.9, 0.9, 1.0, 1.0, 1.1, 1.1, 1.2, 1.2, 1.3, 1.4];
+                                              const totalBudget = editingMonthlyData[row.id]?.reduce((sum, month) => sum + month.budgetValue, 0) || 0;
+                                              const baseValue = totalBudget / 12;
+                                              setEditingMonthlyData(prev => ({
+                                                ...prev,
+                                                [row.id]: prev[row.id]?.map((month, index) => ({
+                                                  ...month,
+                                                  budgetValue: Math.round(baseValue * seasonalMultipliers[index])
+                                                })) || []
+                                              }));
+                                            }}
+                                            className="bg-green-100 text-green-800 px-3 py-1 rounded text-xs hover:bg-green-200 transition-colors"
+                                          >
+                                            📈 Seasonal Growth
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              setEditingMonthlyData(prev => ({
+                                                ...prev,
+                                                [row.id]: prev[row.id]?.map(month => ({ ...month, budgetValue: 0 })) || []
+                                              }));
+                                            }}
+                                            className="bg-red-100 text-red-800 px-3 py-1 rounded text-xs hover:bg-red-200 transition-colors"
+                                          >
+                                            🗑️ Clear All
+                                          </button>
+                                        </div>
                                       </div>
 
-                                      {/* Budget Growth Summary */}
+                                      {/* 2-Row Horizontal Table */}
+                                      <div className="overflow-x-auto">
+                                        <table className="w-full min-w-[800px] border border-gray-300 rounded-lg">
+                                          <thead>
+                                            <tr className="bg-gray-100">
+                                              <th className="p-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">Month</th>
+                                              {editingMonthlyData[row.id]?.map((month, monthIndex) => (
+                                                <th key={monthIndex} className="p-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">
+                                                  {month.month}
+                                                </th>
+                                              )) || []}
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr className="bg-white">
+                                              <td className="p-3 font-medium text-gray-800 border-r border-gray-300 bg-gray-50">Budget Units</td>
+                                              {editingMonthlyData[row.id]?.map((month, monthIndex) => (
+                                                <td key={monthIndex} className="p-2 border-r border-gray-300">
+                                                  <input
+                                                    type="number"
+                                                    className="w-full p-2 text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    value={month.budgetValue}
+                                                    onChange={(e) => handleMonthlyDataChange(
+                                                      row.id,
+                                                      monthIndex,
+                                                      'budgetValue',
+                                                      parseInt(e.target.value) || 0
+                                                    )}
+                                                    placeholder="0"
+                                                  />
+                                                </td>
+                                              )) || []}
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+
+                                      {/* Summary Stats */}
                                       <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                                           <div>
@@ -1064,11 +1126,11 @@ const SalesBudget: React.FC = () => {
                                             </div>
                                           </div>
                                           <div>
-                                            <div className="text-sm text-orange-600 font-medium">Growth Rate</div>
+                                            <div className="text-sm text-orange-600 font-medium">Budget Growth</div>
                                             <div className="text-lg font-bold text-orange-800">
                                               {(() => {
                                                 const monthlyData = editingMonthlyData[row.id] || [];
-                                                if (monthlyData.length < 2) return '0%';
+                                                if (monthlyData.length < 12) return '0%';
                                                 const firstHalf = monthlyData.slice(0, 6).reduce((sum, m) => sum + m.budgetValue, 0);
                                                 const secondHalf = monthlyData.slice(6, 12).reduce((sum, m) => sum + m.budgetValue, 0);
                                                 const growth = firstHalf > 0 ? ((secondHalf - firstHalf) / firstHalf * 100) : 0;

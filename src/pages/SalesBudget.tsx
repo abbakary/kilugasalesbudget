@@ -746,12 +746,21 @@ const SalesBudget: React.FC = () => {
               </div>
 
               {/* Item Filter */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">ITEM:</label>
-                <select 
-                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <div className={`bg-white p-3 rounded-lg shadow-sm border-2 transition-all duration-200 ${
+                selectedItem ? 'border-orange-400 bg-orange-50' : 'border-yellow-400'
+              }`}>
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  🔧 ITEM:
+                  {selectedItem && <span className="text-orange-600">✓</span>}
+                </label>
+                <select
+                  className="w-full text-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
                   value={selectedItem}
-                  onChange={(e) => setSelectedItem(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Item filter changed:', e.target.value);
+                    setSelectedItem(e.target.value);
+                    if (e.target.value) showNotification(`Filtered by item: ${e.target.value}`, 'success');
+                  }}
                 >
                   <option value="">Select item</option>
                   <option value="BF GOODRICH TYRE 235/85R16">BF GOODRICH TYRE 235/85R16</option>
@@ -762,21 +771,31 @@ const SalesBudget: React.FC = () => {
               </div>
 
               {/* Year Selectors */}
-              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-yellow-400">
-                <label className="block text-xs font-medium text-gray-700 mb-1">YEARS:</label>
+              <div className="bg-white p-3 rounded-lg shadow-sm border-2 border-indigo-400">
+                <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  📅 YEARS:
+                </label>
                 <div className="flex gap-1">
-                  <select 
-                    className="w-full text-xs p-1 border border-gray-300 rounded-md"
+                  <select
+                    className="w-full text-xs p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                     value={selectedYear2025}
-                    onChange={(e) => setSelectedYear2025(e.target.value)}
+                    onChange={(e) => {
+                      console.log('Year 2025 changed:', e.target.value);
+                      setSelectedYear2025(e.target.value);
+                      showNotification(`Changed base year to ${e.target.value}`, 'success');
+                    }}
                   >
                     <option value="2024">2024</option>
                     <option value="2025">2025</option>
                   </select>
-                  <select 
-                    className="w-full text-xs p-1 border border-gray-300 rounded-md"
+                  <select
+                    className="w-full text-xs p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
                     value={selectedYear2026}
-                    onChange={(e) => setSelectedYear2026(e.target.value)}
+                    onChange={(e) => {
+                      console.log('Year 2026 changed:', e.target.value);
+                      setSelectedYear2026(e.target.value);
+                      showNotification(`Changed target year to ${e.target.value}`, 'success');
+                    }}
                   >
                     <option value="2025">2025</option>
                     <option value="2026">2026</option>

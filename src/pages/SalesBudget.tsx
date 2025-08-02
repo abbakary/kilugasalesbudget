@@ -250,9 +250,17 @@ const SalesBudget: React.FC = () => {
   }, [selectedCustomer, selectedCategory, selectedBrand, selectedItem, originalTableData]);
 
   const handleSelectRow = (id: number) => {
-    setTableData(prev => prev.map(item =>
-      item.id === id ? { ...item, selected: !item.selected } : item
-    ));
+    console.log('Row selection toggled for ID:', id);
+    setTableData(prev => prev.map(item => {
+      if (item.id === id) {
+        const newSelected = !item.selected;
+        if (newSelected) {
+          showNotification(`Selected: ${item.customer} - ${item.item}`, 'success');
+        }
+        return { ...item, selected: newSelected };
+      }
+      return item;
+    }));
   };
 
   const handleSelectAll = () => {

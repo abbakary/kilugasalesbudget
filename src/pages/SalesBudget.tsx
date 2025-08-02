@@ -750,6 +750,17 @@ const SalesBudget: React.FC = () => {
               onCreateNew={() => setIsDistributionModalOpen(true)}
             />
 
+            {/* Real-time Update Indicator */}
+            {totalBudget2026 > 0 && (
+              <div className="mb-2 p-2 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                <p className="text-sm text-blue-800 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                  <span className="font-medium">Budget statistics updated in real-time</span>
+                  <span className="text-xs text-blue-600">• Enter monthly data to see growth calculations</span>
+                </p>
+              </div>
+            )}
+
             {/* Stats Grid - Real-time Budget Statistics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">{/* Animated when data changes */}
               <div className="bg-white p-2 rounded shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">

@@ -1000,22 +1000,12 @@ const SalesBudget: React.FC = () => {
                             <tr className="bg-gray-50">
                               <td colSpan={12} className="p-4 border-b border-gray-200">
                                 <div className="bg-white rounded-lg p-4 border">
-                                  <div className="flex items-center justify-between mb-4">
+                                  <div className="mb-4">
                                     <h4 className="text-lg font-semibold flex items-center gap-2">
                                       <Calendar className="w-5 h-5" />
                                       Monthly Budget Data for {selectedYear2026}
                                     </h4>
-                                    <div className="flex items-center gap-2">
-                                      <label className="flex items-center gap-2 text-sm">
-                                        <input
-                                          type="checkbox"
-                                          checked={simplifiedBudgetMode}
-                                          onChange={(e) => setSimplifiedBudgetMode(e.target.checked)}
-                                          className="w-4 h-4 accent-blue-600"
-                                        />
-                                        <span className="text-gray-700">Simplified Mode (Month + Budget Only)</span>
-                                      </label>
-                                    </div>
+                                    <p className="text-sm text-gray-600 mt-1">Enter budget values for each month using the simplified 2-row layout</p>
                                   </div>
 
                                   {simplifiedBudgetMode ? (

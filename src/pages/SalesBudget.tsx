@@ -87,7 +87,6 @@ const SalesBudget: React.FC = () => {
 
   // Monthly editing state
   const [editingMonthlyData, setEditingMonthlyData] = useState<{[key: number]: MonthlyBudget[]}>({});
-  const [simplifiedBudgetMode, setSimplifiedBudgetMode] = useState(false);
 
   // Distribution tracking state
   const [appliedDistributions, setAppliedDistributions] = useState<Array<{

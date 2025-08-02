@@ -23,6 +23,7 @@ const CustomerForecastModal: React.FC<CustomerForecastModalProps> = ({
   const [confidence, setConfidence] = useState<'low' | 'medium' | 'high'>('medium');
   const [notes, setNotes] = useState<string>('');
   const [monthlyData, setMonthlyData] = useState<{ [month: string]: { quantity: number; unitPrice: number; notes?: string } }>({});
+  const [simplifiedForecastMode, setSimplifiedForecastMode] = useState(false);
 
   // Get remaining months of the current year
   const getCurrentYearRemainingMonths = () => {
@@ -235,78 +236,253 @@ const CustomerForecastModal: React.FC<CustomerForecastModalProps> = ({
           {/* Monthly Forecast Input */}
           {selectedItemId && (
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <Calendar className="w-5 h-5 mr-2" />
-                Monthly Forecast Data
-              </h3>
-              
-              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Month
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Quantity
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Unit Price ($)
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Total Value ($)
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Notes
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {remainingMonths.map((month) => (
-                        <tr key={month.name} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {month.name} {month.year}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <input
-                              type="number"
-                              min="0"
-                              value={monthlyData[month.name]?.quantity || 0}
-                              onChange={(e) => handleMonthlyDataChange(month.name, 'quantity', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="0"
-                            />
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={monthlyData[month.name]?.unitPrice || 0}
-                              onChange={(e) => handleMonthlyDataChange(month.name, 'unitPrice', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="0.00"
-                            />
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                            ${calculateMonthlyTotal(month.name).toFixed(2)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <input
-                              type="text"
-                              value={monthlyData[month.name]?.notes || ''}
-                              onChange={(e) => handleMonthlyDataChange(month.name, 'notes', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="Optional notes..."
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Monthly Forecast Data
+                </h3>
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={simplifiedForecastMode}
+                      onChange={(e) => setSimplifiedForecastMode(e.target.checked)}
+                      className="w-4 h-4 accent-blue-600"
+                    />
+                    <span className="text-gray-700">Simplified Mode (Month + Quantity Only)</span>
+                  </label>
                 </div>
               </div>
+              
+              {simplifiedForecastMode ? (
+                // Simplified 2-row horizontal layout - Month and Quantity only
+                <div className="space-y-4">
+                  {/* Quick Distribution Tools */}
+                  <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                    <h5 className="text-sm font-medium text-yellow-800 mb-2">Quick Forecast Distribution</h5>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => {
+                          const totalQuantity = Object.values(monthlyData).reduce((sum, data) => sum + data.quantity, 0);
+                          const monthlyAverage = Math.round(totalQuantity / remainingMonths.length);
+                          const selectedItem = getSelectedItem();
+                          const defaultPrice = selectedItem?.unitPrice || 0;
+                          setMonthlyData(prev => {
+                            const newData = { ...prev };
+                            remainingMonths.forEach(month => {
+                              newData[month.name] = {
+                                ...newData[month.name],
+                                quantity: monthlyAverage,
+                                unitPrice: defaultPrice
+                              };
+                            });
+                            return newData;
+                          });
+                        }}
+                        className="bg-blue-100 text-blue-800 px-3 py-1 rounded text-xs hover:bg-blue-200 transition-colors"
+                      >
+                        📊 Equal Distribution
+                      </button>
+                      <button
+                        onClick={() => {
+                          const seasonalMultipliers = remainingMonths.map((_, index) => {
+                            const monthIndex = new Date().getMonth() + index;
+                            // Q4 gets higher multipliers
+                            if (monthIndex >= 9) return 1.3; // Oct, Nov, Dec
+                            if (monthIndex >= 6) return 1.1; // Jul, Aug, Sep
+                            return 0.9; // Earlier months
+                          });
+                          const totalQuantity = Object.values(monthlyData).reduce((sum, data) => sum + data.quantity, 0);
+                          const baseValue = totalQuantity / remainingMonths.length;
+                          const selectedItem = getSelectedItem();
+                          const defaultPrice = selectedItem?.unitPrice || 0;
+                          setMonthlyData(prev => {
+                            const newData = { ...prev };
+                            remainingMonths.forEach((month, index) => {
+                              newData[month.name] = {
+                                ...newData[month.name],
+                                quantity: Math.round(baseValue * seasonalMultipliers[index]),
+                                unitPrice: defaultPrice
+                              };
+                            });
+                            return newData;
+                          });
+                        }}
+                        className="bg-green-100 text-green-800 px-3 py-1 rounded text-xs hover:bg-green-200 transition-colors"
+                      >
+                        📈 Seasonal Growth
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMonthlyData(prev => {
+                            const newData = { ...prev };
+                            remainingMonths.forEach(month => {
+                              newData[month.name] = {
+                                ...newData[month.name],
+                                quantity: 0
+                              };
+                            });
+                            return newData;
+                          });
+                        }}
+                        className="bg-red-100 text-red-800 px-3 py-1 rounded text-xs hover:bg-red-200 transition-colors"
+                      >
+                        🗑️ Clear All
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 2-Row Horizontal Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[800px] border border-gray-300 rounded-lg">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="p-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">Month</th>
+                          {remainingMonths.map((month) => (
+                            <th key={month.name} className="p-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 min-w-[80px]">
+                              {month.name}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="bg-white">
+                          <td className="p-3 font-medium text-gray-800 border-r border-gray-300 bg-gray-50">Forecast Quantity</td>
+                          {remainingMonths.map((month) => (
+                            <td key={month.name} className="p-2 border-r border-gray-300">
+                              <input
+                                type="number"
+                                min="0"
+                                className="w-full p-2 text-center border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                value={monthlyData[month.name]?.quantity || 0}
+                                onChange={(e) => {
+                                  const selectedItem = getSelectedItem();
+                                  const defaultPrice = selectedItem?.unitPrice || 0;
+                                  handleMonthlyDataChange(month.name, 'quantity', e.target.value);
+                                  // Auto-set unit price in simplified mode
+                                  if (defaultPrice > 0) {
+                                    handleMonthlyDataChange(month.name, 'unitPrice', defaultPrice);
+                                  }
+                                }}
+                                placeholder="0"
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Summary Stats */}
+                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                      <div>
+                        <div className="text-sm text-blue-600 font-medium">Total Quantity</div>
+                        <div className="text-lg font-bold text-blue-800">
+                          {Object.values(monthlyData).reduce((sum, data) => sum + data.quantity, 0).toLocaleString()}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-green-600 font-medium">Total Value</div>
+                        <div className="text-lg font-bold text-green-800">
+                          ${calculateYearlyTotal().toFixed(2)}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-purple-600 font-medium">Avg/Month</div>
+                        <div className="text-lg font-bold text-purple-800">
+                          {Math.round(Object.values(monthlyData).reduce((sum, data) => sum + data.quantity, 0) / remainingMonths.length).toLocaleString()}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-orange-600 font-medium">Forecast Growth</div>
+                        <div className="text-lg font-bold text-orange-800">
+                          {(() => {
+                            const quantities = remainingMonths.map(month => monthlyData[month.name]?.quantity || 0);
+                            if (quantities.length < 2) return '0%';
+                            const firstHalf = quantities.slice(0, Math.floor(quantities.length / 2));
+                            const secondHalf = quantities.slice(Math.floor(quantities.length / 2));
+                            const firstAvg = firstHalf.reduce((sum, q) => sum + q, 0) / firstHalf.length;
+                            const secondAvg = secondHalf.reduce((sum, q) => sum + q, 0) / secondHalf.length;
+                            const growth = firstAvg > 0 ? ((secondAvg - firstAvg) / firstAvg * 100) : 0;
+                            return `${growth > 0 ? '+' : ''}${growth.toFixed(1)}%`;
+                          })()
+                        }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // Original detailed table view
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Month
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Quantity
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Unit Price ($)
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Total Value ($)
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Notes
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {remainingMonths.map((month) => (
+                          <tr key={month.name} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {month.name} {month.year}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <input
+                                type="number"
+                                min="0"
+                                value={monthlyData[month.name]?.quantity || 0}
+                                onChange={(e) => handleMonthlyDataChange(month.name, 'quantity', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="0"
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={monthlyData[month.name]?.unitPrice || 0}
+                                onChange={(e) => handleMonthlyDataChange(month.name, 'unitPrice', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="0.00"
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                              ${calculateMonthlyTotal(month.name).toFixed(2)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <input
+                                type="text"
+                                value={monthlyData[month.name]?.notes || ''}
+                                onChange={(e) => handleMonthlyDataChange(month.name, 'notes', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Optional notes..."
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
 
               {/* Summary */}
               <div className="mt-4 bg-green-50 rounded-lg p-4">

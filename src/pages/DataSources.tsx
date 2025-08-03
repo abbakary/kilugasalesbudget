@@ -210,6 +210,25 @@ const DataSources: React.FC = () => {
           </div>
           <div className="flex space-x-2">
             <button
+              onClick={() => {
+                const budgetData = budgetDataIntegration.exportBudgetData();
+                const blob = new Blob([JSON.stringify(budgetData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `budget-export-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showNotification('Budget data exported successfully', 'success');
+              }}
+              className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              <span>Export Budget</span>
+            </button>
+            <button
               onClick={loadConnections}
               disabled={loading}
               className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"

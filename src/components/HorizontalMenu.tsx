@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Grid, TrendingUp, BarChart3, Users, Package } from 'lucide-react';
+import { Home, Grid, TrendingUp, BarChart3, Users, Package, Database, Activity } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
 import { useAccessControl } from '../contexts/AuthContext';
 import { UserType } from '../types/auth';

@@ -69,53 +69,68 @@ const BiDashboard: React.FC = () => {
 
   const loadDashboardData = async () => {
     setRefreshing(true);
-    
+
     // Simulate loading delay
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Generate sample metrics
-    const sampleMetrics: BiMetric[] = [
+
+    // Load real budget data from localStorage or use sample data
+    const savedBudgetData = localStorage.getItem('salesBudgetData');
+    if (savedBudgetData) {
+      try {
+        const budgetData = JSON.parse(savedBudgetData);
+        budgetDataIntegration.setBudgetData(budgetData);
+      } catch (error) {
+        console.warn('Failed to load budget data:', error);
+      }
+    }
+
+    // Get real analytics from budget data
+    const analytics = budgetDataIntegration.getBudgetAnalytics();
+    setBudgetAnalytics(analytics);
+
+    // Generate metrics from real data
+    const realMetrics: BiMetric[] = [
       {
         id: 'total_sales',
-        name: 'Total Sales',
-        value: 2450000,
-        previousValue: 2250000,
+        name: 'Total Sales (Actual)',
+        value: analytics.totalActual2025,
+        previousValue: analytics.totalBudget2025 * 0.9, // Simulate previous period
         format: 'currency',
-        target: 2500000,
+        target: analytics.totalBudget2025,
         category: 'sales',
-        trend: 'up',
-        confidence: 0.85
+        trend: analytics.totalActual2025 > analytics.totalBudget2025 * 0.9 ? 'up' : 'down',
+        confidence: analytics.forecastAccuracy
       },
       {
         id: 'budget_utilization',
         name: 'Budget Utilization',
-        value: 0.87,
-        previousValue: 0.82,
+        value: analytics.budgetUtilization,
+        previousValue: analytics.budgetUtilization * 0.95, // Simulate previous period
         format: 'percentage',
         target: 0.90,
         category: 'budget',
-        trend: 'up',
+        trend: analytics.budgetUtilization > 0.85 ? 'up' : 'down',
         confidence: 0.92
       },
       {
         id: 'forecast_accuracy',
         name: 'Forecast Accuracy',
-        value: 0.94,
-        previousValue: 0.91,
+        value: analytics.forecastAccuracy,
+        previousValue: analytics.forecastAccuracy * 0.98, // Simulate previous period
         format: 'percentage',
         category: 'forecast',
-        trend: 'up',
+        trend: analytics.forecastAccuracy > 0.85 ? 'up' : 'down',
         confidence: 0.88
       },
       {
-        id: 'active_customers',
-        name: 'Active Customers',
-        value: 1247,
-        previousValue: 1195,
-        format: 'number',
+        id: 'budget_growth',
+        name: 'Budget Growth Rate',
+        value: analytics.growthRate / 100,
+        previousValue: (analytics.growthRate * 0.8) / 100, // Simulate previous period
+        format: 'percentage',
         category: 'operations',
-        trend: 'up',
-        confidence: 0.95
+        trend: analytics.growthRate > 10 ? 'up' : analytics.growthRate < -5 ? 'down' : 'stable',
+        confidence: 0.85
       }
     ];
 

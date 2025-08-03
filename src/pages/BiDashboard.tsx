@@ -510,16 +510,16 @@ const BiDashboard: React.FC = () => {
           {/* Budget vs Actual - Medium */}
           <div className="lg:col-span-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Budget vs Actual</h3>
-              <button className="p-2 text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-semibold text-gray-900">Budget vs Actual by Category</h3>
+              <button
+                onClick={() => showNotification('Category filters coming soon', 'success')}
+                className="p-2 text-gray-400 hover:text-gray-600"
+              >
                 <Filter className="w-4 h-4" />
               </button>
             </div>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="text-center">
-                <PieChart className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Budget Comparison Chart</p>
-              </div>
+            <div className="h-64">
+              <BudgetComparisonChart data={generateBudgetComparisonData()} />
             </div>
           </div>
 

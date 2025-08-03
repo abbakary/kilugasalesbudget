@@ -361,9 +361,32 @@ const BiDashboard: React.FC = () => {
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
               <span>Refresh</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            <button
+              onClick={() => {
+                const exportData = {
+                  metrics: metrics,
+                  insights: insights,
+                  budgetAnalytics: budgetAnalytics,
+                  trendData: generateTrendData(),
+                  comparisonData: generateBudgetComparisonData(),
+                  customerData: generateCustomerData(),
+                  exportDate: new Date().toISOString()
+                };
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `bi-dashboard-export-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showNotification('Dashboard data exported successfully', 'success');
+              }}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
               <Download className="w-4 h-4" />
-              <span>Export</span>
+              <span>Export Dashboard</span>
             </button>
           </div>
         </div>

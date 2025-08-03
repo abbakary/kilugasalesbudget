@@ -236,6 +236,11 @@ const SalesBudget: React.FC = () => {
   const [originalTableData, setOriginalTableData] = useState<SalesBudgetItem[]>(initialData);
   const [tableData, setTableData] = useState<SalesBudgetItem[]>(initialData);
 
+  // Save budget data to localStorage for BI integration
+  useEffect(() => {
+    localStorage.setItem('salesBudgetData', JSON.stringify(tableData));
+  }, [tableData]);
+
   // Add event listeners for filter changes
   useEffect(() => {
     // Apply filters whenever any filter changes

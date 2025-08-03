@@ -9,6 +9,8 @@ import RollingForecast from './pages/RollingForecast';
 import DistributionManagement from './pages/DistributionManagement';
 import UserManagement from './pages/UserManagement';
 import InventoryManagement from './pages/InventoryManagement';
+import DataSources from './pages/DataSources';
+import BiDashboard from './pages/BiDashboard';
 import { UserType } from './types/auth';
 import './index.css';
 

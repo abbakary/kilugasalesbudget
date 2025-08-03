@@ -540,8 +540,8 @@ const BiDashboard: React.FC = () => {
                 <thead>
                   <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <th className="pb-3">Customer</th>
-                    <th className="pb-3">Revenue</th>
-                    <th className="pb-3">Growth</th>
+                    <th className="pb-3">Budget vs Actual</th>
+                    <th className="pb-3">Variance</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -549,17 +549,29 @@ const BiDashboard: React.FC = () => {
                     <tr key={index}>
                       <td className="py-3">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{customer.name}</div>
+                          <div className="text-sm font-medium text-gray-900 truncate" title={customer.name}>
+                            {customer.name}
+                          </div>
                           <div className="text-sm text-gray-500">{customer.region}</div>
                         </div>
                       </td>
-                      <td className="py-3 text-sm text-gray-900">
-                        {formatCurrency(customer.revenue)}
+                      <td className="py-3 text-sm">
+                        <div className="text-gray-900 font-medium">
+                          {formatCurrency(customer.revenue)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Actual Revenue
+                        </div>
                       </td>
                       <td className="py-3">
-                        <span className={`text-sm font-medium ${
+                        <span className={`text-sm font-medium flex items-center ${
                           customer.growth > 0 ? 'text-green-600' : 'text-red-600'
                         }`}>
+                          {customer.growth > 0 ? (
+                            <ArrowUpRight className="w-3 h-3 mr-1" />
+                          ) : (
+                            <ArrowDownRight className="w-3 h-3 mr-1" />
+                          )}
                           {customer.growth > 0 ? '+' : ''}{customer.growth.toFixed(1)}%
                         </span>
                       </td>

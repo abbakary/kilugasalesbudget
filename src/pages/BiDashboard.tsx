@@ -218,13 +218,19 @@ const BiDashboard: React.FC = () => {
   };
 
   const generateCustomerData = () => {
-    return [
-      { name: 'Acme Corporation', revenue: 245000, growth: 15.2, region: 'North America' },
-      { name: 'Global Tech Solutions', revenue: 198000, growth: 8.7, region: 'Europe' },
-      { name: 'Asian Trading Co.', revenue: 176000, growth: 22.1, region: 'Asia Pacific' },
-      { name: 'European Systems', revenue: 165000, growth: -2.3, region: 'Europe' },
-      { name: 'Tech Innovations', revenue: 142000, growth: 12.8, region: 'North America' }
-    ];
+    if (!budgetAnalytics) {
+      return [
+        { name: 'Acme Corporation', revenue: 245000, growth: 15.2, region: 'North America' },
+        { name: 'Global Tech Solutions', revenue: 198000, growth: 8.7, region: 'Europe' }
+      ];
+    }
+
+    return budgetAnalytics.topCustomers.slice(0, 5).map(customer => ({
+      name: customer.name,
+      revenue: customer.actual,
+      growth: customer.variance,
+      region: budgetDataIntegration.getRegionFromCustomer ? budgetDataIntegration.getRegionFromCustomer(customer.name) : 'Global'
+    }));
   };
 
   const generateBudgetAllocationData = () => {

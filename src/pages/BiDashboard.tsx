@@ -490,41 +490,20 @@ const BiDashboard: React.FC = () => {
           <div className="lg:col-span-4 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Forecast Accuracy</h3>
-              <button className="p-2 text-gray-400 hover:text-gray-600">
+              <button
+                onClick={() => showNotification('Detailed accuracy metrics coming soon', 'success')}
+                className="p-2 text-gray-400 hover:text-gray-600"
+              >
                 <Eye className="w-4 h-4" />
               </button>
             </div>
-            <div className="h-48 flex items-center justify-center">
-              <div className="text-center">
-                <div className="relative w-32 h-32 mx-auto mb-4">
-                  <svg className="transform -rotate-90 w-32 h-32">
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="56"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="transparent"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="56"
-                      stroke="currentColor"
-                      strokeWidth="8"
-                      fill="transparent"
-                      strokeDasharray={`${2 * Math.PI * 56}`}
-                      strokeDashoffset={`${2 * Math.PI * 56 * (1 - 0.94)}`}
-                      className="text-green-500"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-gray-900">94%</span>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600">Current Period</p>
-              </div>
+            <div className="h-48">
+              <GaugeChart
+                value={budgetAnalytics?.forecastAccuracy ? budgetAnalytics.forecastAccuracy * 100 : 94}
+                max={100}
+                title="Current Period"
+                color="#10b981"
+              />
             </div>
           </div>
 

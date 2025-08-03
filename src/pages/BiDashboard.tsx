@@ -234,13 +234,19 @@ const BiDashboard: React.FC = () => {
   };
 
   const generateBudgetAllocationData = () => {
-    return [
-      { name: 'Product Development', value: 35, amount: 1750000 },
-      { name: 'Sales & Marketing', value: 25, amount: 1250000 },
-      { name: 'Operations', value: 20, amount: 1000000 },
-      { name: 'Technology', value: 12, amount: 600000 },
-      { name: 'Administration', value: 8, amount: 400000 }
-    ];
+    if (!budgetAnalytics || budgetAnalytics.topCategories.length === 0) {
+      return [
+        { name: 'Product Development', value: 35, amount: 1750000 },
+        { name: 'Sales & Marketing', value: 25, amount: 1250000 }
+      ];
+    }
+
+    const totalBudget = budgetAnalytics.topCategories.reduce((sum, cat) => sum + cat.budget, 0);
+    return budgetAnalytics.topCategories.map(category => ({
+      name: category.name,
+      value: totalBudget > 0 ? Math.round((category.budget / totalBudget) * 100) : 0,
+      amount: category.budget
+    }));
   };
 
   const generateRegionalData = () => {

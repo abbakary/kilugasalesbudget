@@ -50,6 +50,22 @@ const HorizontalMenu: React.FC = () => {
       requiresAccess: () => accessPattern.canManageInventory || accessPattern.canAccessDepartmentData
     },
     {
+      icon: Activity,
+      label: 'BI Dashboard',
+      path: '/bi-dashboard',
+      active: location.pathname === '/bi-dashboard',
+      allowedRoles: [UserType.ADMIN, UserType.MANAGER, UserType.SALESMAN],
+      requiresAccess: () => accessPattern.canViewAnalytics || accessPattern.canViewReports
+    },
+    {
+      icon: Database,
+      label: 'Data Sources',
+      path: '/data-sources',
+      active: location.pathname === '/data-sources',
+      allowedRoles: [UserType.ADMIN, UserType.MANAGER],
+      requiresAccess: () => accessPattern.canAccessFullSystem || accessPattern.canAccessDepartmentData
+    },
+    {
       icon: Users,
       label: 'User Management',
       path: '/user-management',

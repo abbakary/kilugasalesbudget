@@ -995,7 +995,7 @@ const SalesBudget: React.FC = () => {
                     {/* Sticky Header */}
                     <thead className="bg-gray-50 sticky top-0 z-10">
                       <tr>
-                        <th className="sticky left-0 bg-gray-50 z-20 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                        <th className="w-12 p-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
                           <input
                             type="checkbox"
                             className="w-4 h-4 accent-blue-600"
@@ -1005,48 +1005,48 @@ const SalesBudget: React.FC = () => {
                         </th>
                         {activeView === 'customer-item' ? (
                           <>
-                            <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
-                              Customer <ChevronUp className="w-4 h-4 inline ml-1" />
+                            <th className="w-32 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                              Customer
                             </th>
-                            <th className="sticky left-[280px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
-                              Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
+                            <th className="w-40 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                              Item (Category - Brand)
                             </th>
                           </>
                         ) : (
                           <>
-                            <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
-                              Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
+                            <th className="w-40 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                              Item (Category - Brand)
                             </th>
-                            <th className="sticky left-[332px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
-                              Customer <ChevronUp className="w-4 h-4 inline ml-1" />
+                            <th className="w-32 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                              Customer
                             </th>
                           </>
                         )}
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           BUD {selectedYear2025}
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           ACT {selectedYear2025}
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-blue-50 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-blue-50">
                           BUD {selectedYear2026}
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                        <th className="w-16 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           RATE
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                        <th className="w-14 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           STK
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                        <th className="w-14 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           GIT
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[120px]">
+                        <th className="w-24 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           BUD {selectedYear2026} Value
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           DISCOUNT
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           Actions
                         </th>
                       </tr>

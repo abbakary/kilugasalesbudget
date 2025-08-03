@@ -585,27 +585,34 @@ const BiDashboard: React.FC = () => {
 
         {/* Data Quality & Status */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Quality & Sync Status</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Sources & Budget Integration</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="flex items-center p-4 bg-green-50 rounded-lg">
               <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
               <div>
-                <p className="text-sm font-medium text-green-900">Oracle Database</p>
-                <p className="text-xs text-green-700">Last sync: 2 minutes ago</p>
+                <p className="text-sm font-medium text-green-900">Sales Budget System</p>
+                <p className="text-xs text-green-700">Connected • {budgetAnalytics ? budgetAnalytics.topCustomers.length : 0} customers</p>
               </div>
             </div>
             <div className="flex items-center p-4 bg-green-50 rounded-lg">
               <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
               <div>
-                <p className="text-sm font-medium text-green-900">OLAP Cube</p>
-                <p className="text-xs text-green-700">Last sync: 5 minutes ago</p>
+                <p className="text-sm font-medium text-green-900">Rolling Forecast</p>
+                <p className="text-xs text-green-700">Active • {budgetAnalytics ? budgetAnalytics.topCategories.length : 0} categories</p>
+              </div>
+            </div>
+            <div className="flex items-center p-4 bg-green-50 rounded-lg">
+              <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
+              <div>
+                <p className="text-sm font-medium text-green-900">OLAP Analytics</p>
+                <p className="text-xs text-green-700">Real-time • Last sync: 2 min ago</p>
               </div>
             </div>
             <div className="flex items-center p-4 bg-blue-50 rounded-lg">
               <RefreshCw className="w-8 h-8 text-blue-600 mr-3 animate-pulse" />
               <div>
-                <p className="text-sm font-medium text-blue-900">Power BI</p>
-                <p className="text-xs text-blue-700">Syncing...</p>
+                <p className="text-sm font-medium text-blue-900">Oracle Database</p>
+                <p className="text-xs text-blue-700">Syncing budget data...</p>
               </div>
             </div>
           </div>

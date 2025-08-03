@@ -8,6 +8,7 @@ import ExcelLikeCustomerTable from '../components/ExcelLikeCustomerTable';
 import { Customer, Item, CustomerItemForecast, ForecastFormData, MonthlyForecast, BudgetHistory, YearlyForecastSummary, FilterOptions } from '../types/forecast';
 import { getBudgetImpactAnalysis, formatCurrency, formatPercentage, getVarianceColor, getConfidenceColor, getRemainingMonths, generateBudgetHistory, generateYearlyForecastSummary, getAvailableYears } from '../utils/budgetCalculations';
 import { exportForecastData, downloadImportTemplate, ExportData } from '../utils/exportUtils';
+import { budgetDataIntegration } from '../utils/budgetDataIntegration';
 
 const RollingForecast: React.FC = () => {
   const [activeTab, setActiveTab] = useState('customer-forecast');

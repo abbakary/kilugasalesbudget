@@ -26,6 +26,10 @@ import {
 import { useAccessControl } from '../contexts/AuthContext';
 import { formatCurrency, formatPercentage } from '../utils/budgetCalculations';
 import { budgetDataIntegration, BudgetAnalyticsData, ForecastInsight } from '../utils/budgetDataIntegration';
+import SalesTrendChart from '../components/charts/SalesTrendChart';
+import BudgetComparisonChart from '../components/charts/BudgetComparisonChart';
+import BudgetAllocationChart from '../components/charts/BudgetAllocationChart';
+import GaugeChart from '../components/charts/GaugeChart';
 
 interface DashboardWidget {
   id: string;

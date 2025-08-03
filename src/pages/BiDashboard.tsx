@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useAccessControl } from '../contexts/AuthContext';
 import { formatCurrency, formatPercentage } from '../utils/budgetCalculations';
+import { budgetDataIntegration, BudgetAnalyticsData, ForecastInsight } from '../utils/budgetDataIntegration';
 
 interface DashboardWidget {
   id: string;

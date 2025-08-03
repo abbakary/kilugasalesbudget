@@ -69,6 +69,22 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/data-sources"
+            element={
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.MANAGER]}>
+                <DataSources />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bi-dashboard"
+            element={
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.MANAGER, UserType.SALESMAN]}>
+                <BiDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

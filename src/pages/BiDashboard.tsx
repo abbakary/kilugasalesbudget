@@ -250,12 +250,20 @@ const BiDashboard: React.FC = () => {
   };
 
   const generateRegionalData = () => {
-    return [
-      { region: 'North America', q1: 850000, q2: 920000, q3: 1100000, q4: 1200000 },
-      { region: 'Europe', q1: 650000, q2: 720000, q3: 850000, q4: 950000 },
-      { region: 'Asia Pacific', q1: 450000, q2: 580000, q3: 720000, q4: 850000 },
-      { region: 'Latin America', q1: 250000, q2: 290000, q3: 340000, q4: 420000 }
-    ];
+    if (!budgetAnalytics) {
+      return [
+        { region: 'North America', q1: 850000, q2: 920000, q3: 1100000, q4: 1200000 },
+        { region: 'Europe', q1: 650000, q2: 720000, q3: 850000, q4: 950000 }
+      ];
+    }
+
+    return budgetAnalytics.regionPerformance.map(region => ({
+      region: region.region,
+      q1: region.budget * 0.23,
+      q2: region.budget * 0.25,
+      q3: region.budget * 0.26,
+      q4: region.budget * 0.26
+    }));
   };
 
   const formatMetricValue = (metric: BiMetric) => {

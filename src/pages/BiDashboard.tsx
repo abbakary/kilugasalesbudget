@@ -575,6 +575,48 @@ const BiDashboard: React.FC = () => {
               </table>
             </div>
           </div>
+
+          {/* Budget Allocation Pie Chart - Medium */}
+          <div className="lg:col-span-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Budget Allocation</h3>
+              <button
+                onClick={() => showNotification('Allocation details coming soon', 'success')}
+                className="text-blue-600 text-sm hover:text-blue-800"
+              >
+                View Details
+              </button>
+            </div>
+            <div className="h-64">
+              <BudgetAllocationChart data={generateBudgetAllocationData()} />
+            </div>
+          </div>
+
+          {/* Regional Performance Chart - Medium */}
+          <div className="lg:col-span-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Regional Performance</h3>
+              <button
+                onClick={() => showNotification('Regional drill-down coming soon', 'success')}
+                className="text-blue-600 text-sm hover:text-blue-800"
+              >
+                View All Regions
+              </button>
+            </div>
+            <div className="h-64">
+              <BudgetComparisonChart
+                data={budgetAnalytics?.regionPerformance.map(region => ({
+                  category: region.region,
+                  budget: region.budget,
+                  actual: region.actual,
+                  variance: region.performance - 100
+                })) || [
+                  { category: 'North America', budget: 1000000, actual: 1100000, variance: 10 },
+                  { category: 'Europe', budget: 800000, actual: 750000, variance: -6.25 }
+                ]}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Data Quality & Status */}

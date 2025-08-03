@@ -202,13 +202,16 @@ const BiDashboard: React.FC = () => {
   };
 
   const generateTrendData = () => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months.map(month => ({
-      month,
-      sales: Math.floor(Math.random() * 500000) + 1500000,
-      budget: Math.floor(Math.random() * 400000) + 1600000,
-      forecast: Math.floor(Math.random() * 450000) + 1550000
-    }));
+    if (!budgetAnalytics) {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return months.map(month => ({
+        month,
+        sales: Math.floor(Math.random() * 500000) + 1500000,
+        budget: Math.floor(Math.random() * 400000) + 1600000,
+        forecast: Math.floor(Math.random() * 450000) + 1550000
+      }));
+    }
+    return budgetAnalytics.monthlyTrends;
   };
 
   const generateBudgetComparisonData = () => {

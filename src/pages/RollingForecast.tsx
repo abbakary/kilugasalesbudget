@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, AlertCircle, Plus, Users, DollarSign, ShoppingCart, Eye, Edit, Trash2, X } from 'lucide-react';
+import { Search, Download, Filter, Calendar, TrendingUp, BarChart3, Target, AlertCircle, Plus, Users, DollarSign, ShoppingCart, Eye, Edit, Trash2, X, Upload } from 'lucide-react';
 import CustomerForecastModal from '../components/CustomerForecastModal';
 import AdvancedCustomerTable from '../components/AdvancedCustomerTable';
 import CustomerAnalyticsModal from '../components/CustomerAnalyticsModal';

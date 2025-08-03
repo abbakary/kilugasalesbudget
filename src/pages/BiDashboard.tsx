@@ -20,7 +20,8 @@ import {
   AlertCircle,
   Target,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  CheckCircle
 } from 'lucide-react';
 import { useAccessControl } from '../contexts/AuthContext';
 import { formatCurrency, formatPercentage } from '../utils/budgetCalculations';

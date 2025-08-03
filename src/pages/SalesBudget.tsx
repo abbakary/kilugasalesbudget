@@ -990,8 +990,8 @@ const SalesBudget: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <div className="overflow-auto max-h-[600px] border border-gray-300 rounded-lg">
-                  <table className="w-full bg-white border-collapse">
+                <div className="max-h-[600px] border border-gray-300 rounded-lg overflow-y-auto">
+                  <table className="w-full bg-white border-collapse table-fixed">
                     {/* Sticky Header */}
                     <thead className="bg-gray-50 sticky top-0 z-10">
                       <tr>

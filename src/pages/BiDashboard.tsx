@@ -187,43 +187,12 @@ const BiDashboard: React.FC = () => {
       }
     ];
 
-    // Generate sample insights
-    const sampleInsights = [
-      {
-        id: '1',
-        type: 'opportunity',
-        title: 'Q4 Sales Surge Detected',
-        description: 'Sales increased 15% above forecast in the last month. Consider increasing Q1 budget allocation.',
-        impact: 'high',
-        confidence: 0.92,
-        metrics: ['Total Sales', 'Forecast Accuracy'],
-        recommendation: 'Increase Q1 budget by 8-12% to capitalize on momentum'
-      },
-      {
-        id: '2',
-        type: 'risk',
-        title: 'Budget Utilization Gap',
-        description: 'Several departments are behind on budget utilization, which may impact year-end targets.',
-        impact: 'medium',
-        confidence: 0.88,
-        metrics: ['Budget Utilization'],
-        recommendation: 'Review budget allocation and accelerate spending in underutilized areas'
-      },
-      {
-        id: '3',
-        type: 'trend',
-        title: 'Customer Acquisition Acceleration',
-        description: 'New customer acquisition rate increased 22% compared to same period last year.',
-        impact: 'high',
-        confidence: 0.95,
-        metrics: ['Active Customers'],
-        recommendation: 'Invest more in customer acquisition channels showing highest ROI'
-      }
-    ];
+    // Generate real insights from budget data
+    const realInsights = budgetDataIntegration.generateInsights();
 
-    setMetrics(sampleMetrics);
+    setMetrics(realMetrics);
     setWidgets(sampleWidgets);
-    setInsights(sampleInsights);
+    setInsights(realInsights);
     setLastRefresh(new Date());
     setRefreshing(false);
   };

@@ -66,6 +66,12 @@ const BiDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<BiMetric[]>([]);
   const [insights, setInsights] = useState<ForecastInsight[]>([]);
   const [budgetAnalytics, setBudgetAnalytics] = useState<BudgetAnalyticsData | null>(null);
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   useEffect(() => {
     loadDashboardData();

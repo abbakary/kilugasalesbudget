@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { DataConnection, DataSourceType } from '../types/dataSource';
 import { dataConnector } from '../utils/dataConnector';
+import { budgetDataIntegration } from '../utils/budgetDataIntegration';
 import DataSourceModal from '../components/DataSourceModal';
 import SchemaExplorer from '../components/SchemaExplorer';
 

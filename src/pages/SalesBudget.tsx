@@ -1056,7 +1056,7 @@ const SalesBudget: React.FC = () => {
                       {tableData.map(row => (
                         <React.Fragment key={row.id}>
                           <tr className={`hover:bg-gray-50 ${row.selected ? 'bg-blue-50' : ''}`}>
-                            <td className="sticky left-0 bg-white z-10 p-3 border-b border-r border-gray-200">
+                            <td className="p-2 border-b border-r border-gray-200">
                               <input
                                 type="checkbox"
                                 className="w-4 h-4 accent-blue-600"
@@ -1066,15 +1066,17 @@ const SalesBudget: React.FC = () => {
                             </td>
                             {activeView === 'customer-item' ? (
                               <>
-                                <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                  {row.customer}
+                                <td className="p-2 border-b border-r border-gray-200 text-xs">
+                                  <div className="truncate" title={row.customer}>
+                                    {row.customer}
+                                  </div>
                                 </td>
-                                <td className="sticky left-[280px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                  <div className="max-w-[300px]">
-                                    <div className="font-medium text-gray-900 truncate" title={row.item}>
+                                <td className="p-2 border-b border-r border-gray-200 text-xs">
+                                  <div className="truncate" title={row.item}>
+                                    <div className="font-medium text-gray-900 truncate">
                                       {row.item}
                                     </div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-xs text-gray-500 truncate">
                                       {row.category} - {row.brand}
                                     </div>
                                   </div>
@@ -1082,31 +1084,33 @@ const SalesBudget: React.FC = () => {
                               </>
                             ) : (
                               <>
-                                <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                  <div className="max-w-[300px]">
-                                    <div className="font-medium text-gray-900 truncate" title={row.item}>
+                                <td className="p-2 border-b border-r border-gray-200 text-xs">
+                                  <div className="truncate" title={row.item}>
+                                    <div className="font-medium text-gray-900 truncate">
                                       {row.item}
                                     </div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-xs text-gray-500 truncate">
                                       {row.category} - {row.brand}
                                     </div>
                                   </div>
                                 </td>
-                                <td className="sticky left-[332px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                  {row.customer}
+                                <td className="p-2 border-b border-r border-gray-200 text-xs">
+                                  <div className="truncate" title={row.customer}>
+                                    {row.customer}
+                                  </div>
                                 </td>
                               </>
                             )}
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${selectedYear2025 === '2025' ? row.budget2025.toLocaleString() : row.budget2026.toLocaleString()}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              ${selectedYear2025 === '2025' ? (row.budget2025/1000).toFixed(0) : (row.budget2026/1000).toFixed(0)}k
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${selectedYear2025 === '2025' ? row.actual2025.toLocaleString() : '0'}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              ${selectedYear2025 === '2025' ? (row.actual2025/1000).toFixed(0) : '0'}k
                             </td>
-                            <td className="p-3 border-b border-gray-200 bg-blue-50 text-sm">
+                            <td className="p-2 border-b border-gray-200 bg-blue-50 text-xs">
                               <input
                                 type="number"
-                                className="w-20 p-1 text-center border border-gray-300 rounded"
+                                className="w-full p-1 text-center border border-gray-300 rounded text-xs"
                                 value={row.budget2026}
                                 onChange={(e) => {
                                   const value = parseInt(e.target.value) || 0;
@@ -1116,22 +1120,22 @@ const SalesBudget: React.FC = () => {
                                 }}
                               />
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${row.rate}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              {row.rate}
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
+                            <td className="p-2 border-b border-gray-200 text-xs">
                               {row.stock}
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
+                            <td className="p-2 border-b border-gray-200 text-xs">
                               {row.git}
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${row.budgetValue2026.toLocaleString()}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              ${(row.budgetValue2026/1000).toFixed(0)}k
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${row.discount.toLocaleString()}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              ${(row.discount/1000).toFixed(0)}k
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
+                            <td className="p-2 border-b border-gray-200 text-xs">
                               <div className="flex gap-1">
                                 {editingRowId === row.id ? (
                                   <>

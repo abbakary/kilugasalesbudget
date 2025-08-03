@@ -461,6 +461,29 @@ const RollingForecast: React.FC = () => {
           </select>
           <div className="relative group">
             <button
+              onClick={() => {
+                // Load budget data and convert to forecasts
+                const savedBudgetData = localStorage.getItem('salesBudgetData');
+                if (savedBudgetData) {
+                  try {
+                    const budgetData = JSON.parse(savedBudgetData);
+                    budgetDataIntegration.setBudgetData(budgetData);
+                    const forecastData = budgetDataIntegration.convertToForecastData();
+                    setCustomerForecasts(prev => [...prev, ...forecastData]);
+                    showNotification(`Imported ${forecastData.length} forecasts from budget data`, 'success');
+                  } catch (error) {
+                    showNotification('Failed to import budget data', 'error');
+                  }
+                } else {
+                  showNotification('No budget data found to import', 'error');
+                }
+              }}
+              className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+              <span>Import from Budget</span>
+            </button>
+            <button
               onClick={() => handleExportData('csv')}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >

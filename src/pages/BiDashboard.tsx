@@ -215,13 +215,19 @@ const BiDashboard: React.FC = () => {
   };
 
   const generateBudgetComparisonData = () => {
-    return [
-      { category: 'Sales & Marketing', budget: 500000, actual: 485000, variance: -3 },
-      { category: 'Operations', budget: 750000, actual: 820000, variance: 9.3 },
-      { category: 'Technology', budget: 300000, actual: 275000, variance: -8.3 },
-      { category: 'HR & Training', budget: 200000, actual: 195000, variance: -2.5 },
-      { category: 'Facilities', budget: 150000, actual: 162000, variance: 8 }
-    ];
+    if (!budgetAnalytics || budgetAnalytics.topCategories.length === 0) {
+      return [
+        { category: 'Sales & Marketing', budget: 500000, actual: 485000, variance: -3 },
+        { category: 'Operations', budget: 750000, actual: 820000, variance: 9.3 }
+      ];
+    }
+
+    return budgetAnalytics.topCategories.map(category => ({
+      category: category.name,
+      budget: category.budget,
+      actual: category.actual,
+      variance: category.budget > 0 ? ((category.actual - category.budget) / category.budget) * 100 : 0
+    }));
   };
 
   const generateCustomerData = () => {

@@ -60,7 +60,8 @@ const BiDashboard: React.FC = () => {
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [widgets, setWidgets] = useState<DashboardWidget[]>([]);
   const [metrics, setMetrics] = useState<BiMetric[]>([]);
-  const [insights, setInsights] = useState<any[]>([]);
+  const [insights, setInsights] = useState<ForecastInsight[]>([]);
+  const [budgetAnalytics, setBudgetAnalytics] = useState<BudgetAnalyticsData | null>(null);
 
   useEffect(() => {
     loadDashboardData();

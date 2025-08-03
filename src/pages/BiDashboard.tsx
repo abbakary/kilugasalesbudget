@@ -467,20 +467,22 @@ const BiDashboard: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Sales Performance Trend</h3>
               <div className="flex items-center space-x-2">
-                <button className="p-2 text-gray-400 hover:text-gray-600">
+                <button
+                  onClick={() => showNotification('Chart settings coming soon', 'success')}
+                  className="p-2 text-gray-400 hover:text-gray-600"
+                >
                   <Settings className="w-4 h-4" />
                 </button>
-                <button className="p-2 text-gray-400 hover:text-gray-600">
+                <button
+                  onClick={() => showNotification('Full screen view coming soon', 'success')}
+                  className="p-2 text-gray-400 hover:text-gray-600"
+                >
                   <Maximize2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
-            <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="text-center">
-                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">Sales Trend Chart</p>
-                <p className="text-sm text-gray-400">Interactive chart showing sales vs budget vs forecast</p>
-              </div>
+            <div className="h-80">
+              <SalesTrendChart data={generateTrendData()} />
             </div>
           </div>
 

@@ -690,36 +690,36 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tracking Options</label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                       <input
                         type="checkbox"
                         name="isSerialTracked"
                         checked={itemData.isSerialTracked}
                         onChange={handleItemInputChange}
-                        className="mr-2"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                       />
-                      <span className="text-sm text-gray-700">Serial Number Tracking</span>
+                      <span className="text-sm font-medium text-gray-700">Serial Tracking</span>
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                       <input
                         type="checkbox"
                         name="isBatchTracked"
                         checked={itemData.isBatchTracked}
                         onChange={handleItemInputChange}
-                        className="mr-2"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                       />
-                      <span className="text-sm text-gray-700">Batch/Lot Tracking</span>
+                      <span className="text-sm font-medium text-gray-700">Batch Tracking</span>
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                       <input
                         type="checkbox"
                         name="isActive"
                         checked={itemData.isActive}
                         onChange={handleItemInputChange}
-                        className="mr-2"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                       />
-                      <span className="text-sm text-gray-700">Active Item</span>
+                      <span className="text-sm font-medium text-gray-700">Active Item</span>
                     </label>
                   </div>
                 </div>

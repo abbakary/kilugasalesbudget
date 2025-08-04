@@ -186,21 +186,24 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="color"
-                  name="color"
-                  value={formData.color}
-                  onChange={handleInputChange}
-                  className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
-                />
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category Color</label>
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <input
+                    type="color"
+                    name="color"
+                    value={formData.color}
+                    onChange={handleInputChange}
+                    className="w-12 h-10 border-2 border-gray-300 rounded-lg cursor-pointer"
+                  />
+                  <div className="absolute inset-0 rounded-lg ring-2 ring-offset-1 ring-transparent pointer-events-none" style={{ backgroundColor: formData.color, opacity: 0.2 }}></div>
+                </div>
                 <input
                   type="text"
                   name="color"
                   value={formData.color}
                   onChange={handleInputChange}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
                   placeholder="#3B82F6"
                 />
               </div>

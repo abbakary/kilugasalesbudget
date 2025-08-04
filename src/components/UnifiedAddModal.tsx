@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Package, Save, Tag, Award, Plus } from 'lucide-react';
+import { X, Package, Save } from 'lucide-react';
 import { InventoryFormData, ItemCategory, ItemBrand, CategoryFormData, BrandFormData } from '../types/inventory';
 
 interface UnifiedAddModalProps {

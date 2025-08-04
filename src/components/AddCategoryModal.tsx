@@ -267,15 +267,15 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
             </div>
 
             <div className="md:col-span-2">
-              <label className="flex items-center">
+              <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                 <input
                   type="checkbox"
                   name="isActive"
                   checked={formData.isActive}
                   onChange={handleInputChange}
-                  className="mr-2"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                 />
-                <span className="text-sm text-gray-700">Active Category</span>
+                <span className="text-sm font-medium text-gray-700">Mark this category as active</span>
               </label>
             </div>
           </div>

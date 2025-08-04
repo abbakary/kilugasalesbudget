@@ -581,7 +581,7 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
               </div>
 
               {/* Stock Information */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-3">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Stock Information</h3>
                 </div>

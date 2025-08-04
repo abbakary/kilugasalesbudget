@@ -298,7 +298,7 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -363,7 +363,7 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
           {activeTab === 'item' && (
             <div className="space-y-6">
               {/* Basic Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
                 </div>
@@ -536,7 +536,7 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
               </div>
 
               {/* Pricing Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Pricing Information</h3>
                 </div>
@@ -581,7 +581,7 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
               </div>
 
               {/* Stock Information */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-3">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Stock Information</h3>
                 </div>
@@ -624,7 +624,7 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
               </div>
 
               {/* Additional Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Additional Information</h3>
                 </div>
@@ -690,36 +690,36 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tracking Options</label>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                       <input
                         type="checkbox"
                         name="isSerialTracked"
                         checked={itemData.isSerialTracked}
                         onChange={handleItemInputChange}
-                        className="mr-2"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                       />
-                      <span className="text-sm text-gray-700">Serial Number Tracking</span>
+                      <span className="text-sm font-medium text-gray-700">Serial Tracking</span>
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                       <input
                         type="checkbox"
                         name="isBatchTracked"
                         checked={itemData.isBatchTracked}
                         onChange={handleItemInputChange}
-                        className="mr-2"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                       />
-                      <span className="text-sm text-gray-700">Batch/Lot Tracking</span>
+                      <span className="text-sm font-medium text-gray-700">Batch Tracking</span>
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                       <input
                         type="checkbox"
                         name="isActive"
                         checked={itemData.isActive}
                         onChange={handleItemInputChange}
-                        className="mr-2"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                       />
-                      <span className="text-sm text-gray-700">Active Item</span>
+                      <span className="text-sm font-medium text-gray-700">Active Item</span>
                     </label>
                   </div>
                 </div>
@@ -750,7 +750,7 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
               </div>
 
               {createNewCategory && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Category Name <span className="text-red-500">*</span>
@@ -867,7 +867,7 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
               </div>
 
               {createNewBrand && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Brand Name <span className="text-red-500">*</span>
@@ -993,17 +993,17 @@ const UnifiedAddModal: React.FC<UnifiedAddModalProps> = ({
           )}
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 bg-gray-50 -mx-6 px-6 py-4 mt-6">
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
             >
               <Save className="w-4 h-4" />
               <span>Save All</span>

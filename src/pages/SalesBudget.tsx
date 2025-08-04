@@ -236,6 +236,11 @@ const SalesBudget: React.FC = () => {
   const [originalTableData, setOriginalTableData] = useState<SalesBudgetItem[]>(initialData);
   const [tableData, setTableData] = useState<SalesBudgetItem[]>(initialData);
 
+  // Save budget data to localStorage for BI integration
+  useEffect(() => {
+    localStorage.setItem('salesBudgetData', JSON.stringify(tableData));
+  }, [tableData]);
+
   // Add event listeners for filter changes
   useEffect(() => {
     // Apply filters whenever any filter changes
@@ -990,12 +995,12 @@ const SalesBudget: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <div className="overflow-auto max-h-[600px] border border-gray-300 rounded-lg">
-                  <table className="w-full bg-white border-collapse">
+                <div className="max-h-[600px] border border-gray-300 rounded-lg overflow-y-auto">
+                  <table className="w-full bg-white border-collapse table-fixed">
                     {/* Sticky Header */}
                     <thead className="bg-gray-50 sticky top-0 z-10">
                       <tr>
-                        <th className="sticky left-0 bg-gray-50 z-20 p-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                        <th className="w-12 p-2 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
                           <input
                             type="checkbox"
                             className="w-4 h-4 accent-blue-600"
@@ -1005,48 +1010,48 @@ const SalesBudget: React.FC = () => {
                         </th>
                         {activeView === 'customer-item' ? (
                           <>
-                            <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
-                              Customer <ChevronUp className="w-4 h-4 inline ml-1" />
+                            <th className="w-32 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                              Customer
                             </th>
-                            <th className="sticky left-[280px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
-                              Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
+                            <th className="w-40 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                              Item (Category - Brand)
                             </th>
                           </>
                         ) : (
                           <>
-                            <th className="sticky left-12 bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[300px]">
-                              Item (Category - Brand) <ChevronUp className="w-4 h-4 inline ml-1" />
+                            <th className="w-40 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                              Item (Category - Brand)
                             </th>
-                            <th className="sticky left-[332px] bg-gray-50 z-20 p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[200px]">
-                              Customer <ChevronUp className="w-4 h-4 inline ml-1" />
+                            <th className="w-32 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200">
+                              Customer
                             </th>
                           </>
                         )}
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           BUD {selectedYear2025}
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           ACT {selectedYear2025}
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-blue-50 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-blue-50">
                           BUD {selectedYear2026}
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                        <th className="w-16 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           RATE
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                        <th className="w-14 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           STK
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[80px]">
+                        <th className="w-14 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           GIT
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[120px]">
+                        <th className="w-24 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           BUD {selectedYear2026} Value
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           DISCOUNT
                         </th>
-                        <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 min-w-[100px]">
+                        <th className="w-20 p-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
                           Actions
                         </th>
                       </tr>
@@ -1056,7 +1061,7 @@ const SalesBudget: React.FC = () => {
                       {tableData.map(row => (
                         <React.Fragment key={row.id}>
                           <tr className={`hover:bg-gray-50 ${row.selected ? 'bg-blue-50' : ''}`}>
-                            <td className="sticky left-0 bg-white z-10 p-3 border-b border-r border-gray-200">
+                            <td className="p-2 border-b border-r border-gray-200">
                               <input
                                 type="checkbox"
                                 className="w-4 h-4 accent-blue-600"
@@ -1066,15 +1071,17 @@ const SalesBudget: React.FC = () => {
                             </td>
                             {activeView === 'customer-item' ? (
                               <>
-                                <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                  {row.customer}
+                                <td className="p-2 border-b border-r border-gray-200 text-xs">
+                                  <div className="truncate" title={row.customer}>
+                                    {row.customer}
+                                  </div>
                                 </td>
-                                <td className="sticky left-[280px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                  <div className="max-w-[300px]">
-                                    <div className="font-medium text-gray-900 truncate" title={row.item}>
+                                <td className="p-2 border-b border-r border-gray-200 text-xs">
+                                  <div className="truncate" title={row.item}>
+                                    <div className="font-medium text-gray-900 truncate">
                                       {row.item}
                                     </div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-xs text-gray-500 truncate">
                                       {row.category} - {row.brand}
                                     </div>
                                   </div>
@@ -1082,31 +1089,33 @@ const SalesBudget: React.FC = () => {
                               </>
                             ) : (
                               <>
-                                <td className="sticky left-12 bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                  <div className="max-w-[300px]">
-                                    <div className="font-medium text-gray-900 truncate" title={row.item}>
+                                <td className="p-2 border-b border-r border-gray-200 text-xs">
+                                  <div className="truncate" title={row.item}>
+                                    <div className="font-medium text-gray-900 truncate">
                                       {row.item}
                                     </div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-xs text-gray-500 truncate">
                                       {row.category} - {row.brand}
                                     </div>
                                   </div>
                                 </td>
-                                <td className="sticky left-[332px] bg-white z-10 p-3 border-b border-r border-gray-200 text-sm">
-                                  {row.customer}
+                                <td className="p-2 border-b border-r border-gray-200 text-xs">
+                                  <div className="truncate" title={row.customer}>
+                                    {row.customer}
+                                  </div>
                                 </td>
                               </>
                             )}
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${selectedYear2025 === '2025' ? row.budget2025.toLocaleString() : row.budget2026.toLocaleString()}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              ${selectedYear2025 === '2025' ? (row.budget2025/1000).toFixed(0) : (row.budget2026/1000).toFixed(0)}k
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${selectedYear2025 === '2025' ? row.actual2025.toLocaleString() : '0'}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              ${selectedYear2025 === '2025' ? (row.actual2025/1000).toFixed(0) : '0'}k
                             </td>
-                            <td className="p-3 border-b border-gray-200 bg-blue-50 text-sm">
+                            <td className="p-2 border-b border-gray-200 bg-blue-50 text-xs">
                               <input
                                 type="number"
-                                className="w-20 p-1 text-center border border-gray-300 rounded"
+                                className="w-full p-1 text-center border border-gray-300 rounded text-xs"
                                 value={row.budget2026}
                                 onChange={(e) => {
                                   const value = parseInt(e.target.value) || 0;
@@ -1116,22 +1125,22 @@ const SalesBudget: React.FC = () => {
                                 }}
                               />
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${row.rate}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              {row.rate}
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
+                            <td className="p-2 border-b border-gray-200 text-xs">
                               {row.stock}
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
+                            <td className="p-2 border-b border-gray-200 text-xs">
                               {row.git}
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${row.budgetValue2026.toLocaleString()}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              ${(row.budgetValue2026/1000).toFixed(0)}k
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
-                              ${row.discount.toLocaleString()}
+                            <td className="p-2 border-b border-gray-200 text-xs">
+                              ${(row.discount/1000).toFixed(0)}k
                             </td>
-                            <td className="p-3 border-b border-gray-200 text-sm">
+                            <td className="p-2 border-b border-gray-200 text-xs">
                               <div className="flex gap-1">
                                 {editingRowId === row.id ? (
                                   <>

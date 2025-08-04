@@ -9,6 +9,8 @@ import RollingForecast from './pages/RollingForecast';
 import DistributionManagement from './pages/DistributionManagement';
 import UserManagement from './pages/UserManagement';
 import InventoryManagement from './pages/InventoryManagement';
+import DataSources from './pages/DataSources';
+import BiDashboard from './pages/BiDashboard';
 import { UserType } from './types/auth';
 import './index.css';
 
@@ -64,6 +66,22 @@ function App() {
             element={
               <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.SUPPLY_CHAIN, UserType.MANAGER]}>
                 <InventoryManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/data-sources"
+            element={
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.MANAGER]}>
+                <DataSources />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bi-dashboard"
+            element={
+              <ProtectedRoute requiredUserTypes={[UserType.ADMIN, UserType.MANAGER, UserType.SALESMAN]}>
+                <BiDashboard />
               </ProtectedRoute>
             }
           />

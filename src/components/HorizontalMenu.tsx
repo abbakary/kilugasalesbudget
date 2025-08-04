@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Grid, TrendingUp, BarChart3, Users, Package } from 'lucide-react';
+import { Home, Grid, TrendingUp, BarChart3, Users, Package, Database, Activity } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
 import { useAccessControl } from '../contexts/AuthContext';
 import { UserType } from '../types/auth';
@@ -48,6 +48,22 @@ const HorizontalMenu: React.FC = () => {
       active: location.pathname === '/inventory-management',
       allowedRoles: [UserType.ADMIN, UserType.SUPPLY_CHAIN, UserType.MANAGER],
       requiresAccess: () => accessPattern.canManageInventory || accessPattern.canAccessDepartmentData
+    },
+    {
+      icon: Activity,
+      label: 'BI Dashboard',
+      path: '/bi-dashboard',
+      active: location.pathname === '/bi-dashboard',
+      allowedRoles: [UserType.ADMIN, UserType.MANAGER, UserType.SALESMAN],
+      requiresAccess: () => accessPattern.canViewAnalytics || accessPattern.canViewReports
+    },
+    {
+      icon: Database,
+      label: 'Data Sources',
+      path: '/data-sources',
+      active: location.pathname === '/data-sources',
+      allowedRoles: [UserType.ADMIN, UserType.MANAGER],
+      requiresAccess: () => accessPattern.canAccessFullSystem || accessPattern.canAccessDepartmentData
     },
     {
       icon: Users,
